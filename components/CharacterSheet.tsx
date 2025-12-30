@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Character, Attributes } from '../types';
 import { StatBlock } from './StatBlock';
-import { Shield, Save, Printer, Copy, Swords, Backpack, ScrollText } from 'lucide-react';
+import { Printer, Backpack, Swords, Scroll } from 'lucide-react';
 import { CLASSES } from '../constants';
 import { IdentityHeader } from './sheet/IdentityHeader';
 import { CombatStats } from './sheet/CombatStats';
@@ -15,10 +15,10 @@ interface Props {
   onUpdate?: (updates: Partial<Character>) => void;
 }
 
-type SheetTab = 'overview' | 'inventory';
+type SheetTab = 'combat' | 'inventory';
 
 export const CharacterSheet: React.FC<Props> = ({ character, isEditing = false, onUpdate }) => {
-  const [activeTab, setActiveTab] = useState<SheetTab>('overview');
+  const [activeTab, setActiveTab] = useState<SheetTab>('combat');
   
   const classData = CLASSES.find(c => c.name === character.class);
 
@@ -32,75 +32,88 @@ export const CharacterSheet: React.FC<Props> = ({ character, isEditing = false, 
     if (onUpdate) onUpdate({ [field]: value });
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   return (
-    <div className="w-full max-w-5xl mx-auto flex flex-col gap-6 animate-fade-in">
+    <div className="w-full max-w-6xl mx-auto flex flex-col gap-8 animate-fade-in pb-20">
         
-        {/* Actions Bar (Floating or Fixed) */}
-        <div className="flex justify-between items-center no-print">
-             {/* Tabs */}
-             <div className="flex gap-2 p-1 bg-slate-900/80 backdrop-blur rounded-lg border border-white/5">
+        {/* Header & Controls */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 no-print border-b border-stone-200 pb-4">
+            <h2 className="text-sm font-bold text-stone-400 uppercase tracking-widest">Ficha de Personagem</h2>
+            
+            <div className="flex items-center gap-4">
+                {/* Navigation Pills */}
+                <div className="flex p-1 bg-stone-100 rounded-lg">
+                    <button 
+                        onClick={() => setActiveTab('combat')}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'combat' ? 'bg-white text-emerald-800 shadow-sm' : 'text-stone-500 hover:text-stone-800'}`}
+                    >
+                        <Swords size={16} /> <span className="hidden sm:inline">Combate & Perícias</span>
+                    </button>
+                    <button 
+                        onClick={() => setActiveTab('inventory')}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'inventory' ? 'bg-white text-emerald-800 shadow-sm' : 'text-stone-500 hover:text-stone-800'}`}
+                    >
+                        <Backpack size={16} /> <span className="hidden sm:inline">Mochila & Notas</span>
+                    </button>
+                </div>
+                
                 <button 
-                    onClick={() => setActiveTab('overview')}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'overview' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                    onClick={() => window.print()}
+                    className="p-2.5 text-stone-400 hover:text-emerald-700 hover:bg-emerald-50 rounded-full transition-colors"
+                    title="Imprimir Ficha"
                 >
-                    <Swords size={16} /> <span className="hidden sm:inline">Combate & Perícias</span>
-                </button>
-                <button 
-                    onClick={() => setActiveTab('inventory')}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'inventory' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
-                >
-                    <Backpack size={16} /> <span className="hidden sm:inline">Inventário & História</span>
+                    <Printer size={20} />
                 </button>
             </div>
-
-            <button 
-                onClick={handlePrint}
-                className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm px-3 py-2 rounded hover:bg-white/5"
-            >
-                <Printer size={16} /> <span className="hidden sm:inline">Imprimir</span>
-            </button>
         </div>
 
-        {/* Main Sheet Container */}
-        <div className="sheet-container w-full min-h-[800px] bg-slate-950 text-slate-200 relative print:bg-white print:text-black">
-            
+        {/* Paper Container */}
+        <div className="bg-white rounded-xl shadow-soft border border-stone-200 p-8 md:p-12 relative overflow-hidden print:shadow-none print:border-0 print:p-0">
+            {/* Decorative Top Line */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-30"></div>
+
             <IdentityHeader character={character} isEditing={isEditing} onChange={handleChange} />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mt-8">
                 
-                {/* Left Column: Attributes (Always Visible) */}
+                {/* Left Column: Attributes (Sticky) */}
                 <div className="lg:col-span-3">
-                    <div className="grid grid-cols-3 lg:grid-cols-1 gap-4 sticky top-4">
-                        {(Object.keys(character.attributes) as Array<keyof Attributes>).map((key) => (
-                            <StatBlock 
-                                key={key} 
-                                label={key} 
-                                value={character.attributes[key]} 
-                                modifier={character.modifiers[key]} 
-                                isEditing={isEditing}
-                                onUpdate={(val) => handleAttributeChange(key, val)}
-                            />
-                        ))}
+                    <div className="sticky top-24 space-y-4">
+                        <div className="text-center mb-2">
+                             <h3 className="text-xs font-bold text-stone-400 uppercase tracking-widest">Atributos</h3>
+                        </div>
+                        <div className="grid grid-cols-3 lg:grid-cols-1 gap-4">
+                            {(Object.keys(character.attributes) as Array<keyof Attributes>).map((key) => (
+                                <StatBlock 
+                                    key={key} 
+                                    label={key} 
+                                    value={character.attributes[key]} 
+                                    modifier={character.modifiers[key]} 
+                                    isEditing={isEditing}
+                                    onUpdate={(val) => handleAttributeChange(key, val)}
+                                />
+                            ))}
+                        </div>
                     </div>
                 </div>
 
-                {/* Right Column: Tab Content */}
-                <div className="lg:col-span-9">
-                    {activeTab === 'overview' && (
-                        <div className="animate-slide-in h-full flex flex-col gap-6">
-                            <CombatStats character={character} isEditing={isEditing} onChange={handleChange} />
-                            <div className="flex-grow">
+                {/* Right Column: Dynamic Content */}
+                <div className="lg:col-span-9 min-h-[600px]">
+                    {activeTab === 'combat' && (
+                        <div className="animate-slide-up flex flex-col gap-10">
+                            <section>
+                                <CombatStats character={character} isEditing={isEditing} onChange={handleChange} />
+                            </section>
+                            
+                            <div className="w-full h-px bg-stone-100"></div>
+
+                            <section className="h-full">
                                 <SkillsList skills={character.skills} />
-                            </div>
+                            </section>
                         </div>
                     )}
 
                     {activeTab === 'inventory' && (
-                        <div className="animate-slide-in h-full">
+                        <div className="animate-slide-up h-full">
                             <InventoryNotes 
                                 character={character} 
                                 classData={classData} 
