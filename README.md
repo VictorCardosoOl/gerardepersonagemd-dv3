@@ -1,20 +1,35 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 🔮 Mestre da Masmorra | Grimório Digital
 
-# Run and deploy your AI Studio app
+> *"Onde a imaginação encontra a arte digital."*
 
-This contains everything you need to run your app locally.
+Este projeto é uma **experiência frontend imersiva** projetada para ser o ponto de partida visual e interativo para jogadores de RPG de mesa (D&D 5e). Mais do que um gerador de fichas, é uma interface de **Design Artístico de Alta Fidelidade**.
 
-View your app in AI Studio: https://ai.studio/apps/drive/18zNWRK1JT7MZWuzBJT4nBecWuEthsHsa
+## 🎨 Visão do Projeto & Design
+Inspirado em referências de vanguarda como *Shopify Editions*, *Poison Studio* e *Cornerstone*, este projeto busca quebrar a barreira entre uma ferramenta utilitária e uma obra de arte interativa.
 
-## Run Locally
+**Pilares Visuais:**
+*   **Imersão Fantástica:** Uso de "Glassmorphism" avançado, gradientes animados (Aurora Borealis) e tipografia editorial.
+*   **Interatividade Fluida:** Micro-interações táteis, animações de entrada cinematográficas e feedback visual constante ("Juicy UI").
+*   **Acessibilidade Divertida:** Transformar regras complexas em componentes visuais intuitivos (Tooltips explicativos, Sliders infinitos).
+*   **Foco na Jornada:** Uma ferramenta de *onboarding* para novos jogadores, eliminando a complexidade técnica (JSONs) e focando na criação e aprendizado.
 
-**Prerequisites:**  Node.js
+## 🚀 Funcionalidades
+*   **Geração Procedural de Heróis:** Algoritmos que criam personagens únicos com histórias, equipamentos e atributos balanceados.
+*   **Bestiário Visual:** Catálogo de monstros com design de cartões colecionáveis.
+*   **Guia Interativo:** Uma seção dedicada a ensinar os novatos sobre os pilares do D&D.
+*   **Modo de Impressão (PDF Real):** Estilização CSS dedicada para exportar sua ficha direto para o papel (A4) sem a interface digital.
+*   **Códice de Raças:** Exploração visual das origens disponíveis.
 
+## 🛠️ Tecnologias
+*   **React 19:** Core da aplicação.
+*   **Tailwind CSS:** Motor de estilização para o sistema de design complexo.
+*   **Lucide React:** Iconografia.
+*   **CSS Nativo Otimizado:** Para animações de performance (GPU).
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 📦 Como Rodar
+1.  Clone o repositório.
+2.  Abra o `index.html` em um navegador moderno (Chrome/Edge/Firefox).
+    *   *Nota: O projeto utiliza ES Modules nativos via CDN, não requer `npm install` ou build steps para visualização rápida.*
+
+---
+*Desenvolvido com magia e código.*

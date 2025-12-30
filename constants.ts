@@ -1,5 +1,38 @@
 import { DndClass, DndRace, SkillName, Attribute } from "./types";
 
+// --- ATTRIBUTE DESCRIPTIONS (TOOLTIPS) ---
+export const ATTRIBUTE_DESCRIPTIONS: Record<string, string> = {
+    "Força": "Mede sua potência física natural, capacidade atlética e o quanto você pode carregar. Importante para Bárbaros e Guerreiros.",
+    "Destreza": "Mede agilidade, reflexos e equilíbrio. Afeta sua Classe de Armadura (CA) e ataques à distância ou com armas leves.",
+    "Constituição": "Mede saúde, vigor e força vital. Determina seus Pontos de Vida (HP). Essencial para todos os aventureiros sobreviverem.",
+    "Inteligência": "Mede acuidade mental, memória e raciocínio lógico. Usada para conjuração de Magos e perícias de conhecimento.",
+    "Sabedoria": "Mede percepção, intuição e força de vontade. Usada para Clérigos, Druidas e para perceber o mundo ao redor.",
+    "Carisma": "Mede força de personalidade, eloquência e liderança. Usada por Bardos, Paladinos, Feiticeiros e Bruxos para magia e interação social."
+};
+
+export const GUIDE_STEPS = [
+    {
+        title: "1. Escolha sua Raça",
+        desc: "A raça define sua biologia, aparência e talentos naturais. Um Elfo é ágil e mágico, enquanto um Anão é resistente e forte.",
+        icon: "🧬"
+    },
+    {
+        title: "2. Escolha sua Classe",
+        desc: "A classe é sua profissão e como você luta. Guerreiros usam armas, Magos usam feitiços, Ladinos usam astúcia.",
+        icon: "⚔️"
+    },
+    {
+        title: "3. Entenda os Atributos",
+        desc: "Seus 6 números principais definem o que você faz bem. O Modificador (ex: +3) é o número que você realmente soma nos dados.",
+        icon: "📊"
+    },
+    {
+        title: "4. Interpretação",
+        desc: "O D&D é sobre contar histórias. Use o campo 'Antecedente' para dar vida ao personagem. Quem ele era antes de se tornar herói?",
+        icon: "🎭"
+    }
+];
+
 // --- SYSTEM OF TRANSLATION ---
 export const DICTIONARY: Record<string, string> = {
   // Sizes
