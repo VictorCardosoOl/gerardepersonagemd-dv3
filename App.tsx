@@ -4,9 +4,10 @@ import { generateCharacter, getModifier } from './utils/logic';
 import { CharacterSheet } from './components/CharacterSheet';
 import { MonsterCard } from './components/MonsterCard';
 import { DMPanel } from './components/DMPanel';
+import { DragSlider } from './components/DragSlider'; // Importação do novo componente
 import { fetchMonsterList, fetchMonsterDetails } from './services/dndApi';
 import { RACES, DICTIONARY } from './constants';
-import { Dice5, Save, Copy, Crown, Trash2, X, Pencil, Check, Download, Upload, User, Users, Skull, Book, Search, Filter } from 'lucide-react';
+import { Dice5, Save, Copy, Crown, Trash2, X, Pencil, Check, Download, Upload, User, Users, Skull, Book, Search, Filter, MoveRight } from 'lucide-react';
 
 const LOCAL_STORAGE_KEY = 'dnd_saved_characters_v2';
 
@@ -159,7 +160,7 @@ export default function App() {
   // --- Bestiary Logic ---
   const handleMonsterSelect = async (index: string) => {
     setIsLoadingMonsters(true);
-    setMonsterSearch(''); // Clear search on select? or keep it? user preference. Let's keep input but hide suggestions.
+    setMonsterSearch(''); 
     setShowSuggestions(false);
     const details = await fetchMonsterDetails(index);
     setSelectedMonster(details);
@@ -180,7 +181,6 @@ export default function App() {
   const filteredMonsters = useMemo(() => {
     const term = debouncedSearch.toLowerCase();
     
-    // Filter by name (including translated terms)
     let results = monsterList;
     
     if (term) {
@@ -195,20 +195,14 @@ export default function App() {
             return false;
         });
     }
-
-    // NOTE: Client-side CR filtering is limited because APIMonsterIndex lacks CR data.
-    // Real implementation would require fetching details or having a richer index.
-    // For now, we only filter the list if we have the data, or we keep name filtering dominant.
-    // The UI is added as requested.
     
     return results;
   }, [debouncedSearch, monsterList, crFilter]);
 
-  // Slice for suggestions dropdown
   const suggestions = filteredMonsters.slice(0, 8);
 
   return (
-    <div className="min-h-screen bg-[#fafaf9] font-sans text-stone-800 print:bg-white selection:bg-emerald-200">
+    <div className="min-h-screen bg-[#fafaf9] font-sans text-stone-800 print:bg-white selection:bg-emerald-200 overflow-x-hidden">
       
       {/* Top Navigation Bar */}
       <nav className="fixed top-0 w-full z-40 bg-white/80 backdrop-blur-md border-b border-stone-200 h-16 flex items-center justify-between px-4 md:px-8 no-print shadow-sm">
@@ -271,7 +265,7 @@ export default function App() {
             <div className="w-full">
                 {currentCharacter ? (
                      <>
-                        {/* Floating Action Bar for Current Character */}
+                        {/* Floating Action Bar */}
                         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 bg-white/90 backdrop-blur-md border border-stone-200 p-2 rounded-full shadow-2xl flex items-center gap-2 no-print animate-fade-in text-stone-600">
                             <button onClick={() => setIsEditing(!isEditing)} className={`p-3 rounded-full transition-all ${isEditing ? 'bg-emerald-600 text-white' : 'hover:bg-stone-100 text-stone-600'}`} title="Editar"><Pencil size={20} /></button>
                             <div className="w-px h-6 bg-stone-300"></div>
@@ -390,43 +384,53 @@ export default function App() {
             </div>
         )}
 
-        {/* CODEX */}
+        {/* CODEX - DRAG SLIDER INTERACTION */}
         {activeTab === 'codex' && (
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-             {RACES.map(race => (
-                 <div key={race.name} className="glass-panel p-6 rounded-xl hover:shadow-lg hover:border-emerald-500/30 transition-all group bg-white border border-stone-200">
-                     <div className="flex justify-between items-start mb-4">
-                         <h2 className="text-2xl font-serif text-stone-800 group-hover:text-emerald-700 transition-colors">{race.name}</h2>
-                         <span className="text-xs bg-stone-100 px-2 py-1 rounded text-stone-500 border border-stone-200">Desl. {race.speed}m</span>
-                     </div>
-                     <p className="text-stone-600 italic mb-6 text-sm leading-relaxed border-l-2 border-emerald-500/30 pl-4 bg-stone-50 p-2 rounded-r">"{race.description}"</p>
-                     
-                     <div className="space-y-3 text-sm mb-6 bg-stone-50 p-4 rounded-lg border border-stone-100">
-                         <div>
-                             <strong className="text-emerald-700 block mb-1 text-xs uppercase tracking-wider">Bônus de Atributo</strong>
-                             <div className="flex flex-wrap gap-2">
-                                {Object.entries(race.bonuses).map(([k,v]) => (
-                                    <span key={k} className="px-2 py-0.5 bg-white text-emerald-800 rounded border border-emerald-200 text-xs shadow-sm">
-                                        {k} +{v}
-                                    </span>
-                                ))}
-                             </div>
-                         </div>
-                         <div>
-                            <strong className="text-emerald-700 block mb-1 text-xs uppercase tracking-wider">Traços Raciais</strong>
-                            <p className="text-stone-600">{race.traits?.join(', ')}</p>
-                         </div>
-                     </div>
+            <div className="flex flex-col items-center justify-center h-[80vh]">
+                <div className="text-center mb-8">
+                     <h2 className="text-3xl font-serif text-stone-800 mb-2">Códice das Raças</h2>
+                     <p className="text-stone-500 flex items-center justify-center gap-2">
+                         Arraste para explorar as origens <MoveRight size={16} className="animate-bounce-x" />
+                     </p>
+                </div>
 
-                     <button 
-                         onClick={() => handleGenerate(false, race.name)}
-                         className="w-full py-2.5 border border-stone-300 rounded-lg text-stone-500 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all text-sm font-medium"
-                     >
-                         Gerar {race.name}
-                     </button>
-                 </div>
-             ))}
-         </div>
+                <DragSlider className="max-w-[95vw]">
+                    {RACES.map(race => (
+                        <div 
+                            key={race.name} 
+                            className="min-w-[320px] max-w-[320px] glass-panel p-6 rounded-xl hover:shadow-xl hover:border-emerald-500/50 transition-all group bg-white border border-stone-200 flex flex-col h-full transform hover:-translate-y-2 duration-300"
+                        >
+                            <div className="flex justify-between items-start mb-4">
+                                <h2 className="text-2xl font-serif text-stone-800 group-hover:text-emerald-700 transition-colors">{race.name}</h2>
+                                <span className="text-xs bg-stone-100 px-2 py-1 rounded text-stone-500 border border-stone-200">Desl. {race.speed}m</span>
+                            </div>
+                            <p className="text-stone-600 italic mb-6 text-sm leading-relaxed border-l-2 border-emerald-500/30 pl-4 bg-stone-50 p-2 rounded-r flex-grow">"{race.description}"</p>
+                            
+                            <div className="space-y-3 text-sm mb-6 bg-stone-50 p-4 rounded-lg border border-stone-100">
+                                <div>
+                                    <strong className="text-emerald-700 block mb-1 text-xs uppercase tracking-wider">Bônus</strong>
+                                    <div className="flex flex-wrap gap-2">
+                                        {Object.entries(race.bonuses).map(([k,v]) => (
+                                            <span key={k} className="px-2 py-0.5 bg-white text-emerald-800 rounded border border-emerald-200 text-xs shadow-sm">
+                                                {k} +{v}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button 
+                                onClick={() => handleGenerate(false, race.name)}
+                                className="w-full py-3 border border-emerald-200 bg-emerald-50 rounded-lg text-emerald-700 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all text-sm font-bold tracking-wide mt-auto shadow-sm"
+                            >
+                                GERAR {race.name.toUpperCase()}
+                            </button>
+                        </div>
+                    ))}
+                    {/* Spacer to allow dragging the last item fully into view comfortably */}
+                    <div className="min-w-[50px]"></div>
+                </DragSlider>
+            </div>
         )}
       </main>
     </div>
