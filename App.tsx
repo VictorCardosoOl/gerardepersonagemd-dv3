@@ -3,26 +3,31 @@ import { Character } from './types';
 import { generateCharacter, recalculateCharacterStats } from './utils/logic';
 import { Sanctum } from './components/Sanctum';
 import { CharacterSheet } from './components/CharacterSheet';
-import { BestiaryOverlay } from './components/BestiaryOverlay';
+import { BestiarySection } from './components/BestiarySection';
 import { DragSlider } from './components/DragSlider';
 import { GuideSection } from './components/GuideSection';
-import { Sidebar } from './components/Sidebar';
 import { RACES } from './constants';
-import { MoveRight, Zap, Check, Sparkles } from 'lucide-react';
+import { MoveRight, Zap, Check, Sparkles, Book, Skull, Map, Shield } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Lenis from 'lenis';
 
 const LOCAL_STORAGE_KEY = 'dnd_saved_characters_v4';
-type ViewState = 'sanctum' | 'sheet' | 'codex' | 'guide';
+type TabId = 'sanctum' | 'sheet' | 'codex' | 'bestiary' | 'guide';
+
+const TABS = [
+  { id: 'sanctum', label: 'Grimório', icon: Shield },
+  { id: 'codex', label: 'Códice', icon: Book },
+  { id: 'bestiary', label: 'Bestiário', icon: Skull },
+  { id: 'guide', label: 'Guia', icon: Map },
+];
 
 export default function App() {
   // --- Global State ---
-  const [currentView, setCurrentView] = useState<ViewState>('sanctum');
+  const [activeTab, setActiveTab] = useState<TabId>('sanctum');
   const [savedCharacters, setSavedCharacters] = useState<Character[]>([]);
   const [activeCharacterId, setActiveCharacterId] = useState<string | null>(null);
   
   // --- Tool States ---
-  const [isBestiaryOpen, setIsBestiaryOpen] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   
@@ -83,14 +88,14 @@ export default function App() {
     const newChar = generateCharacter(isNPC, raceOverride);
     setSavedCharacters(prev => [newChar, ...prev]);
     setActiveCharacterId(newChar.id);
-    setCurrentView('sheet');
+    setActiveTab('sheet');
     notify("Nova Lenda Forjada");
     lenisRef.current?.scrollTo(0, { immediate: true });
   };
 
   const handleSelectCharacter = (char: Character) => {
     setActiveCharacterId(char.id);
-    setCurrentView('sheet');
+    setActiveTab('sheet');
     lenisRef.current?.scrollTo(0, { immediate: true });
   };
 
@@ -98,7 +103,7 @@ export default function App() {
     setSavedCharacters(prev => prev.filter(c => c.id !== id));
     if (activeCharacterId === id) {
         setActiveCharacterId(null);
-        setCurrentView('sanctum');
+        setActiveTab('sanctum');
     }
     notify("Lenda esquecida");
   };
@@ -144,29 +149,57 @@ export default function App() {
       e.target.value = '';
   };
 
+  // Custom Navigation Logic
+  const handleTabChange = (id: string) => {
+      if (id === 'sanctum') setActiveCharacterId(null);
+      setActiveTab(id as TabId);
+      lenisRef.current?.scrollTo(0, { immediate: true });
+  };
+
   return (
-    <div className="min-h-screen font-body text-mystic-100 selection:bg-cyan-500/30 selection:text-white pl-0 md:pl-24 transition-all">
+    <div className="min-h-screen font-body text-mystic-100 selection:bg-cyan-500/30 selection:text-white transition-all bg-void-950">
       
       <input type="file" ref={fileInputRef} onChange={handleImport} className="hidden" accept=".json" />
 
-      {/* --- Vertical Sidebar --- */}
-      <Sidebar 
-          currentView={currentView}
-          onChangeView={(view) => {
-              setCurrentView(view);
-              lenisRef.current?.scrollTo(0, { immediate: true });
-          }}
-          onToggleBestiary={() => setIsBestiaryOpen(!isBestiaryOpen)}
-          activeCharacterName={activeCharacter?.name}
-          isBestiaryOpen={isBestiaryOpen}
-      />
+      {/* --- Horizontal Navigation --- */}
+      <header className="fixed top-0 left-0 w-full z-50 flex justify-center pt-6 px-4 pointer-events-none">
+        <nav className="glass-panel rounded-full px-2 py-2 flex items-center gap-1 shadow-2xl pointer-events-auto">
+            {TABS.map((tab) => {
+                const isActive = activeTab === tab.id || (tab.id === 'sanctum' && activeTab === 'sheet');
+                const Icon = tab.icon;
+                
+                return (
+                    <button
+                        key={tab.id}
+                        onClick={() => handleTabChange(tab.id)}
+                        className={`
+                            relative px-6 py-2.5 rounded-full text-sm font-display font-bold tracking-widest uppercase transition-all duration-300
+                            ${isActive ? 'text-void-950' : 'text-mystic-400 hover:text-white'}
+                        `}
+                    >
+                        {isActive && (
+                            <motion.div 
+                                layoutId="nav-pill"
+                                className="absolute inset-0 bg-white rounded-full"
+                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                            />
+                        )}
+                        <span className="relative z-10 flex items-center gap-2">
+                             <Icon size={14} className={isActive ? 'text-cyan-600' : ''} />
+                             {tab.label}
+                        </span>
+                    </button>
+                )
+            })}
+        </nav>
+      </header>
 
       {/* --- Main Content --- */}
-      <main className="w-full min-h-screen pt-12 pb-20 relative z-0">
+      <main className="w-full min-h-screen pt-32 pb-20 relative z-0">
           <AnimatePresence mode="wait">
             
-            {/* View: SANCTUM */}
-            {currentView === 'sanctum' && (
+            {/* View: SANCTUM (Grimório) */}
+            {activeTab === 'sanctum' && (
                 <motion.div 
                     key="sanctum"
                     initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, filter: 'blur(10px)' }}
@@ -184,7 +217,7 @@ export default function App() {
             )}
 
             {/* View: SHEET */}
-            {currentView === 'sheet' && activeCharacter && (
+            {activeTab === 'sheet' && activeCharacter && (
                 <motion.div 
                     key={`sheet-${activeCharacter.id}`}
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -207,28 +240,29 @@ export default function App() {
                 </motion.div>
             )}
 
-            {/* View: CODEX */}
-            {currentView === 'codex' && (
+            {/* View: CODEX (Raças) */}
+            {activeTab === 'codex' && (
                 <motion.div 
                     key="codex"
                     initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }}
                     className="flex flex-col items-center justify-center py-12"
                 >
-                     <div className="text-center mb-16">
-                        <Sparkles className="mx-auto text-gold-500 mb-4" size={32} />
-                        <h2 className="text-5xl font-display font-bold text-white mb-2">Códice de Origens</h2>
-                        <p className="text-mystic-300 font-body opacity-60">Arraste para explorar as linhagens.</p>
+                     <div className="text-center mb-16 px-4">
+                        <Sparkles className="mx-auto text-gold-500 mb-4 animate-pulse" size={32} />
+                        <h2 className="text-5xl md:text-6xl font-display font-black text-white mb-4 tracking-tight">Códice de Origens</h2>
+                        <p className="text-mystic-300 font-body opacity-60 max-w-lg mx-auto leading-relaxed">Arraste os cartões para explorar as linhagens ancestrais e forjar seu novo destino.</p>
                     </div>
                     
                     <DragSlider className="max-w-[95vw]">
                         {RACES.map(race => (
-                            <div key={race.name} className="min-w-[360px] glass-panel p-8 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 cursor-pointer group"
+                            <div key={race.name} className="min-w-[360px] glass-panel p-10 rounded-[2rem] hover:border-cyan-500/30 transition-all duration-500 cursor-pointer group relative overflow-hidden"
                                 onClick={() => handleCreateNew(false, race.name)}
                             >
-                                <h3 className="text-3xl font-display text-white mb-4 group-hover:text-cyan-400 transition-colors">{race.name}</h3>
-                                <p className="text-mystic-300 text-sm leading-relaxed mb-8">{race.description}</p>
+                                <div className="absolute -right-10 -top-10 w-40 h-40 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+                                <h3 className="text-4xl font-display font-bold text-white mb-6 group-hover:text-cyan-400 transition-colors">{race.name}</h3>
+                                <p className="text-mystic-300 text-base leading-relaxed mb-8 border-l-2 border-white/10 pl-4">{race.description}</p>
                                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gold-500 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
-                                    Escolher <MoveRight size={14}/>
+                                    Selecionar Linhagem <MoveRight size={14}/>
                                 </div>
                             </div>
                         ))}
@@ -236,8 +270,19 @@ export default function App() {
                 </motion.div>
             )}
 
+             {/* View: BESTIARY */}
+             {activeTab === 'bestiary' && (
+                <motion.div 
+                    key="bestiary"
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    className="max-w-7xl mx-auto px-4"
+                >
+                    <BestiarySection />
+                </motion.div>
+            )}
+
             {/* View: GUIDE */}
-            {currentView === 'guide' && (
+            {activeTab === 'guide' && (
                 <motion.div 
                     key="guide"
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -248,9 +293,6 @@ export default function App() {
 
           </AnimatePresence>
       </main>
-
-      {/* Global Overlays */}
-      <BestiaryOverlay isOpen={isBestiaryOpen} onClose={() => setIsBestiaryOpen(false)} />
 
       {/* Notifications */}
       <AnimatePresence>
