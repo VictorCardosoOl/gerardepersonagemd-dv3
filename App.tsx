@@ -7,27 +7,27 @@ import { DMPanel } from './components/DMPanel';
 import { DragSlider } from './components/DragSlider';
 import { GuideSection } from './components/GuideSection';
 import { fetchMonsterList, fetchMonsterDetails } from './services/dndApi';
-import { RACES, DICTIONARY } from './constants';
-import { Dice5, Save, Copy, Crown, Pencil, Check, User, Skull, Book, Search, MoveRight, Sparkles, Sword, Map, Zap } from 'lucide-react';
+import { RACES } from './constants';
+import { Dice5, Save, Copy, Crown, Pencil, Check, User, Skull, Book, Search, MoveRight, Sparkles, Sword, Map, Zap, Upload, Download } from 'lucide-react';
 
-const LOCAL_STORAGE_KEY = 'dnd_saved_characters_v3';
+const LOCAL_STORAGE_KEY = 'dnd_saved_characters_v4';
 
 type ActiveTab = 'grimoire' | 'bestiary' | 'codex' | 'guide';
 
 // --- Skeleton Component ---
 const MonsterSkeleton = () => (
-    <div className="glass-panel rounded-2xl p-8 max-w-4xl w-full mx-auto mt-4 animate-pulse bg-white/5">
-        <div className="border-b border-white/10 pb-8 mb-8">
-            <div className="h-12 bg-white/10 rounded w-1/3 mb-4"></div>
+    <div className="glass-panel rounded-2xl p-8 max-w-4xl w-full mx-auto mt-4 animate-pulse bg-white/50 border border-royal-100">
+        <div className="border-b border-royal-100 pb-8 mb-8">
+            <div className="h-12 bg-royal-100 rounded w-1/3 mb-4"></div>
             <div className="flex gap-3">
-                <div className="h-8 bg-white/10 rounded w-20"></div>
-                <div className="h-8 bg-white/10 rounded w-24"></div>
+                <div className="h-8 bg-royal-50 rounded w-20"></div>
+                <div className="h-8 bg-royal-50 rounded w-24"></div>
             </div>
         </div>
         <div className="grid grid-cols-3 gap-6 mb-10">
-            <div className="h-32 bg-white/10 rounded-xl"></div>
-            <div className="h-32 bg-white/10 rounded-xl"></div>
-            <div className="h-32 bg-white/10 rounded-xl"></div>
+            <div className="h-32 bg-royal-50 rounded-xl border border-royal-100"></div>
+            <div className="h-32 bg-royal-50 rounded-xl border border-royal-100"></div>
+            <div className="h-32 bg-royal-50 rounded-xl border border-royal-100"></div>
         </div>
     </div>
 );
@@ -167,27 +167,25 @@ export default function App() {
   const suggestions = filteredMonsters.slice(0, 8);
 
   return (
-    <div className="min-h-screen font-sans selection:bg-mystic-500 selection:text-white overflow-x-hidden">
+    <div className="min-h-screen font-sans selection:bg-royal-200 selection:text-royal-900 overflow-x-hidden bg-canvas-50">
       
       {/* --- Top Navigation --- */}
-      <nav className="fixed top-0 w-full z-40 bg-void-950/70 backdrop-blur-md border-b border-white/5 h-20 transition-all duration-300 no-print">
+      <nav className="fixed top-0 w-full z-40 bg-white/90 backdrop-blur-md border-b border-royal-100 h-20 transition-all duration-300 no-print shadow-sm">
          <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
              
              {/* Brand */}
              <button onClick={handleHome} className="group flex items-center gap-3 focus:outline-none" title="Voltar ao Início">
-                 <div className="bg-gradient-to-br from-mystic-500 to-accent-cyan p-0.5 rounded-xl shadow-[0_0_20px_rgba(168,85,247,0.4)] group-hover:scale-105 transition-transform duration-500">
-                    <div className="bg-void-950 p-2 rounded-[10px]">
+                 <div className="bg-royal-900 p-2.5 rounded-xl shadow-lg shadow-royal-900/20 group-hover:bg-royal-800 transition-colors">
                      <Dice5 size={24} className="text-white" />
-                    </div>
                  </div>
                  <div className="flex flex-col items-start">
-                    <h1 className="text-xl font-display font-black text-white tracking-wide leading-none group-hover:text-mystic-300 transition-colors">Mestre da Masmorra</h1>
-                    <span className="text-[10px] uppercase tracking-[0.3em] text-slate-500 font-bold mt-1">Grimório Digital</span>
+                    <h1 className="text-xl font-display font-black text-royal-950 tracking-wide leading-none group-hover:text-royal-700 transition-colors">Mestre da Masmorra</h1>
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-royal-400 font-bold mt-1">Grimório Digital</span>
                  </div>
              </button>
 
-             {/* Desktop Navigation */}
-             <div className="hidden md:flex items-center bg-white/5 p-1 rounded-full border border-white/5 backdrop-blur-md">
+             {/* Desktop Navigation (Horizontal Tabs) */}
+             <div className="hidden md:flex items-center bg-canvas-100 p-1.5 rounded-full border border-canvas-200 shadow-inner">
                 {[
                     { id: 'grimoire', icon: User, label: 'Ficha' },
                     { id: 'guide', icon: Map, label: 'Guia' },
@@ -198,14 +196,14 @@ export default function App() {
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id as ActiveTab)}
                         className={`
-                            px-6 py-2 rounded-full flex items-center gap-2 text-xs font-bold transition-all duration-300 uppercase tracking-wider
+                            px-6 py-2.5 rounded-full flex items-center gap-2 text-xs font-bold transition-all duration-300 uppercase tracking-widest relative overflow-hidden
                             ${activeTab === tab.id 
-                                ? 'bg-mystic-600 text-white shadow-lg shadow-mystic-500/20' 
-                                : 'text-slate-400 hover:text-white hover:bg-white/5'}
+                                ? 'bg-white text-royal-700 shadow-sm ring-1 ring-black/5' 
+                                : 'text-slate-400 hover:text-royal-600 hover:bg-white/50'}
                         `}
                     >
-                        <tab.icon size={16} className={activeTab === tab.id ? 'text-white' : 'opacity-50'} /> 
-                        <span>{tab.label}</span>
+                        <tab.icon size={16} className={activeTab === tab.id ? 'text-royal-600' : 'opacity-50'} /> 
+                        <span className="relative z-10">{tab.label}</span>
                     </button>
                 ))}
              </div>
@@ -213,7 +211,7 @@ export default function App() {
              {/* DM Tools Trigger */}
              <button 
                 onClick={() => setIsDMPanelOpen(true)}
-                className="flex items-center gap-2 text-slate-300 hover:text-white hover:bg-white/10 border border-white/10 transition-all py-2.5 px-5 rounded-full shadow-sm hover:shadow-glow bg-void-900 font-bold uppercase text-xs tracking-widest"
+                className="flex items-center gap-2 text-slate-500 hover:text-royal-700 hover:bg-royal-50 border border-canvas-200 hover:border-royal-200 transition-all py-2.5 px-5 rounded-full shadow-sm hover:shadow-md bg-white font-bold uppercase text-xs tracking-widest"
              >
                 <Crown size={16} />
                 <span className="hidden lg:inline">Mestre</span>
@@ -222,7 +220,7 @@ export default function App() {
       </nav>
 
       {/* --- Mobile Navigation (Bottom) --- */}
-      <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-void-900/90 backdrop-blur-xl border border-white/10 shadow-2xl rounded-3xl px-6 py-4 flex items-center gap-8 no-print w-auto">
+      <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-white/95 backdrop-blur-xl border border-royal-100 shadow-2xl rounded-3xl px-6 py-4 flex items-center gap-8 no-print w-auto">
         {[
             { id: 'grimoire', icon: User },
             { id: 'guide', icon: Map },
@@ -232,7 +230,7 @@ export default function App() {
             <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as ActiveTab)}
-                className={`flex flex-col items-center gap-1 transition-all ${activeTab === tab.id ? 'text-mystic-400 scale-110' : 'text-slate-500'}`}
+                className={`flex flex-col items-center gap-1 transition-all ${activeTab === tab.id ? 'text-royal-600 scale-110' : 'text-slate-400'}`}
             >
                 <tab.icon size={24} strokeWidth={activeTab === tab.id ? 2.5 : 2} />
             </button>
@@ -251,8 +249,8 @@ export default function App() {
 
       {/* --- Notification Toast --- */}
       {notification && (
-        <div className="fixed top-24 right-6 z-50 bg-mystic-900 text-white px-6 py-4 rounded-xl shadow-glass font-bold animate-enter-up no-print flex items-center gap-4 border border-mystic-500/30 max-w-sm">
-          <div className="bg-mystic-500 rounded-full p-1"><Check size={16} /></div>
+        <div className="fixed top-24 right-6 z-50 bg-royal-900 text-white px-6 py-4 rounded-xl shadow-glass font-bold animate-enter-up no-print flex items-center gap-4 border border-royal-700 max-w-sm">
+          <div className="bg-royal-600 rounded-full p-1"><Check size={16} /></div>
           {notification}
         </div>
       )}
@@ -267,50 +265,52 @@ export default function App() {
                      <>
                         {/* Floating Action Toolbar */}
                         <div className="fixed bottom-28 md:bottom-10 right-6 md:right-10 z-30 flex flex-col gap-3 no-print animate-enter-up group">
-                            <div className="glass-panel p-2 rounded-2xl flex flex-col gap-2 border-white/10">
-                                <button onClick={() => setIsEditing(!isEditing)} className={`p-4 rounded-xl transition-all ${isEditing ? 'bg-mystic-500 text-white' : 'hover:bg-white/10 text-slate-400'}`} title={isEditing ? 'Salvar Edição' : 'Editar Ficha'}>
+                            <div className="glass-panel p-2 rounded-2xl flex flex-col gap-2 border-royal-100 bg-white/80">
+                                <button onClick={() => setIsEditing(!isEditing)} className={`p-4 rounded-xl transition-all ${isEditing ? 'bg-royal-100 text-royal-700' : 'hover:bg-canvas-50 text-slate-400'}`} title={isEditing ? 'Salvar Edição' : 'Editar Ficha'}>
                                     <Pencil size={20} />
                                 </button>
-                                <button onClick={handleSave} className="p-4 hover:bg-emerald-500/20 text-emerald-400 rounded-xl transition-colors" title="Salvar no Grimório"><Save size={20} /></button>
-                                <button onClick={handleCopy} className="p-4 hover:bg-white/10 text-slate-400 rounded-xl transition-colors" title="Copiar Resumo"><Copy size={20} /></button>
+                                <button onClick={handleSave} className="p-4 hover:bg-emerald-50 text-emerald-600 rounded-xl transition-colors" title="Salvar no Grimório"><Save size={20} /></button>
+                                <button onClick={handleCopy} className="p-4 hover:bg-canvas-50 text-slate-500 rounded-xl transition-colors" title="Copiar Resumo"><Copy size={20} /></button>
                             </div>
                         </div>
 
                         <CharacterSheet character={currentCharacter} backstoryLoading={false} isEditing={isEditing} onUpdate={handleCharacterUpdate} />
                      </>
                 ) : (
-                    /* HERO / EMPTY STATE (Cinematic) */
-                    <div className="flex flex-col items-center justify-center min-h-[70vh] py-12 relative animate-scale-in text-center">
+                    /* HERO / EMPTY STATE (Royal Blue Theme) */
+                    <div className="flex flex-col items-center justify-center min-h-[60vh] py-12 relative animate-scale-in text-center">
                         <div className="max-w-4xl w-full relative z-10">
                             
                             <div className="flex justify-center mb-8 animate-float">
                                 <div className="relative">
-                                    <div className="absolute inset-0 bg-mystic-500 blur-[60px] opacity-40 rounded-full"></div>
-                                    <Sword size={64} className="text-white relative z-10" strokeWidth={1} />
+                                    <div className="absolute inset-0 bg-royal-200 blur-[50px] opacity-60 rounded-full"></div>
+                                    <div className="relative z-10 bg-white p-6 rounded-3xl shadow-glow border border-white">
+                                        <Sword size={48} className="text-royal-600" strokeWidth={1.5} />
+                                    </div>
                                 </div>
                             </div>
                             
-                            <h2 className="text-6xl md:text-8xl font-display font-black text-white mb-8 tracking-tight leading-tight drop-shadow-2xl">
+                            <h2 className="text-6xl md:text-8xl font-display font-black text-royal-950 mb-6 tracking-tight leading-tight">
                                 Crie sua <br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-mystic-400 via-accent-cyan to-mystic-400">Própria Lenda</span>
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-royal-600 to-indigo-600">Própria Lenda</span>
                             </h2>
                             
-                            <p className="text-xl md:text-2xl text-slate-400 mb-12 leading-relaxed max-w-2xl mx-auto font-serif italic">
+                            <p className="text-xl md:text-2xl text-slate-500 mb-12 leading-relaxed max-w-2xl mx-auto font-serif italic">
                                 "O destino não é encontrado, ele é forjado. Invoque seu herói e comece a aventura."
                             </p>
                             
                             <div className="flex flex-col sm:flex-row gap-6 w-full justify-center">
                                 <button 
                                     onClick={() => handleGenerate(false)} 
-                                    className="group relative px-8 py-5 rounded-full bg-white text-void-950 font-bold text-lg tracking-widest uppercase transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(255,255,255,0.4)]"
+                                    className="group relative px-8 py-5 rounded-full bg-royal-900 text-white font-bold text-lg tracking-widest uppercase transition-all hover:bg-royal-800 hover:shadow-lg shadow-royal-900/20"
                                 >
                                     <span className="relative z-10 flex items-center gap-3">
-                                        <Sparkles size={20} className="text-mystic-600" /> Inovar Herói
+                                        <Sparkles size={20} className="text-royal-200" /> Inovar Herói
                                     </span>
                                 </button>
                                 <button 
                                     onClick={() => setIsDMPanelOpen(true)}
-                                    className="px-8 py-5 rounded-full border border-white/20 text-white font-bold text-lg tracking-widest uppercase hover:bg-white/5 hover:border-white/40 transition-all flex items-center justify-center gap-3"
+                                    className="px-8 py-5 rounded-full bg-white border border-royal-100 text-royal-700 font-bold text-lg tracking-widest uppercase hover:bg-royal-50 transition-all flex items-center justify-center gap-3 shadow-sm hover:shadow-md"
                                 >
                                     <Crown size={20} />
                                     Painel do Mestre
@@ -329,10 +329,10 @@ export default function App() {
         {activeTab === 'bestiary' && (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-[calc(100vh-140px)] animate-enter-up">
                 {/* Sidebar List */}
-                <div className="lg:col-span-4 xl:col-span-3 glass-panel flex flex-col h-full overflow-hidden rounded-[2rem] border-white/5">
-                    <div className="p-6 border-b border-white/5 bg-void-950/40">
-                        <h2 className="font-display text-xl text-white mb-4 flex items-center gap-2 font-black tracking-widest">
-                            <Skull size={20} className="text-accent-rose"/> Bestiário
+                <div className="lg:col-span-4 xl:col-span-3 glass-panel flex flex-col h-full overflow-hidden rounded-[2rem] border-white/60 bg-white/60">
+                    <div className="p-6 border-b border-royal-100 bg-canvas-50/80">
+                        <h2 className="font-display text-xl text-royal-900 mb-4 flex items-center gap-2 font-black tracking-widest">
+                            <Skull size={20} className="text-royal-600"/> Bestiário
                         </h2>
                         
                         <div className="relative mb-3 group">
@@ -341,15 +341,15 @@ export default function App() {
                                 placeholder="Buscar criatura..." 
                                 value={monsterSearch}
                                 onChange={(e) => { setMonsterSearch(e.target.value); setShowSuggestions(true); }}
-                                className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-sm focus:bg-white/10 focus:border-mystic-500/50 transition-all text-white placeholder-slate-500 font-bold"
+                                className="w-full bg-white border border-royal-100 rounded-xl py-4 pl-12 pr-4 text-sm focus:border-royal-400 focus:ring-1 focus:ring-royal-400 transition-all text-royal-900 placeholder-slate-400 font-bold shadow-sm"
                             />
-                            <Search className="absolute left-4 top-4 text-slate-500 group-focus-within:text-white transition-colors" size={20} />
+                            <Search className="absolute left-4 top-4 text-slate-400 group-focus-within:text-royal-500 transition-colors" size={20} />
                         </div>
 
                         {showSuggestions && monsterSearch && (
-                             <div className="absolute z-20 w-[90%] bg-void-900 border border-white/10 rounded-xl shadow-2xl max-h-60 overflow-y-auto mt-2 p-2">
+                             <div className="absolute z-20 w-[90%] bg-white border border-royal-100 rounded-xl shadow-xl max-h-60 overflow-y-auto mt-2 p-2">
                                 {suggestions.map(m => (
-                                    <button key={m.index} onClick={() => { setMonsterSearch(m.name); setShowSuggestions(false); handleMonsterSelect(m.index); }} className="w-full text-left px-4 py-3 hover:bg-white/5 rounded-lg text-sm font-bold text-slate-300">{m.name}</button>
+                                    <button key={m.index} onClick={() => { setMonsterSearch(m.name); setShowSuggestions(false); handleMonsterSelect(m.index); }} className="w-full text-left px-4 py-3 hover:bg-royal-50 rounded-lg text-sm font-bold text-slate-600">{m.name}</button>
                                 ))}
                              </div>
                         )}
@@ -360,7 +360,7 @@ export default function App() {
                             <button 
                                 key={m.index}
                                 onClick={() => handleMonsterSelect(m.index)}
-                                className={`w-full text-left px-5 py-4 rounded-xl transition-all flex justify-between items-center group font-bold ${selectedMonster?.index === m.index ? 'bg-mystic-600 text-white shadow-lg' : 'hover:bg-white/5 text-slate-400 hover:text-white'}`}
+                                className={`w-full text-left px-5 py-4 rounded-xl transition-all flex justify-between items-center group font-bold ${selectedMonster?.index === m.index ? 'bg-royal-600 text-white shadow-lg shadow-royal-500/30' : 'hover:bg-white text-slate-500 hover:text-royal-700 hover:shadow-sm'}`}
                             >
                                 <span className="truncate tracking-wide">{m.name}</span>
                             </button>
@@ -379,11 +379,11 @@ export default function App() {
                             <MonsterCard monster={selectedMonster} onClose={() => setSelectedMonster(null)} />
                         </div>
                     ) : (
-                        <div className="h-full glass-panel rounded-[2rem] flex flex-col items-center justify-center text-slate-500 border-dashed border-2 border-white/5 bg-white/0">
-                            <div className="p-8 rounded-full bg-white/5 mb-6 animate-float">
-                                <Book size={48} className="opacity-40 text-white" />
+                        <div className="h-full glass-panel rounded-[2rem] flex flex-col items-center justify-center text-slate-400 border-dashed border-2 border-royal-100 bg-white/40">
+                            <div className="p-8 rounded-full bg-white mb-6 animate-float shadow-sm">
+                                <Book size={48} className="opacity-30 text-royal-800" />
                             </div>
-                            <p className="font-display text-xl font-bold opacity-50 tracking-widest">Selecione uma criatura</p>
+                            <p className="font-display text-xl font-bold opacity-50 tracking-widest text-royal-900">Selecione uma criatura</p>
                         </div>
                     )}
                 </div>
@@ -394,11 +394,11 @@ export default function App() {
         {activeTab === 'codex' && (
             <div className="flex flex-col items-center justify-center min-h-[70vh] animate-enter-up">
                 <div className="text-center mb-16 max-w-2xl px-4">
-                     <h2 className="text-5xl md:text-7xl font-display font-black text-white mb-6 tracking-tight">Códice</h2>
-                     <p className="text-slate-400 text-xl font-serif italic">
+                     <h2 className="text-5xl md:text-7xl font-display font-black text-royal-950 mb-6 tracking-tight">Códice</h2>
+                     <p className="text-slate-500 text-xl font-serif italic">
                          Arraste para desvendar as linhagens ancestrais.
                      </p>
-                     <div className="flex justify-center mt-6 text-mystic-500">
+                     <div className="flex justify-center mt-6 text-royal-400">
                         <MoveRight size={32} className="animate-pulse" />
                      </div>
                 </div>
@@ -407,33 +407,33 @@ export default function App() {
                     {RACES.map(race => (
                         <div 
                             key={race.name} 
-                            className="min-w-[400px] max-w-[400px] glass-panel p-10 flex flex-col h-[600px] transform transition-all duration-500 hover:-translate-y-4 hover:shadow-glow rounded-[3rem] border-t border-white/10 relative overflow-hidden group"
+                            className="min-w-[400px] max-w-[400px] glass-panel p-10 flex flex-col h-[600px] transform transition-all duration-500 hover:-translate-y-4 hover:shadow-xl rounded-[3rem] border-t border-white relative overflow-hidden group bg-white"
                         >
-                            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-mystic-500 to-accent-cyan"></div>
+                            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-royal-600 to-indigo-500"></div>
                             
                             <div className="mb-8">
-                                <h2 className="text-5xl font-display font-black text-white mb-2">{race.name}</h2>
-                                <div className="w-12 h-1 bg-white/20 rounded-full"></div>
+                                <h2 className="text-5xl font-display font-black text-royal-900 mb-2">{race.name}</h2>
+                                <div className="w-12 h-1 bg-royal-100 rounded-full"></div>
                             </div>
                             
                             <div className="flex-grow flex flex-col gap-8 relative z-10">
-                                <div className="flex items-center gap-4 text-xs font-mono text-slate-400 uppercase tracking-widest border-b border-white/10 pb-6">
-                                    <span className="bg-white/5 px-3 py-1.5 rounded-lg border border-white/5">Desl: {race.speed}m</span>
-                                    <span className="bg-white/5 px-3 py-1.5 rounded-lg border border-white/5">Médio</span>
+                                <div className="flex items-center gap-4 text-xs font-mono text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-6">
+                                    <span className="bg-canvas-100 px-3 py-1.5 rounded-lg border border-canvas-200 text-slate-600">Desl: {race.speed}m</span>
+                                    <span className="bg-canvas-100 px-3 py-1.5 rounded-lg border border-canvas-200 text-slate-600">Médio</span>
                                 </div>
 
-                                <p className="text-slate-300 text-lg leading-relaxed font-serif">
+                                <p className="text-slate-600 text-lg leading-relaxed font-serif">
                                     "{race.description}"
                                 </p>
                                 
                                 <div className="mt-auto">
-                                    <strong className="text-mystic-400 block mb-4 text-xs uppercase tracking-[0.2em] font-bold flex items-center gap-2">
+                                    <strong className="text-royal-500 block mb-4 text-xs uppercase tracking-[0.2em] font-bold flex items-center gap-2">
                                         <Zap size={14}/> Bônus
                                     </strong>
                                     <div className="flex flex-wrap gap-2">
                                         {Object.entries(race.bonuses).map(([k,v]) => (
-                                            <span key={k} className="px-4 py-2 bg-white/5 text-white rounded-xl text-xs font-bold border border-white/10">
-                                                {k} <span className="text-accent-cyan">+{v}</span>
+                                            <span key={k} className="px-4 py-2 bg-royal-50 text-royal-700 rounded-xl text-xs font-bold border border-royal-100">
+                                                {k} <span className="text-royal-500">+{v}</span>
                                             </span>
                                         ))}
                                     </div>
@@ -442,7 +442,7 @@ export default function App() {
 
                             <button 
                                 onClick={() => handleGenerate(false, race.name)}
-                                className="w-full py-5 mt-8 bg-white text-void-950 rounded-2xl hover:bg-mystic-300 transition-all text-sm font-black tracking-[0.2em] uppercase shadow-lg group-hover:scale-[1.02]"
+                                className="w-full py-5 mt-8 bg-royal-900 text-white rounded-2xl hover:bg-royal-800 transition-all text-sm font-black tracking-[0.2em] uppercase shadow-lg group-hover:scale-[1.02]"
                             >
                                 Escolher {race.name}
                             </button>
