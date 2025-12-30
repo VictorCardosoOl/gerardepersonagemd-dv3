@@ -1,6 +1,6 @@
 import React from 'react';
 import { Monster } from '../types';
-import { Skull, Shield, Heart, Activity } from 'lucide-react';
+import { Skull, Shield, Heart, Activity, AlertCircle } from 'lucide-react';
 import { translateTerm, translateText } from '../utils/logic';
 
 interface Props {
@@ -12,84 +12,94 @@ export const MonsterCard: React.FC<Props> = ({ monster, onClose }) => {
   if (!monster) return null;
 
   const getMod = (val: number) => {
-    return Math.floor((val - 10) / 2);
+    const mod = Math.floor((val - 10) / 2);
+    return mod >= 0 ? `+${mod}` : `${mod}`;
   };
 
   const safeTranslateList = (list: string[]) => {
-      if (!list || !Array.isArray(list)) return '';
+      if (!list || !Array.isArray(list) || list.length === 0) return null;
       return list.map(item => translateTerm(item)).join(', ');
   };
 
-  // Safe Armor Class Handling
+  // Safe Armor Class Handling (API 5e updated this field to be complex)
   const renderAC = () => {
     if (!monster.armor_class) return '10';
+    
+    // Check if it's an array (New API format)
     if (Array.isArray(monster.armor_class) && monster.armor_class.length > 0) {
+        const ac = monster.armor_class[0];
         return (
-            <>
-                {monster.armor_class[0].value}
-                <span className="text-xs font-sans font-normal text-stone-500 ml-1">
-                    ({translateText(monster.armor_class[0].type || '')})
-                </span>
-            </>
+            <div className="flex flex-col items-center leading-none">
+                <span className="text-3xl font-mono font-bold text-stone-800">{ac.value}</span>
+                {ac.type && (
+                   <span className="text-[10px] text-stone-400 font-medium mt-1 uppercase tracking-wide">
+                     {translateText(ac.type)}
+                   </span>
+                )}
+            </div>
         );
     }
-    // Fallback for number
-    return monster.armor_class; 
+    
+    // Fallback for number/string (Old API format)
+    return <span className="text-3xl font-mono font-bold text-stone-800">{monster.armor_class}</span>;
   };
 
   return (
-    <div className="bg-white text-stone-800 border border-stone-200 rounded-xl shadow-xl p-6 max-w-2xl w-full font-body relative animate-in fade-in zoom-in duration-300">
+    <div className="bg-white text-stone-800 border border-emerald-100 rounded-2xl shadow-hover p-8 max-w-3xl w-full relative animate-scale-in">
       <button 
         onClick={onClose}
-        className="absolute top-4 right-4 text-stone-300 hover:text-red-500 font-bold transition-colors p-2"
+        className="absolute top-4 right-4 p-2 rounded-full text-stone-300 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
       >
         ✕
       </button>
 
       {/* Header */}
-      <div className="border-b border-emerald-500/30 pb-4 mb-6">
-        <h2 className="font-serif font-black text-4xl text-emerald-900 tracking-tight leading-none mb-2">{monster.name}</h2>
-        <p className="italic text-stone-500 text-lg">
-            {translateTerm(monster.size)} {translateTerm(monster.type)}, {translateTerm(monster.alignment)}
-        </p>
+      <div className="border-b border-emerald-100 pb-6 mb-8 text-center sm:text-left">
+        <h2 className="font-serif font-black text-4xl md:text-5xl text-emerald-900 tracking-tight mb-2 capitalize">{monster.name}</h2>
+        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-sm text-stone-500 font-medium">
+            <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full">{translateTerm(monster.size)}</span>
+            <span className="bg-stone-50 px-3 py-1 rounded-full capitalize">{translateTerm(monster.type)}</span>
+            <span className="italic text-stone-400">{translateTerm(monster.alignment)}</span>
+        </div>
       </div>
 
       {/* Vitals Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="bg-stone-50 p-4 rounded-lg border border-stone-100 flex flex-col items-center justify-center text-center">
-             <Shield size={24} className="text-emerald-600 mb-2" />
-             <span className="text-xs font-bold text-stone-400 uppercase tracking-widest">Defesa (CA)</span>
-             <span className="font-mono font-bold text-2xl text-stone-800">{renderAC()}</span>
+      <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="bg-stone-50 p-4 rounded-xl border border-stone-100 flex flex-col items-center justify-center text-center group hover:border-emerald-200 transition-colors">
+             <Shield size={24} className="text-emerald-600 mb-3 opacity-80" />
+             <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Defesa (CA)</span>
+             {renderAC()}
         </div>
-        <div className="bg-stone-50 p-4 rounded-lg border border-stone-100 flex flex-col items-center justify-center text-center">
-             <Heart size={24} className="text-rose-500 mb-2" />
-             <span className="text-xs font-bold text-stone-400 uppercase tracking-widest">Vida (PV)</span>
-             <span className="font-mono font-bold text-2xl text-stone-800">
-                {monster.hit_points} <span className="text-xs text-stone-400 font-sans font-normal">({monster.hit_dice})</span>
-             </span>
+        <div className="bg-stone-50 p-4 rounded-xl border border-stone-100 flex flex-col items-center justify-center text-center group hover:border-emerald-200 transition-colors">
+             <Heart size={24} className="text-emerald-600 mb-3 opacity-80" />
+             <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Vida (PV)</span>
+             <div className="flex flex-col items-center leading-none">
+                <span className="text-3xl font-mono font-bold text-stone-800">{monster.hit_points}</span>
+                <span className="text-[10px] text-stone-400 font-medium mt-1">Dados: {monster.hit_dice}</span>
+             </div>
         </div>
-        <div className="bg-stone-50 p-4 rounded-lg border border-stone-100 flex flex-col items-center justify-center text-center">
-             <Activity size={24} className="text-amber-500 mb-2" />
-             <span className="text-xs font-bold text-stone-400 uppercase tracking-widest">Deslocamento</span>
-             <span className="font-medium text-stone-800 text-sm capitalize">
-                {monster.speed ? Object.entries(monster.speed).map(([k, v]) => `${translateTerm(k)} ${v}`).join(', ') : '-'}
-             </span>
+        <div className="bg-stone-50 p-4 rounded-xl border border-stone-100 flex flex-col items-center justify-center text-center group hover:border-emerald-200 transition-colors">
+             <Activity size={24} className="text-emerald-600 mb-3 opacity-80" />
+             <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Desafio (CR)</span>
+             <div className="flex flex-col items-center leading-none">
+                <span className="text-3xl font-mono font-bold text-stone-800">{monster.challenge_rating}</span>
+                <span className="text-[10px] text-stone-400 font-medium mt-1">{monster.xp} XP</span>
+             </div>
         </div>
       </div>
 
       {/* Ability Scores */}
-      <div className="mb-8">
-         <div className="grid grid-cols-6 gap-2 text-center text-xs">
+      <div className="mb-8 overflow-x-auto pb-2">
+         <div className="flex justify-between min-w-[300px] gap-2">
             {['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'].map((attrKey) => {
                 const label = translateTerm(attrKey); 
                 const val = monster[attrKey as keyof Monster] as number || 10;
-                const mod = getMod(val);
                 return (
-                    <div key={attrKey} className="flex flex-col">
-                        <span className="font-bold text-stone-400 mb-1 uppercase tracking-widest text-[10px]">{label}</span>
-                        <div className="bg-stone-100 p-2 rounded border border-stone-200">
-                            <span className="font-mono font-bold text-stone-900 text-sm block">{val}</span>
-                            <span className="text-[10px] text-emerald-600 font-bold">{mod >= 0 ? '+' : ''}{mod}</span>
+                    <div key={attrKey} className="flex flex-col items-center flex-1">
+                        <span className="font-bold text-stone-400 mb-1 uppercase tracking-widest text-[9px]">{label.substring(0,3)}</span>
+                        <div className="w-full bg-white p-2 rounded-lg border border-stone-200 text-center shadow-sm">
+                            <span className="font-mono font-bold text-emerald-900 text-lg block leading-none">{val}</span>
+                            <span className="text-[10px] text-emerald-600 font-bold">{getMod(val)}</span>
                         </div>
                     </div>
                 )
@@ -97,64 +107,58 @@ export const MonsterCard: React.FC<Props> = ({ monster, onClose }) => {
          </div>
       </div>
 
-      {/* Details List */}
-      <div className="space-y-3 mb-8 text-sm text-stone-600 bg-stone-50/50 p-4 rounded-lg border border-stone-100">
-        
-        {monster.proficiencies && monster.proficiencies.length > 0 && (
-           <div className="flex gap-2">
-                <strong className="text-stone-800 min-w-[120px]">Perícias/Saves:</strong> 
-                <span>
-                {monster.proficiencies.map(p => {
-                   const name = p.proficiency?.name?.replace('Skill: ', '').replace('Saving Throw: ', '') || '';
-                   const isSave = p.proficiency?.name?.includes('Saving Throw');
-                   const translatedName = translateTerm(name);
-                   return `${isSave ? '(TR)' : ''} ${translatedName} +${p.value}`;
-               }).join(', ')}
-               </span>
-           </div>
-        )}
-
-        {monster.damage_vulnerabilities?.length > 0 && (
-            <div className="flex gap-2 text-rose-700">
-                <strong className="min-w-[120px]">Vulnerável:</strong> {safeTranslateList(monster.damage_vulnerabilities)}
-            </div>
-        )}
-        {monster.damage_resistances?.length > 0 && (
-            <div className="flex gap-2 text-emerald-800">
-                <strong className="min-w-[120px]">Resistente:</strong> {safeTranslateList(monster.damage_resistances)}
-            </div>
-        )}
-        {monster.damage_immunities?.length > 0 && (
-            <div className="flex gap-2 text-emerald-800">
-                <strong className="min-w-[120px]">Imune:</strong> {safeTranslateList(monster.damage_immunities)}
-            </div>
-        )}
-        
-        <div className="flex gap-2">
-            <strong className="text-stone-800 min-w-[120px]">Sentidos:</strong> 
-            {monster.senses ? Object.entries(monster.senses).map(([k,v]) => `${translateTerm(k.replace('_',' '))} ${v}`).join(', ') : '-'}
-        </div>
-        
-        <div className="flex gap-2">
-            <strong className="text-stone-800 min-w-[120px]">Idiomas:</strong> {translateText(monster.languages)}
-        </div>
-        
-        <div className="flex gap-2">
-            <strong className="text-stone-800 min-w-[120px]">Desafio (CR):</strong> 
-            <span className="font-bold text-emerald-600">{monster.challenge_rating}</span> 
-            <span className="text-stone-400">({monster.xp} XP)</span>
-        </div>
+      {/* Traits & Details */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-sm">
+          <div className="space-y-3">
+              <div className="flex items-start gap-2">
+                 <AlertCircle size={16} className="text-emerald-600 mt-0.5 shrink-0" />
+                 <div>
+                    <strong className="block text-emerald-900 text-xs uppercase tracking-wide">Sentidos</strong>
+                    <span className="text-stone-600">
+                        {monster.senses ? Object.entries(monster.senses).map(([k,v]) => `${translateTerm(k.replace('_',' '))} ${v}`).join(', ') : '-'}
+                    </span>
+                 </div>
+              </div>
+              <div className="flex items-start gap-2">
+                 <AlertCircle size={16} className="text-emerald-600 mt-0.5 shrink-0" />
+                 <div>
+                    <strong className="block text-emerald-900 text-xs uppercase tracking-wide">Idiomas</strong>
+                    <span className="text-stone-600">{translateText(monster.languages)}</span>
+                 </div>
+              </div>
+          </div>
+          
+          <div className="space-y-2">
+            {safeTranslateList(monster.damage_vulnerabilities) && (
+                <div className="bg-rose-50 px-3 py-2 rounded-lg border border-rose-100 text-rose-800 text-xs">
+                    <strong>Vulnerável:</strong> {safeTranslateList(monster.damage_vulnerabilities)}
+                </div>
+            )}
+            {safeTranslateList(monster.damage_resistances) && (
+                <div className="bg-amber-50 px-3 py-2 rounded-lg border border-amber-100 text-amber-800 text-xs">
+                    <strong>Resistente:</strong> {safeTranslateList(monster.damage_resistances)}
+                </div>
+            )}
+            {safeTranslateList(monster.damage_immunities) && (
+                <div className="bg-emerald-50 px-3 py-2 rounded-lg border border-emerald-100 text-emerald-800 text-xs">
+                    <strong>Imune:</strong> {safeTranslateList(monster.damage_immunities)}
+                </div>
+            )}
+          </div>
       </div>
 
       {/* Actions Section */}
-      <div className="border-t border-stone-200 pt-6">
-         <h3 className="font-serif text-xl font-bold text-emerald-900 mb-4 flex items-center gap-2">
+      <div className="border-t border-stone-100 pt-6">
+         <h3 className="font-serif text-2xl font-bold text-stone-900 mb-6 flex items-center gap-2">
             Ações
          </h3>
-         <div className="space-y-4">
+         <div className="space-y-6">
              {monster.actions?.map((action, i) => (
-                 <div key={i} className="text-sm group">
-                     <span className="font-bold text-stone-900 border-b border-emerald-200 group-hover:border-emerald-500 transition-colors">{action.name}.</span> <span className="text-stone-700 leading-relaxed" dangerouslySetInnerHTML={{__html: action.desc}} />
+                 <div key={i} className="group">
+                     <div className="flex items-baseline gap-2 mb-1">
+                        <span className="font-bold text-lg text-emerald-800">{action.name}</span>
+                     </div>
+                     <p className="text-stone-600 text-sm leading-relaxed pl-4 border-l-2 border-emerald-100 group-hover:border-emerald-400 transition-colors" dangerouslySetInnerHTML={{__html: action.desc}} />
                  </div>
              ))}
              {!monster.actions && <p className="text-stone-400 italic">Nenhuma ação listada.</p>}
@@ -163,19 +167,19 @@ export const MonsterCard: React.FC<Props> = ({ monster, onClose }) => {
       
       {/* Legendary Actions */}
       {monster.legendary_actions && monster.legendary_actions.length > 0 && (
-          <div className="border-t border-stone-200 pt-6 mt-6">
-            <h3 className="font-serif text-xl font-bold text-amber-700 mb-4">Ações Lendárias</h3>
-            <p className="text-xs text-stone-400 mb-4 italic">A criatura pode realizar 3 ações lendárias, escolhendo entre as opções abaixo.</p>
+          <div className="bg-stone-50 rounded-xl p-6 mt-8 border border-stone-100">
+            <h3 className="font-serif text-lg font-bold text-stone-800 mb-2">Ações Lendárias</h3>
+            <p className="text-xs text-stone-500 mb-4">A criatura pode realizar 3 ações lendárias, escolhendo entre as opções abaixo. Apenas uma opção pode ser usada por vez e somente no final do turno de outra criatura.</p>
             <div className="space-y-4">
                 {monster.legendary_actions.map((action, i) => (
                     <div key={i} className="text-sm">
-                        <span className="font-bold text-stone-900">{action.name}.</span> <span className="text-stone-700 leading-relaxed" dangerouslySetInnerHTML={{__html: action.desc}} />
+                        <span className="font-bold text-stone-900 block mb-1">{action.name}</span> 
+                        <span className="text-stone-600 leading-relaxed" dangerouslySetInnerHTML={{__html: action.desc}} />
                     </div>
                 ))}
             </div>
          </div>
       )}
-
     </div>
   );
 };
