@@ -6,6 +6,7 @@ import { CharacterSheet } from './components/CharacterSheet';
 import { BestiaryOverlay } from './components/BestiaryOverlay';
 import { DragSlider } from './components/DragSlider';
 import { GuideSection } from './components/GuideSection';
+import { Sidebar } from './components/Sidebar';
 import { RACES } from './constants';
 import { MoveRight, Zap, Check, Sparkles } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -143,63 +144,25 @@ export default function App() {
       e.target.value = '';
   };
 
-  const tabs = [
-    { id: 'sanctum', label: 'Grimório' },
-    { id: 'sheet', label: activeCharacter ? activeCharacter.name.split(' ')[0] : 'Herói' },
-    { id: 'codex', label: 'Códice' },
-    { id: 'guide', label: 'Guia' },
-  ];
-
   return (
-    <div className="min-h-screen font-body text-mystic-100 selection:bg-cyan-500/30 selection:text-white">
+    <div className="min-h-screen font-body text-mystic-100 selection:bg-cyan-500/30 selection:text-white pl-0 md:pl-24 transition-all">
       
       <input type="file" ref={fileInputRef} onChange={handleImport} className="hidden" accept=".json" />
 
-      {/* --- Horizontal Navigation --- */}
-      <nav className="fixed top-0 left-0 w-full z-50 flex justify-center py-6 px-4 pointer-events-none">
-        <div className="bg-void-950/80 backdrop-blur-xl border border-white/5 rounded-full px-2 py-2 flex gap-1 pointer-events-auto shadow-2xl">
-          {tabs.map((tab) => {
-            const isActive = currentView === tab.id;
-            // Disable 'sheet' tab if no active character
-            if (tab.id === 'sheet' && !activeCharacter) return null;
-
-            return (
-              <button
-                key={tab.id}
-                onClick={() => {
-                    setCurrentView(tab.id as ViewState);
-                    lenisRef.current?.scrollTo(0, { immediate: true });
-                }}
-                className={`
-                  relative px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300
-                  ${isActive ? 'text-void-950' : 'text-mystic-300 hover:text-white hover:bg-white/5'}
-                `}
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="activeTab"
-                    className="absolute inset-0 bg-mystic-100 rounded-full"
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  />
-                )}
-                <span className="relative z-10">{tab.label}</span>
-              </button>
-            );
-          })}
-          
-          <div className="w-px h-6 bg-white/10 mx-2 self-center"></div>
-
-          <button
-            onClick={() => setIsBestiaryOpen(true)}
-             className="relative px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest text-mystic-300 hover:text-white hover:bg-white/5 transition-all"
-          >
-             Bestiário
-          </button>
-        </div>
-      </nav>
+      {/* --- Vertical Sidebar --- */}
+      <Sidebar 
+          currentView={currentView}
+          onChangeView={(view) => {
+              setCurrentView(view);
+              lenisRef.current?.scrollTo(0, { immediate: true });
+          }}
+          onToggleBestiary={() => setIsBestiaryOpen(!isBestiaryOpen)}
+          activeCharacterName={activeCharacter?.name}
+          isBestiaryOpen={isBestiaryOpen}
+      />
 
       {/* --- Main Content --- */}
-      <main className="w-full min-h-screen pt-32 pb-20 relative z-0">
+      <main className="w-full min-h-screen pt-12 pb-20 relative z-0">
           <AnimatePresence mode="wait">
             
             {/* View: SANCTUM */}

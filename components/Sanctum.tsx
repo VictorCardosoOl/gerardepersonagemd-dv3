@@ -1,7 +1,7 @@
 import React from 'react';
 import { Character } from '../types';
 import { Plus, Upload, Trash2, Download, Wand2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 interface Props {
     savedCharacters: Character[];
@@ -14,6 +14,10 @@ interface Props {
 
 export const Sanctum: React.FC<Props> = ({ savedCharacters, onSelect, onCreate, onImport, onDelete, onExport }) => {
     
+    // Parallax logic
+    const { scrollY } = useScroll();
+    const yTitle = useTransform(scrollY, [0, 500], [0, 150]);
+
     // Stagger Container variants
     const container = {
         hidden: { opacity: 0 },
@@ -39,11 +43,14 @@ export const Sanctum: React.FC<Props> = ({ savedCharacters, onSelect, onCreate, 
     return (
         <div className="w-full max-w-7xl mx-auto px-6 md:px-12 py-12 relative">
             
-            {/* Mega Background Title (Parallax-ish) */}
+            {/* Mega Background Title (Parallax) */}
             <div className="absolute top-0 left-0 w-full overflow-hidden pointer-events-none -z-10 h-[500px]">
-                <span className="absolute -top-20 -left-20 text-[12rem] md:text-[18rem] font-display font-black text-white/5 select-none blur-sm whitespace-nowrap">
+                <motion.span 
+                    style={{ y: yTitle }}
+                    className="absolute -top-20 -left-20 text-[12rem] md:text-[18rem] font-display font-black text-white/5 select-none blur-sm whitespace-nowrap"
+                >
                     SANCTUM
-                </span>
+                </motion.span>
             </div>
 
             {/* Header */}

@@ -16,19 +16,19 @@ const NavIcon = ({ icon: Icon, active, onClick, tooltip }: any) => (
             onClick={onClick}
             className={`
                 p-3 rounded-full transition-all duration-500 cursor-pointer
-                ${active ? 'text-champagne-500' : 'text-zinc-600 hover:text-white'}
+                ${active ? 'text-gold-500' : 'text-zinc-600 hover:text-white'}
             `}
         >
             <Icon size={24} strokeWidth={1.5} />
             {active && (
                 <motion.div 
                     layoutId="nav-dot"
-                    className="absolute -right-1 top-1/2 -translate-y-1/2 w-1 h-1 bg-champagne-500 rounded-full"
+                    className="absolute -right-1 top-1/2 -translate-y-1/2 w-1 h-1 bg-gold-500 rounded-full"
                 />
             )}
         </button>
         {/* Tooltip */}
-        <span className="absolute left-14 text-[10px] uppercase tracking-widest font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none bg-obsidian-900 px-2 py-1 rounded">
+        <span className="absolute left-14 text-[10px] uppercase tracking-widest font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none bg-void-900 px-2 py-1 rounded">
             {tooltip}
         </span>
     </div>
@@ -37,7 +37,7 @@ const NavIcon = ({ icon: Icon, active, onClick, tooltip }: any) => (
 export const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, onToggleBestiary, activeCharacterName, isBestiaryOpen }) => {
     return (
         <nav className="fixed left-0 top-0 h-screen w-24 hidden md:flex flex-col items-center justify-center py-12 z-50 pointer-events-none">
-            <div className="pointer-events-auto bg-obsidian-950/80 backdrop-blur-md border border-white/5 rounded-full py-8 px-2 flex flex-col gap-6 shadow-2xl">
+            <div className="pointer-events-auto bg-void-950/80 backdrop-blur-md border border-white/5 rounded-full py-8 px-2 flex flex-col gap-6 shadow-2xl">
                 <NavIcon 
                     icon={Hexagon} 
                     active={currentView === 'sanctum'} 

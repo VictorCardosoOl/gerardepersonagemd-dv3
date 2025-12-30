@@ -14,7 +14,7 @@ export const SkillsList: React.FC<Props> = ({ skills }) => {
                 <Target size={14} /> Perícias
             </h3>
            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-2 overflow-y-auto custom-scrollbar pr-2 max-h-[300px] md:max-h-none">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-2 overflow-y-auto custom-scrollbar pr-2 max-h-[300px] md:max-h-none" data-lenis-prevent>
                 {skills.map((skill, i) => (
                     <div 
                         key={skill.name} 

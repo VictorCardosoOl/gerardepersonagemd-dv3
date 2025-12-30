@@ -27,7 +27,7 @@ export const MonsterCard: React.FC<Props> = ({ monster, onClose }) => {
   };
 
   return (
-    <div className="h-full w-full max-w-2xl ml-auto bg-obsidian-950/40 backdrop-blur-2xl border-l border-white/10 p-12 overflow-y-auto custom-scrollbar relative">
+    <div className="h-full w-full max-w-2xl ml-auto bg-obsidian-950/40 backdrop-blur-2xl border-l border-white/10 p-12 overflow-y-auto custom-scrollbar relative" data-lenis-prevent>
       
       {/* Decorative Glow */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-champagne-500/5 rounded-full blur-[100px] pointer-events-none"></div>
