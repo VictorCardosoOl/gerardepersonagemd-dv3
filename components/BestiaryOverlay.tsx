@@ -96,6 +96,7 @@ export const BestiaryOverlay: React.FC<Props> = ({ isOpen, onClose }) => {
                             <Search size={14} className="absolute left-3 top-3 text-slate-500" />
                         </div>
                     </div>
+                    {/* ADDED data-lenis-prevent HERE */}
                     <div className="flex-grow overflow-y-auto custom-scrollbar p-2 space-y-1" data-lenis-prevent>
                         {monsterList.length === 0 ? (
                             <div className="flex justify-center py-10"><Loader2 className="animate-spin text-slate-500" /></div>
@@ -113,6 +114,7 @@ export const BestiaryOverlay: React.FC<Props> = ({ isOpen, onClose }) => {
                 </div>
 
                 {/* 2. Detail View (Right) */}
+                {/* ADDED data-lenis-prevent HERE */}
                 <div className="flex-grow overflow-y-auto custom-scrollbar bg-[url('https://grainy-gradients.vercel.app/noise.svg')] p-8" data-lenis-prevent>
                     {isLoadingDetails ? (
                         <div className="h-full flex flex-col items-center justify-center text-slate-500 gap-4">

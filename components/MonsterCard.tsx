@@ -27,6 +27,7 @@ export const MonsterCard: React.FC<Props> = ({ monster, onClose }) => {
   };
 
   return (
+    // ADDED data-lenis-prevent HERE
     <div className="h-full w-full max-w-2xl ml-auto bg-obsidian-950/40 backdrop-blur-2xl border-l border-white/10 p-12 overflow-y-auto custom-scrollbar relative" data-lenis-prevent>
       
       {/* Decorative Glow */}
