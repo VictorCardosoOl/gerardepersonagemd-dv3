@@ -1,4 +1,1 @@
-// Serviço de IA removido conforme solicitação de reengenharia manual.
-export const generateBackstory = async (): Promise<string> => {
-    return "";
-};
+// This service is deprecated and has been removed.

@@ -19,29 +19,31 @@ export const StatBlock: React.FC<Props> = ({ label, value, modifier, highlight, 
   };
 
   return (
-    <div className={`flex flex-col items-center justify-between p-2 rounded-lg border-2 ${highlight ? 'border-amber-500 bg-wood-800/80' : 'border-stone-600 bg-wood-900/60'} h-28 w-full relative group shadow-lg`}>
+    <div className={`relative flex flex-col items-center justify-center p-3 rounded-xl glass-panel transition-all duration-300 group hover:border-indigo-500/50 ${highlight ? 'border-indigo-500/60 bg-indigo-950/20' : ''}`}>
+      
+      {/* Label */}
       <span 
         title={label} 
-        className="text-[10px] md:text-xs uppercase tracking-widest text-stone-400 font-bold -mt-1"
+        className="text-[10px] uppercase tracking-[0.2em] text-indigo-300 font-bold mb-1"
       >
         {label.substring(0, 3)}
       </span>
       
       {/* Big Modifier */}
-      <div className="flex-grow flex items-center justify-center">
-        <span className={`text-3xl md:text-4xl font-fantasy font-bold ${modifier >= 0 ? 'text-amber-100' : 'text-red-200'}`}>
+      <div className="flex items-center justify-center">
+        <span className={`text-4xl font-mono font-bold tracking-tighter drop-shadow-lg ${modifier >= 0 ? 'text-cyan-400' : 'text-rose-400'}`}>
             {modString}
         </span>
       </div>
       
       {/* Small Score Bubble */}
-      <div className="bg-white text-wood-900 font-bold rounded-full w-8 h-8 flex items-center justify-center border-2 border-stone-500 -mb-5 z-10 text-sm shadow-md">
+      <div className="absolute -bottom-3 bg-slate-900 text-slate-400 text-xs font-mono font-bold rounded-full w-8 h-8 flex items-center justify-center border border-slate-700 shadow-lg z-10">
         {isEditing ? (
             <input 
             type="number" 
             value={value} 
             onChange={handleChange}
-            className="w-full h-full bg-transparent text-center focus:outline-none rounded-full"
+            className="w-full h-full bg-transparent text-center focus:outline-none rounded-full text-white"
             />
         ) : (
             <span>{value}</span>

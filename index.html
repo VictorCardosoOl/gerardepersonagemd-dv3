@@ -3,31 +3,42 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mestre da Masmorra | Gerador D&D</title>
+    <title>Mestre da Masmorra | Grimório Digital</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lato:wght@400;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              fantasy: ['MedievalSharp', 'cursive'],
-              heading: ['Cinzel', 'serif'],
-              body: ['Lato', 'sans-serif'],
+              serif: ['Playfair Display', 'serif'],
+              sans: ['Inter', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
             },
             colors: {
-              parchment: {
-                100: '#fbf6e5',
-                200: '#f4e4bc',
-                300: '#e6cf97',
+              slate: {
+                850: '#151e2e',
+                900: '#0f172a',
+                950: '#020617',
               },
-              wood: {
-                800: '#4a3b2a',
-                900: '#2b2118',
+              indigo: {
+                950: '#1e1b4b',
+              }
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.5s ease-out',
+              'slide-in': 'slideIn 0.3s ease-out',
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
               },
-              gold: {
-                500: '#d4af37',
-                600: '#b4941f',
+              slideIn: {
+                '0%': { transform: 'translateX(-20px)', opacity: '0' },
+                '100%': { transform: 'translateX(0)', opacity: '1' },
               }
             }
           }
@@ -36,38 +47,57 @@
     </script>
     <style>
       body {
-        background-color: #1a1612;
-        background-image: url('https://www.transparenttextures.com/patterns/dark-leather.png');
+        background-color: #020617; /* Slate 950 */
+        background-image: 
+          radial-gradient(circle at 50% 0%, #1e1b4b 0%, transparent 40%),
+          radial-gradient(circle at 0% 100%, #1e1b4b 0%, transparent 30%);
+        color: #e2e8f0; /* Slate 200 */
+      }
+      .glass-panel {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .glass-input {
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: white;
       }
       .custom-scrollbar::-webkit-scrollbar {
-        width: 8px;
+        width: 6px;
       }
       .custom-scrollbar::-webkit-scrollbar-track {
-        background: #2b2118; 
+        background: rgba(0,0,0,0.2); 
       }
       .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #888; 
-        border-radius: 4px;
+        background: #475569; 
+        border-radius: 3px;
       }
       .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #555; 
+        background: #64748b; 
       }
       @media print {
         body {
-          background: white;
-          color: black;
+          background: white !important;
+          color: black !important;
+          background-image: none !important;
         }
         .no-print {
           display: none !important;
         }
-        .print-break {
-          page-break-inside: avoid;
-        }
-        .sheet-container {
-          border: 1px solid #000;
+        .glass-panel {
+          background: white;
+          border: 1px solid #ccc;
+          backdrop-filter: none;
+          color: black;
           box-shadow: none;
-          max-width: 100%;
-          width: 100%;
+        }
+        .text-cyan-400, .text-indigo-400, .text-indigo-300 {
+          color: black !important;
+        }
+        .bg-indigo-500 {
+          background-color: #ddd !important;
         }
       }
     </style>

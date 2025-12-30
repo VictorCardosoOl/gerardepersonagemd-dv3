@@ -1,19 +1,34 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Character, Attributes } from './types';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { Character, Attributes, APIMonsterIndex, Monster } from './types';
 import { generateCharacter, getModifier } from './utils/logic';
 import { CharacterSheet } from './components/CharacterSheet';
-import { Dice5, Save, Copy, History, Trash2, X, Pencil, Check, Download, Upload, User, Users } from 'lucide-react';
+import { MonsterCard } from './components/MonsterCard';
+import { DMPanel } from './components/DMPanel';
+import { fetchMonsterList, fetchMonsterDetails } from './services/dndApi';
+import { RACES, DICTIONARY } from './constants';
+import { Dice5, Save, Copy, Crown, Trash2, X, Pencil, Check, Download, Upload, User, Users, Skull, Book, Menu, Settings } from 'lucide-react';
 
 const LOCAL_STORAGE_KEY = 'dnd_saved_characters_v2';
 
+type ActiveTab = 'grimoire' | 'bestiary' | 'codex';
+
 export default function App() {
+  const [activeTab, setActiveTab] = useState<ActiveTab>('grimoire');
+  
+  // Grimoire State
   const [currentCharacter, setCurrentCharacter] = useState<Character | null>(null);
   const [savedCharacters, setSavedCharacters] = useState<Character[]>([]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isDMPanelOpen, setIsDMPanelOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [isNPCMode, setIsNPCMode] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Bestiary State
+  const [monsterList, setMonsterList] = useState<APIMonsterIndex[]>([]);
+  const [monsterSearch, setMonsterSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [selectedMonster, setSelectedMonster] = useState<Monster | null>(null);
+  const [isLoadingMonsters, setIsLoadingMonsters] = useState(false);
 
   // Load from local storage
   useEffect(() => {
@@ -25,6 +40,8 @@ export default function App() {
         console.error("Erro ao carregar do storage", e);
       }
     }
+    // Initial fetch for Bestiary list (lightweight)
+    fetchMonsterList().then(data => setMonsterList(data));
   }, []);
 
   // Sync to local storage
@@ -32,16 +49,29 @@ export default function App() {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedCharacters));
   }, [savedCharacters]);
 
+  // Debounce for monster search
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(monsterSearch);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [monsterSearch]);
+
   const showNotification = (msg: string) => {
     setNotification(msg);
     setTimeout(() => setNotification(null), 3000);
   };
 
-  const handleGenerate = () => {
-    const newChar = generateCharacter(isNPCMode);
+  // --- Logic ---
+  const handleGenerate = (isNPC: boolean = false, raceOverride?: string) => {
+    const newChar = generateCharacter(isNPC);
+    if (raceOverride) newChar.race = raceOverride;
+    
     setCurrentCharacter(newChar);
     setIsEditing(false);
-    showNotification(isNPCMode ? "Novo NPC gerado!" : "Novo aventureiro criado!");
+    setActiveTab('grimoire'); // Force view to grimoire
+    showNotification(isNPC ? "NPC Invocado!" : "Novo Herói Gerado!");
+    if (window.innerWidth < 768) setIsDMPanelOpen(false); // Close mobile menu
   };
 
   const handleSave = () => {
@@ -49,18 +79,16 @@ export default function App() {
     setIsEditing(false);
     if (savedCharacters.some(c => c.id === currentCharacter.id)) {
       setSavedCharacters(prev => prev.map(c => c.id === currentCharacter.id ? currentCharacter : c));
-      showNotification("Personagem atualizado!");
+      showNotification("Grimório Atualizado!");
     } else {
       setSavedCharacters(prev => [currentCharacter, ...prev]);
-      showNotification("Salvo no grimório!");
+      showNotification("Salvo no Grimório!");
     }
   };
 
   const handleCharacterUpdate = (updates: Partial<Character>) => {
     if (!currentCharacter) return;
-    
     let updatedChar = { ...currentCharacter, ...updates };
-
     if (updates.attributes) {
         const newModifiers: Attributes = {
             Força: getModifier(updatedChar.attributes.Força),
@@ -71,8 +99,6 @@ export default function App() {
             Carisma: getModifier(updatedChar.attributes.Carisma),
         };
         updatedChar.modifiers = newModifiers;
-        // Recalculate derivative stats ideally here (AC, Skills), but for manual edit let user control or implement deep recalc later.
-        // For now, let's keep it simple.
     }
     setCurrentCharacter(updatedChar);
   };
@@ -95,16 +121,15 @@ export default function App() {
     reader.onload = (e) => {
         try {
             const json = JSON.parse(e.target?.result as string);
-            // Basic validation
             if (json.name && json.attributes) {
                 setCurrentCharacter(json);
-                showNotification("Ficha importada com sucesso!");
+                showNotification("Ficha Importada.");
             } else {
-                showNotification("Arquivo inválido.");
+                showNotification("Arquivo corrompido.");
             }
         } catch (err) {
             console.error(err);
-            showNotification("Erro ao ler arquivo.");
+            showNotification("Erro na leitura.");
         }
     };
     reader.readAsText(file);
@@ -113,175 +138,217 @@ export default function App() {
 
   const handleCopy = () => {
     if (!currentCharacter) return;
-    const text = `${currentCharacter.name} - ${currentCharacter.race} ${currentCharacter.class} (Nv ${currentCharacter.level})\nHP: ${currentCharacter.hp} | CA: ${currentCharacter.ac} | PP: ${currentCharacter.passivePerception}\nFOR ${currentCharacter.attributes.Força} | DES ${currentCharacter.attributes.Destreza} | CON ${currentCharacter.attributes.Constituição} | INT ${currentCharacter.attributes.Inteligência} | SAB ${currentCharacter.attributes.Sabedoria} | CAR ${currentCharacter.attributes.Carisma}`;
+    const text = `${currentCharacter.name} | ${currentCharacter.race} ${currentCharacter.class} | Nv ${currentCharacter.level}\nHP: ${currentCharacter.hp} AC: ${currentCharacter.ac}`;
     navigator.clipboard.writeText(text);
-    showNotification("Resumo copiado!");
+    showNotification("Resumo Copiado.");
   };
 
-  const handleDelete = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleDelete = (id: string) => {
     setSavedCharacters(prev => prev.filter(c => c.id !== id));
   };
 
   const loadCharacter = (char: Character) => {
     setCurrentCharacter(char);
-    setIsSidebarOpen(false);
+    setActiveTab('grimoire');
+    setIsDMPanelOpen(false);
     setIsEditing(false);
   };
 
+  // --- Bestiary Logic ---
+  const handleMonsterSelect = async (index: string) => {
+    setIsLoadingMonsters(true);
+    const details = await fetchMonsterDetails(index);
+    setSelectedMonster(details);
+    setIsLoadingMonsters(false);
+  };
+
+  const filteredMonsters = useMemo(() => {
+    const term = debouncedSearch.toLowerCase();
+    if (!term) return monsterList;
+    const potentialEnglishTerms = Object.entries(DICTIONARY)
+        .filter(([_, pt]) => pt.toLowerCase().includes(term))
+        .map(([eng, _]) => eng.toLowerCase());
+
+    return monsterList.filter(m => {
+        const lowerName = m.name.toLowerCase();
+        if (lowerName.includes(term)) return true;
+        if (potentialEnglishTerms.some(eng => lowerName.includes(eng))) return true;
+        return false;
+    }).slice(0, 30);
+  }, [debouncedSearch, monsterList]);
+
   return (
-    <div className="min-h-screen font-body text-stone-200 p-4 md:p-8 flex flex-col items-center print:p-0 print:bg-white">
+    <div className="min-h-screen bg-slate-950 font-sans text-slate-200 print:bg-white">
       
-      {/* Navbar / Header */}
-      <header className="w-full max-w-6xl flex justify-between items-center mb-8 pb-4 border-b border-wood-800 no-print">
-        <div className="flex items-center gap-3">
-          <Dice5 size={32} className="text-amber-500" />
-          <h1 className="text-2xl md:text-4xl font-fantasy text-amber-100">Mestre da Masmorra</h1>
-        </div>
-        <button 
-          onClick={() => setIsSidebarOpen(true)}
-          className="flex items-center gap-2 text-stone-400 hover:text-amber-400 transition-colors"
-        >
-          <History size={24} />
-          <span className="hidden md:inline font-heading">Grimório ({savedCharacters.length})</span>
-        </button>
-      </header>
+      {/* Top Navigation Bar */}
+      <nav className="fixed top-0 w-full z-40 bg-slate-950/80 backdrop-blur-md border-b border-white/5 h-16 flex items-center justify-between px-4 md:px-8 no-print">
+         <div className="flex items-center gap-3">
+             <div className="bg-indigo-600 p-1.5 rounded-lg shadow-[0_0_15px_rgba(79,70,229,0.5)]">
+                 <Dice5 size={24} className="text-white" />
+             </div>
+             <h1 className="text-xl font-serif font-bold text-white tracking-tight hidden md:block">Mestre da Masmorra</h1>
+         </div>
+
+         {/* Center Tabs */}
+         <div className="flex items-center bg-slate-900 rounded-full p-1 border border-white/5 shadow-inner">
+            {[
+                { id: 'grimoire', icon: User, label: 'Grimório' },
+                { id: 'bestiary', icon: Skull, label: 'Bestiário' },
+                { id: 'codex', icon: Book, label: 'Códice' }
+            ].map(tab => (
+                <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as ActiveTab)}
+                    className={`px-4 py-1.5 rounded-full flex items-center gap-2 text-sm font-medium transition-all ${activeTab === tab.id ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                >
+                    <tab.icon size={16} /> <span className="hidden sm:inline">{tab.label}</span>
+                </button>
+            ))}
+         </div>
+
+         {/* DM Tools Toggle */}
+         <button 
+            onClick={() => setIsDMPanelOpen(true)}
+            className="flex items-center gap-2 text-slate-400 hover:text-cyan-400 transition-colors"
+         >
+            <span className="hidden md:inline text-sm font-bold tracking-wider">DM TOOLS</span>
+            <Crown size={20} />
+         </button>
+      </nav>
+
+      {/* DM Side Panel */}
+      <DMPanel 
+        savedCharacters={savedCharacters}
+        onSelect={loadCharacter}
+        onDelete={handleDelete}
+        onGenerate={(npc) => handleGenerate(npc)}
+        isOpen={isDMPanelOpen}
+        onClose={() => setIsDMPanelOpen(false)}
+      />
 
       {/* Notification Toast */}
       {notification && (
-        <div className="fixed top-4 right-4 z-50 bg-amber-600 text-white px-6 py-3 rounded shadow-lg font-bold animate-bounce no-print">
-          {notification}
+        <div className="fixed top-20 right-8 z-50 bg-indigo-600 text-white px-4 py-3 rounded-lg shadow-2xl font-bold animate-fade-in no-print border border-indigo-400/50 flex items-center gap-2">
+          <Check size={18} /> {notification}
         </div>
       )}
 
-      {/* Main Content Area */}
-      <main className="w-full max-w-6xl flex flex-col items-center gap-8">
+      {/* Main Content */}
+      <main className="pt-24 pb-12 px-4 md:px-8 max-w-7xl mx-auto min-h-screen">
         
-        {/* Controls */}
-        <div className="flex flex-wrap gap-4 justify-center w-full no-print">
-          
-          <div className="flex items-center gap-2 bg-wood-900/50 p-1 rounded-lg border border-wood-800">
-             <button 
-                onClick={() => setIsNPCMode(false)}
-                className={`px-4 py-2 rounded flex items-center gap-2 transition-colors ${!isNPCMode ? 'bg-amber-700 text-white' : 'text-stone-400 hover:text-stone-200'}`}
-             >
-                <User size={18} /> Herói
-             </button>
-             <button 
-                onClick={() => setIsNPCMode(true)}
-                className={`px-4 py-2 rounded flex items-center gap-2 transition-colors ${isNPCMode ? 'bg-amber-700 text-white' : 'text-stone-400 hover:text-stone-200'}`}
-             >
-                <Users size={18} /> NPC
-             </button>
-          </div>
+        {/* GRIMOIRE (CHARACTER SHEET) */}
+        {activeTab === 'grimoire' && (
+            <div className="w-full">
+                {currentCharacter ? (
+                     <>
+                        {/* Floating Action Bar for Current Character */}
+                        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 bg-slate-900/90 backdrop-blur-md border border-white/10 p-2 rounded-full shadow-2xl flex items-center gap-2 no-print animate-fade-in">
+                            <button onClick={() => setIsEditing(!isEditing)} className={`p-3 rounded-full transition-all ${isEditing ? 'bg-indigo-600 text-white' : 'hover:bg-white/10 text-slate-400'}`} title="Editar"><Pencil size={20} /></button>
+                            <div className="w-px h-6 bg-white/10"></div>
+                            <button onClick={handleSave} className="p-3 hover:bg-emerald-500/20 text-emerald-400 rounded-full transition-colors" title="Salvar"><Save size={20} /></button>
+                            <button onClick={handleCopy} className="p-3 hover:bg-white/10 text-slate-300 rounded-full transition-colors" title="Copiar"><Copy size={20} /></button>
+                            <button onClick={handleExportJSON} className="p-3 hover:bg-cyan-500/20 text-cyan-400 rounded-full transition-colors" title="Exportar"><Download size={20} /></button>
+                            <div className="relative">
+                                <input type="file" ref={fileInputRef} onChange={handleImportJSON} accept=".json" className="hidden" />
+                                <button onClick={() => fileInputRef.current?.click()} className="p-3 hover:bg-purple-500/20 text-purple-400 rounded-full transition-colors" title="Importar"><Upload size={20} /></button>
+                            </div>
+                        </div>
 
-          <button 
-            onClick={handleGenerate}
-            className="group relative px-6 py-3 bg-wood-800 hover:bg-wood-900 border-2 border-amber-600 rounded text-amber-100 font-heading text-xl shadow-[0_0_15px_rgba(217,119,6,0.2)] hover:shadow-[0_0_25px_rgba(217,119,6,0.4)] transition-all active:scale-95"
-          >
-            <span className="flex items-center gap-2">
-              <Dice5 className="group-hover:rotate-180 transition-transform duration-500" />
-              {isNPCMode ? 'Gerar NPC' : 'Gerar Herói'}
-            </span>
-          </button>
+                        <CharacterSheet character={currentCharacter} backstoryLoading={false} isEditing={isEditing} onUpdate={handleCharacterUpdate} />
+                     </>
+                ) : (
+                    <div className="flex flex-col items-center justify-center h-[60vh] text-slate-600">
+                        <div className="w-24 h-24 rounded-full bg-slate-900 flex items-center justify-center mb-6 shadow-inner">
+                            <Dice5 size={48} className="text-slate-700" />
+                        </div>
+                        <h2 className="text-3xl font-serif text-slate-400 mb-2">A mesa está vazia</h2>
+                        <p className="mb-8">Abra o <strong>DM Tools</strong> ou gere um herói para começar.</p>
+                        <button onClick={() => handleGenerate(false)} className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg shadow-lg shadow-indigo-900/20 font-medium transition-all">
+                            Gerar Herói Aleatório
+                        </button>
+                    </div>
+                )}
+            </div>
+        )}
 
-          {currentCharacter && (
-            <>
-              <div className="h-12 w-px bg-wood-800 mx-2 hidden md:block"></div>
+        {/* BESTIARY */}
+        {activeTab === 'bestiary' && (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-[80vh]">
+                <div className="glass-panel p-4 rounded-xl flex flex-col h-full">
+                    <h2 className="font-serif text-xl text-indigo-400 mb-4 flex items-center gap-2"><Skull size={20}/> Catálogo</h2>
+                    <input 
+                        type="text" 
+                        placeholder="Buscar criatura..." 
+                        value={monsterSearch}
+                        onChange={(e) => setMonsterSearch(e.target.value)}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 mb-4 focus:outline-none focus:border-indigo-500 text-slate-300 placeholder-slate-600"
+                    />
+                    <div className="flex-grow overflow-y-auto custom-scrollbar space-y-1">
+                         {filteredMonsters.map((m) => (
+                            <button 
+                                key={m.index}
+                                onClick={() => handleMonsterSelect(m.index)}
+                                className="w-full text-left p-3 rounded-lg hover:bg-white/5 text-slate-400 hover:text-white transition-colors flex justify-between items-center group"
+                            >
+                                <span className="font-medium">{m.name}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
 
-              <button onClick={() => setIsEditing(!isEditing)} className={`p-3 border-2 rounded transition-all ${isEditing ? 'bg-amber-700 border-amber-500' : 'bg-stone-800 border-stone-500'}`}>
-                {isEditing ? <Check size={20} /> : <Pencil size={20} />}
-              </button>
+                <div className="lg:col-span-2 flex items-center justify-center glass-panel rounded-xl p-8 relative min-h-[400px]">
+                    {isLoadingMonsters && <div className="absolute inset-0 flex items-center justify-center bg-slate-950/50 backdrop-blur-sm z-10 rounded-xl"><Dice5 className="animate-spin text-indigo-500" size={48} /></div>}
+                    {selectedMonster ? (
+                        <MonsterCard monster={selectedMonster} onClose={() => setSelectedMonster(null)} />
+                    ) : (
+                        <div className="text-center text-slate-600">
+                            <Skull size={64} className="mx-auto mb-4 opacity-20" />
+                            <p>Selecione uma criatura para analisar seus atributos.</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        )}
 
-              <button onClick={handleSave} className="p-3 bg-green-900/50 hover:bg-green-900 border-2 border-green-600 rounded text-green-100" title="Salvar">
-                <Save size={20} />
-              </button>
-              
-              <button onClick={handleCopy} className="p-3 bg-stone-800 hover:bg-stone-700 border-2 border-stone-500 rounded text-stone-300" title="Copiar Texto">
-                <Copy size={20} />
-              </button>
+        {/* CODEX */}
+        {activeTab === 'codex' && (
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+             {RACES.map(race => (
+                 <div key={race.name} className="glass-panel p-6 rounded-xl hover:border-indigo-500/40 transition-all group">
+                     <div className="flex justify-between items-start mb-4">
+                         <h2 className="text-2xl font-serif text-white group-hover:text-cyan-400 transition-colors">{race.name}</h2>
+                         <span className="text-xs bg-slate-800 px-2 py-1 rounded text-slate-400">Desl. {race.speed}m</span>
+                     </div>
+                     <p className="text-slate-400 italic mb-6 text-sm leading-relaxed border-l-2 border-indigo-500/20 pl-4">"{race.description}"</p>
+                     
+                     <div className="space-y-3 text-sm mb-6 bg-slate-950/30 p-4 rounded-lg">
+                         <div>
+                             <strong className="text-indigo-400 block mb-1 text-xs uppercase tracking-wider">Bônus de Atributo</strong>
+                             <div className="flex flex-wrap gap-2">
+                                {Object.entries(race.bonuses).map(([k,v]) => (
+                                    <span key={k} className="px-2 py-0.5 bg-indigo-500/10 text-indigo-200 rounded border border-indigo-500/20 text-xs">
+                                        {k} +{v}
+                                    </span>
+                                ))}
+                             </div>
+                         </div>
+                         <div>
+                            <strong className="text-indigo-400 block mb-1 text-xs uppercase tracking-wider">Traços Raciais</strong>
+                            <p className="text-slate-300">{race.traits?.join(', ')}</p>
+                         </div>
+                     </div>
 
-              <button onClick={handleExportJSON} className="p-3 bg-blue-900/50 hover:bg-blue-900 border-2 border-blue-600 rounded text-blue-100" title="Exportar JSON">
-                <Download size={20} />
-              </button>
-            </>
-          )}
-
-          <div className="relative">
-             <input type="file" ref={fileInputRef} onChange={handleImportJSON} accept=".json" className="hidden" />
-             <button onClick={() => fileInputRef.current?.click()} className="p-3 bg-purple-900/50 hover:bg-purple-900 border-2 border-purple-600 rounded text-purple-100" title="Importar JSON">
-                <Upload size={20} />
-             </button>
-          </div>
-        </div>
-
-        {/* Character Display */}
-        {currentCharacter ? (
-          <div className="animate-[fadeIn_0.5s_ease-out] w-full flex justify-center">
-            <CharacterSheet 
-                character={currentCharacter} 
-                backstoryLoading={false}
-                isEditing={isEditing}
-                onUpdate={handleCharacterUpdate}
-            />
-          </div>
-        ) : (
-          <div className="text-center p-12 border-2 border-dashed border-stone-800 rounded-xl bg-wood-900/30 text-stone-500">
-             <Dice5 size={64} className="mx-auto mb-4 opacity-50" />
-             <p className="text-xl font-fantasy">A mesa está vazia. Role os dados para começar.</p>
-          </div>
+                     <button 
+                         onClick={() => handleGenerate(false, race.name)}
+                         className="w-full py-2.5 border border-slate-700 rounded-lg text-slate-400 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all text-sm font-medium"
+                     >
+                         Gerar {race.name}
+                     </button>
+                 </div>
+             ))}
+         </div>
         )}
       </main>
-
-      {/* Sidebar (Saved Characters) */}
-      {isSidebarOpen && (
-        <>
-          <div className="fixed inset-0 bg-black/70 z-40 backdrop-blur-sm no-print" onClick={() => setIsSidebarOpen(false)} />
-          <div className="fixed top-0 right-0 w-80 h-full bg-wood-900 border-l border-amber-900 z-50 p-6 overflow-y-auto custom-scrollbar shadow-2xl no-print">
-            <div className="flex justify-between items-center mb-6 pb-4 border-b border-amber-900/50">
-              <h2 className="text-2xl font-fantasy text-amber-500">Grimório</h2>
-              <button onClick={() => setIsSidebarOpen(false)} className="text-stone-500 hover:text-red-400">
-                <X />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              {savedCharacters.length === 0 ? (
-                <p className="text-stone-600 italic text-center mt-10">Nenhum herói salvo.</p>
-              ) : (
-                savedCharacters.map(char => (
-                  <div 
-                    key={char.id} 
-                    onClick={() => loadCharacter(char)}
-                    className="p-4 rounded bg-wood-800 border border-wood-800 hover:border-amber-600 cursor-pointer group transition-all relative"
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-bold text-amber-100 group-hover:text-amber-400">
-                            {char.name} {char.isNPC && <span className="text-xs text-red-400 ml-1">(NPC)</span>}
-                        </h3>
-                        <p className="text-xs text-stone-400">{char.race} {char.class} - Nv {char.level}</p>
-                      </div>
-                      <button 
-                        onClick={(e) => handleDelete(char.id, e)}
-                        className="text-stone-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-1"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* Footer */}
-      <footer className="mt-auto pt-12 pb-4 text-center text-stone-600 text-sm no-print">
-        <p>© 2024 Mestre da Masmorra. Feito para aventureiros.</p>
-        <p className="text-xs mt-1 opacity-50">Dungeons & Dragons é marca registrada da Wizards of the Coast.</p>
-      </footer>
     </div>
   );
 }

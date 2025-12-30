@@ -32,7 +32,7 @@ export interface Character {
   level: number;
   proficiencyBonus: number;
   hp: number;
-  maxHp: number; // Added for tracking current vs max
+  maxHp: number; 
   ac: number;
   attributes: Attributes;
   modifiers: Attributes;
@@ -61,4 +61,49 @@ export interface DndRace {
   bonuses: Partial<Attributes>;
   languages: string[];
   senses: string[];
+  description?: string; // Added for Codex
+  traits?: string[]; // Added for Codex
+}
+
+// API Types for Bestiary
+export interface MonsterAction {
+  name: string;
+  desc: string;
+  attack_bonus?: number;
+}
+
+export interface Monster {
+  index: string;
+  name: string;
+  size: string;
+  type: string;
+  alignment: string;
+  armor_class: { type: string, value: number }[];
+  hit_points: number;
+  hit_dice: string;
+  speed: { walk: string, fly?: string, swim?: string };
+  strength: number;
+  dexterity: number;
+  constitution: number;
+  intelligence: number;
+  wisdom: number;
+  charisma: number;
+  proficiencies: { value: number, proficiency: { name: string } }[];
+  damage_vulnerabilities: string[];
+  damage_resistances: string[];
+  damage_immunities: string[];
+  condition_immunities: { name: string }[];
+  senses: Record<string, string | number>;
+  languages: string;
+  challenge_rating: number;
+  xp: number;
+  special_abilities?: MonsterAction[];
+  actions?: MonsterAction[];
+  legendary_actions?: MonsterAction[];
+}
+
+export interface APIMonsterIndex {
+  index: string;
+  name: string;
+  url: string;
 }

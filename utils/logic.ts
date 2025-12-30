@@ -1,4 +1,4 @@
-import { CLASSES, RACES, BACKGROUNDS, ALIGNMENTS, NAMES_FIRST, NAMES_LAST, SKILL_LIST, NPC_QUOTES } from "../constants";
+import { CLASSES, RACES, BACKGROUNDS, ALIGNMENTS, NAMES_FIRST, NAMES_LAST, SKILL_LIST, NPC_QUOTES, DICTIONARY } from "../constants";
 import { Attributes, Character, DndClass, DndRace, Skill } from "../types";
 
 export const rollDice = (sides: number): number => Math.floor(Math.random() * sides) + 1;
@@ -16,6 +16,31 @@ export const generateRandomName = (): string => {
   const first = NAMES_FIRST[Math.floor(Math.random() * NAMES_FIRST.length)];
   const last = NAMES_LAST[Math.floor(Math.random() * NAMES_LAST.length)];
   return `${first}${last}`;
+};
+
+// --- TRANSLATION LOGIC ---
+export const translateTerm = (term: string): string => {
+  if (!term) return "";
+  // Direct match
+  if (DICTIONARY[term]) return DICTIONARY[term];
+  // Case insensitive match
+  const lower = term.toLowerCase();
+  // Check exact keys in dictionary which might be lower case
+  if (DICTIONARY[lower]) return DICTIONARY[lower];
+  
+  // Clean punctuation for matching (e.g., "blindsight," -> "blindsight")
+  const clean = lower.replace(/[,.]/g, '');
+  if (DICTIONARY[clean]) return DICTIONARY[clean];
+
+  return term;
+};
+
+export const translateText = (text: string): string => {
+  if (!text) return "";
+  // Split by comma to translate lists (like "Fire, Cold, Lightning")
+  const parts = text.split(', ');
+  const translated = parts.map(p => translateTerm(p.trim()));
+  return translated.join(', ');
 };
 
 const calculateAC = (dndClass: string, dexMod: number, conMod: number, wisMod: number, equipment: string[]): number => {
