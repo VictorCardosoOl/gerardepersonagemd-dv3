@@ -8,12 +8,12 @@ interface Props {
     onSelect: (char: Character) => void;
     onDelete: (id: string) => void;
     onGenerate: (isNPC: boolean) => void;
+    onSaveNew?: (npc: Character) => void; // New callback for streamlined UX
     isOpen: boolean;
     onClose: () => void;
 }
 
-export const DMPanel: React.FC<Props> = ({ savedCharacters, onSelect, onDelete, onGenerate, isOpen, onClose }) => {
-    // Local state for the "Quick NPC" feature
+export const DMPanel: React.FC<Props> = ({ savedCharacters, onSelect, onDelete, onGenerate, onSaveNew, isOpen, onClose }) => {
     const [quickNPC, setQuickNPC] = useState<Character | null>(null);
 
     const handleQuickGenerate = () => {
@@ -21,18 +21,18 @@ export const DMPanel: React.FC<Props> = ({ savedCharacters, onSelect, onDelete, 
         setQuickNPC(npc);
     };
 
-    const handleSaveQuickNPC = () => {
+    const handleSaveAndClose = () => {
         if (quickNPC) {
-            // Trigger the main generate logic but pass this specific character
-            // Since props.onGenerate creates a NEW one, we need to adapt or just emit a save event.
-            // For simplicity in this structure, we'll mimic saving by calling onSelect 
-            // BUT ideally, the App should handle "Saving" an external object.
-            // As a workaround for this "frontend-only" prompt constraints:
-            // We will inject it into localStorage manually or assume the user wants to View it.
-            // Better UX: Let's assume onSelect loads it into the main view where it can be saved.
             onSelect(quickNPC);
             setQuickNPC(null);
             onClose();
+        }
+    };
+
+    const handleSaveAndNew = () => {
+        if (quickNPC && onSaveNew) {
+            onSaveNew(quickNPC);
+            handleQuickGenerate(); // Roll next immediately
         }
     };
 
@@ -51,7 +51,7 @@ export const DMPanel: React.FC<Props> = ({ savedCharacters, onSelect, onDelete, 
 
                 <div className="flex-grow overflow-y-auto custom-scrollbar space-y-8 pr-1">
                     
-                    {/* --- QUICK NPC SECTION (New Feature) --- */}
+                    {/* --- QUICK NPC SECTION --- */}
                     <div className="space-y-3">
                          <div className="flex items-center justify-between">
                             <h3 className="text-xs uppercase tracking-widest text-royal-400 font-bold">NPC Rápido</h3>
@@ -90,7 +90,7 @@ export const DMPanel: React.FC<Props> = ({ savedCharacters, onSelect, onDelete, 
                                      </div>
                                  </div>
 
-                                 <div className="flex gap-2">
+                                 <div className="flex gap-2 mb-2">
                                      <button 
                                         onClick={handleQuickGenerate}
                                         className="flex-1 py-2 bg-canvas-100 hover:bg-canvas-200 text-slate-600 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition-colors"
@@ -99,12 +99,18 @@ export const DMPanel: React.FC<Props> = ({ savedCharacters, onSelect, onDelete, 
                                          <RefreshCw size={14} /> Re-rolar
                                      </button>
                                      <button 
-                                        onClick={handleSaveQuickNPC}
+                                        onClick={handleSaveAndClose}
                                         className="flex-[2] py-2 bg-royal-600 hover:bg-royal-700 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition-colors shadow-md shadow-royal-200"
                                      >
-                                         <Save size={14} /> Abrir Ficha
+                                         <Save size={14} /> Abrir
                                      </button>
                                  </div>
+                                 <button 
+                                     onClick={handleSaveAndNew}
+                                     className="w-full py-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition-colors border border-emerald-100"
+                                 >
+                                     <Plus size={14} /> Salvar e Gerar Novo
+                                 </button>
                              </div>
                          )}
                     </div>

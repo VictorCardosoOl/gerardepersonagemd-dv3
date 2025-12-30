@@ -34,6 +34,7 @@ export interface Character {
   hp: number;
   maxHp: number; 
   ac: number;
+  initiative: number; // Added field for manual override
   attributes: Attributes;
   modifiers: Attributes;
   skills: Skill[];
@@ -61,8 +62,8 @@ export interface DndRace {
   bonuses: Partial<Attributes>;
   languages: string[];
   senses: string[];
-  description?: string; // Added for Codex
-  traits?: string[]; // Added for Codex
+  description?: string;
+  traits?: string[];
 }
 
 // API Types for Bestiary
@@ -72,13 +73,15 @@ export interface MonsterAction {
   attack_bonus?: number;
 }
 
+// Normalized Monster interface for the View
 export interface Monster {
   index: string;
   name: string;
   size: string;
   type: string;
   alignment: string;
-  armor_class: { type: string, value: number }[];
+  armor_class_value: number; // Normalized
+  armor_class_desc: string; // Normalized
   hit_points: number;
   hit_dice: string;
   speed: { walk: string, fly?: string, swim?: string };

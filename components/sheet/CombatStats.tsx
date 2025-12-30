@@ -59,9 +59,18 @@ export const CombatStats: React.FC<Props> = ({ character, isEditing, onChange })
             <div className="bg-white border border-stone-200 rounded-2xl p-6 flex items-center justify-between shadow-sm hover:shadow-hover hover:border-emerald-300 transition-all group">
                 <div className="flex flex-col">
                     <span className="text-[10px] uppercase text-stone-400 font-bold tracking-widest mb-1">Iniciativa</span>
-                    <span className="text-5xl font-serif font-black text-stone-800">
-                        {character.modifiers.Destreza >= 0 ? `+${character.modifiers.Destreza}` : character.modifiers.Destreza}
-                    </span>
+                    {isEditing ? (
+                        <input 
+                            type="number" 
+                            value={character.initiative !== undefined ? character.initiative : character.modifiers.Destreza} 
+                            onChange={(e) => onChange('initiative', parseInt(e.target.value))} 
+                            className="w-20 text-5xl font-serif font-black text-amber-700 bg-transparent border-b-2 border-amber-500 focus:outline-none"
+                        />
+                    ) : (
+                        <span className="text-5xl font-serif font-black text-stone-800">
+                             {(character.initiative ?? character.modifiers.Destreza) >= 0 ? `+${character.initiative ?? character.modifiers.Destreza}` : (character.initiative ?? character.modifiers.Destreza)}
+                        </span>
+                    )}
                 </div>
                 <div className="bg-amber-50 p-4 rounded-xl text-amber-500 group-hover:bg-amber-100 transition-colors">
                     <Zap size={32} strokeWidth={1.5} />

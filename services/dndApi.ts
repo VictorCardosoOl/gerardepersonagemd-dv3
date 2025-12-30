@@ -16,8 +16,29 @@ export const fetchMonsterList = async (): Promise<APIMonsterIndex[]> => {
 export const fetchMonsterDetails = async (index: string): Promise<Monster | null> => {
   try {
     const response = await fetch(`${BASE_URL}/monsters/${index}`);
-    const data = await response.json();
-    return data;
+    const rawData = await response.json();
+    
+    // --- ADAPTER LOGIC ---
+    // Normalize Armor Class which varies in the API (number vs array of objects)
+    let acValue = 10;
+    let acDesc = "";
+
+    if (Array.isArray(rawData.armor_class) && rawData.armor_class.length > 0) {
+        const acEntry = rawData.armor_class[0];
+        acValue = acEntry.value;
+        acDesc = acEntry.type || "";
+    } else if (typeof rawData.armor_class === 'number') {
+        acValue = rawData.armor_class;
+    }
+
+    // Construct clean object
+    const normalizedMonster: Monster = {
+        ...rawData,
+        armor_class_value: acValue,
+        armor_class_desc: acDesc
+    };
+
+    return normalizedMonster;
   } catch (error) {
     console.error("Erro ao buscar detalhes do monstro:", error);
     return null;
