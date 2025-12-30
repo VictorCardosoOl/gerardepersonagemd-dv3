@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="scroll-smooth">
+<html lang="pt-BR" class="scroll-smooth antialiased">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
@@ -18,12 +18,17 @@
               mono: ['JetBrains Mono', 'monospace'],
             },
             colors: {
-              paper: '#fafaf9',
-              ink: '#1c1917',
+              paper: '#fdfbf7', /* Off-white quente, cor de papel */
+              ink: '#292524',   /* Stone 800, mais suave que preto puro */
               emerald: {
-                50: '#ecfdf5',
-                100: '#d1fae5',
-                600: '#059669',
+                50: '#f0fdf4',
+                100: '#dcfce7',
+                200: '#bbf7d0',
+                300: '#86efac',
+                400: '#4ade80',
+                500: '#22c55e',
+                600: '#059669', // Primary Brand
+                700: '#047857',
                 800: '#065f46',
                 900: '#064e3b',
               },
@@ -32,13 +37,17 @@
                 100: '#f5f5f4',
                 200: '#e7e5e4',
                 300: '#d6d3d1',
+                400: '#a8a29e',
+                500: '#78716c',
                 800: '#292524',
+                900: '#1c1917',
               }
             },
             animation: {
-              'fade-in': 'fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-              'slide-up': 'slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+              'fade-in': 'fadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)',
+              'slide-up': 'slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)',
               'bounce-x': 'bounceX 1s infinite',
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
             },
             keyframes: {
               fadeIn: {
@@ -46,7 +55,7 @@
                 '100%': { opacity: '1' },
               },
               slideUp: {
-                '0%': { transform: 'translateY(20px)', opacity: '0' },
+                '0%': { transform: 'translateY(15px)', opacity: '0' },
                 '100%': { transform: 'translateY(0)', opacity: '1' },
               },
               bounceX: {
@@ -55,56 +64,104 @@
               }
             },
             boxShadow: {
-              'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
-              'hover': '0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.01)',
+              'soft': '0 2px 10px rgba(28, 25, 23, 0.03)',
+              'card': '0 0 0 1px rgba(28, 25, 23, 0.05), 0 4px 12px rgba(28, 25, 23, 0.05)',
+              'float': '0 10px 30px -10px rgba(5, 150, 105, 0.2)',
+              'inner-light': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.02)',
+            },
+            backgroundImage: {
+              'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
             }
           }
         }
       }
     </script>
     <style>
-      /* Reset & Base */
+      /* --- Global Base --- */
       body {
-        background-color: #fafaf9;
+        background-color: #fcfbf9; /* Paper base */
         color: #1c1917;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
         overflow-x: hidden;
       }
+      
+      /* Texture Overlay (Noise) - Reduced opacity for cleaner look */
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 50;
+      }
 
-      /* Clean Card Style - Replacing Glassmorphism with "High-End Paper" feel */
+      /* --- Component: Clean Panel (Card) --- */
       .clean-panel {
-        background: white;
-        border: 1px solid #e7e5e4;
-        border-radius: 1rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        background: #ffffff;
+        border: 1px solid rgba(231, 229, 228, 0.8);
+        border-radius: 1rem; /* More rounded, modern */
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
+        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        position: relative;
+        z-index: 10;
       }
       
       .clean-panel:hover {
-        border-color: #d1fae5; /* Emerald 100 */
-        box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+        border-color: rgba(5, 150, 105, 0.4);
+        box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.08);
         transform: translateY(-2px);
       }
 
-      /* Input Styles */
+      /* --- Component: Primary Button --- */
+      .btn-primary {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        color: white;
+        font-weight: 600;
+        letter-spacing: 0.025em;
+        padding: 0.75rem 1.75rem;
+        border-radius: 0.75rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 1px solid rgba(255,255,255,0.1);
+      }
+      
+      .btn-primary:hover {
+        background: linear-gradient(135deg, #065f46 0%, #064e3b 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 8px 16px rgba(5, 150, 105, 0.35);
+      }
+      
+      .btn-primary:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
+      }
+
+      /* --- Component: Minimal Input --- */
       .input-minimal {
         background: transparent;
+        border: none;
         border-bottom: 2px solid #e7e5e4;
         transition: all 0.3s ease;
-        padding: 0.25rem 0;
+        padding: 0.5rem 0;
         border-radius: 0;
+        color: #1c1917;
+        font-family: 'Playfair Display', serif;
       }
       .input-minimal:focus {
         outline: none;
         border-color: #059669;
-        background: rgba(5, 150, 105, 0.02);
+        background: linear-gradient(to bottom, transparent 95%, rgba(5, 150, 105, 0.05) 100%);
       }
 
-      /* Scrollbar Styling */
+      /* --- Scrollbar Customization --- */
       .custom-scrollbar::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
+        width: 5px;
+        height: 5px;
       }
       .custom-scrollbar::-webkit-scrollbar-track {
         background: transparent;
@@ -116,28 +173,17 @@
       .custom-scrollbar::-webkit-scrollbar-thumb:hover {
         background: #a8a29e;
       }
+      
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-      /* Utility */
-      .no-scrollbar::-webkit-scrollbar {
-          display: none;
-      }
-      .no-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-      }
-
+      /* --- Print Styles --- */
       @media print {
-        body {
-          background: white !important;
-          color: black !important;
-        }
-        .no-print {
-          display: none !important;
-        }
-        .clean-panel {
-          border: 1px solid #ccc;
-          box-shadow: none;
-        }
+        body { background: white !important; color: black !important; }
+        body::before { display: none; }
+        .no-print { display: none !important; }
+        .clean-panel { border: 1px solid #ccc; box-shadow: none; border-radius: 0; }
+        .btn-primary { display: none; }
       }
     </style>
   <script type="importmap">

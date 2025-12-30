@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Character, Attributes } from '../types';
 import { StatBlock } from './StatBlock';
-import { Printer, Backpack, Swords, Scroll } from 'lucide-react';
+import { Printer, Backpack, Swords, Scroll, Info } from 'lucide-react';
 import { CLASSES } from '../constants';
 import { IdentityHeader } from './sheet/IdentityHeader';
 import { CombatStats } from './sheet/CombatStats';
@@ -19,7 +19,6 @@ type SheetTab = 'combat' | 'inventory';
 
 export const CharacterSheet: React.FC<Props> = ({ character, isEditing = false, onUpdate }) => {
   const [activeTab, setActiveTab] = useState<SheetTab>('combat');
-  
   const classData = CLASSES.find(c => c.name === character.class);
 
   const handleAttributeChange = (key: keyof Attributes, value: number) => {
@@ -33,53 +32,32 @@ export const CharacterSheet: React.FC<Props> = ({ character, isEditing = false, 
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto flex flex-col gap-8 animate-fade-in pb-20">
+    <div className="w-full max-w-5xl mx-auto flex flex-col gap-6 animate-fade-in pb-20">
         
-        {/* Header & Controls */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 no-print border-b border-stone-200 pb-4">
-            <h2 className="text-sm font-bold text-stone-400 uppercase tracking-widest">Ficha de Personagem</h2>
+        {/* Header Section */}
+        <div className="flex justify-between items-end px-2 no-print">
+            <h2 className="text-xs font-bold text-stone-400 uppercase tracking-[0.2em]">Ficha de Personagem</h2>
             
-            <div className="flex items-center gap-4">
-                {/* Navigation Pills */}
-                <div className="flex p-1 bg-stone-100 rounded-lg">
-                    <button 
-                        onClick={() => setActiveTab('combat')}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'combat' ? 'bg-white text-emerald-800 shadow-sm' : 'text-stone-500 hover:text-stone-800'}`}
-                    >
-                        <Swords size={16} /> <span className="hidden sm:inline">Combate & Perícias</span>
-                    </button>
-                    <button 
-                        onClick={() => setActiveTab('inventory')}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'inventory' ? 'bg-white text-emerald-800 shadow-sm' : 'text-stone-500 hover:text-stone-800'}`}
-                    >
-                        <Backpack size={16} /> <span className="hidden sm:inline">Mochila & Notas</span>
-                    </button>
-                </div>
-                
-                <button 
-                    onClick={() => window.print()}
-                    className="p-2.5 text-stone-400 hover:text-emerald-700 hover:bg-emerald-50 rounded-full transition-colors"
-                    title="Imprimir Ficha"
-                >
-                    <Printer size={20} />
-                </button>
-            </div>
+            <button 
+                onClick={() => window.print()}
+                className="text-stone-400 hover:text-emerald-700 hover:bg-emerald-50 px-3 py-1.5 rounded-lg transition-colors text-sm flex items-center gap-2"
+            >
+                <Printer size={16} /> Imprimir
+            </button>
         </div>
 
-        {/* Paper Container */}
-        <div className="bg-white rounded-xl shadow-soft border border-stone-200 p-8 md:p-12 relative overflow-hidden print:shadow-none print:border-0 print:p-0">
-            {/* Decorative Top Line */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-30"></div>
-
+        {/* Main Paper Surface */}
+        <div className="clean-panel p-8 md:p-12 relative overflow-hidden bg-white shadow-card">
+            
             <IdentityHeader character={character} isEditing={isEditing} onChange={handleChange} />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mt-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mt-10 border-t border-stone-100 pt-10">
                 
-                {/* Left Column: Attributes (Sticky) */}
-                <div className="lg:col-span-3">
-                    <div className="sticky top-24 space-y-4">
-                        <div className="text-center mb-2">
-                             <h3 className="text-xs font-bold text-stone-400 uppercase tracking-widest">Atributos</h3>
+                {/* Left Column: Core Attributes */}
+                <div className="lg:col-span-3 border-r border-stone-100 pr-0 lg:pr-10">
+                    <div className="sticky top-28 space-y-6">
+                        <div className="flex items-center justify-between lg:justify-center">
+                             <h3 className="text-[10px] font-bold text-stone-400 uppercase tracking-widest bg-stone-50 px-2 py-1 rounded">Atributos</h3>
                         </div>
                         <div className="grid grid-cols-3 lg:grid-cols-1 gap-4">
                             {(Object.keys(character.attributes) as Array<keyof Attributes>).map((key) => (
@@ -96,32 +74,47 @@ export const CharacterSheet: React.FC<Props> = ({ character, isEditing = false, 
                     </div>
                 </div>
 
-                {/* Right Column: Dynamic Content */}
-                <div className="lg:col-span-9 min-h-[600px]">
-                    {activeTab === 'combat' && (
-                        <div className="animate-slide-up flex flex-col gap-10">
-                            <section>
+                {/* Right Column: Interactive Content */}
+                <div className="lg:col-span-9">
+                    
+                    {/* Internal Tabs */}
+                    <div className="flex border-b border-stone-200 mb-8 no-print">
+                        <button 
+                            onClick={() => setActiveTab('combat')}
+                            className={`pb-3 px-1 mr-6 text-sm font-bold tracking-wide transition-all relative ${activeTab === 'combat' ? 'text-emerald-700' : 'text-stone-400 hover:text-stone-600'}`}
+                        >
+                            <span className="flex items-center gap-2"><Swords size={18}/> Combate & Perícias</span>
+                            {activeTab === 'combat' && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-emerald-600"></span>}
+                        </button>
+                        <button 
+                            onClick={() => setActiveTab('inventory')}
+                            className={`pb-3 px-1 mr-6 text-sm font-bold tracking-wide transition-all relative ${activeTab === 'inventory' ? 'text-emerald-700' : 'text-stone-400 hover:text-stone-600'}`}
+                        >
+                            <span className="flex items-center gap-2"><Backpack size={18}/> Equipamento & Notas</span>
+                            {activeTab === 'inventory' && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-emerald-600"></span>}
+                        </button>
+                    </div>
+
+                    <div className="min-h-[500px]">
+                        {activeTab === 'combat' && (
+                            <div className="animate-slide-up flex flex-col gap-12">
                                 <CombatStats character={character} isEditing={isEditing} onChange={handleChange} />
-                            </section>
-                            
-                            <div className="w-full h-px bg-stone-100"></div>
-
-                            <section className="h-full">
+                                <div className="w-full h-px bg-stone-100"></div>
                                 <SkillsList skills={character.skills} />
-                            </section>
-                        </div>
-                    )}
+                            </div>
+                        )}
 
-                    {activeTab === 'inventory' && (
-                        <div className="animate-slide-up h-full">
-                            <InventoryNotes 
-                                character={character} 
-                                classData={classData} 
-                                isEditing={isEditing} 
-                                onChange={handleChange} 
-                            />
-                        </div>
-                    )}
+                        {activeTab === 'inventory' && (
+                            <div className="animate-slide-up h-full">
+                                <InventoryNotes 
+                                    character={character} 
+                                    classData={classData} 
+                                    isEditing={isEditing} 
+                                    onChange={handleChange} 
+                                />
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
