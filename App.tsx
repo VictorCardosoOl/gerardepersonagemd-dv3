@@ -2,13 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Character } from './types';
 import { generateCharacter, recalculateCharacterStats } from './utils/logic';
 import { Sanctum } from './components/Sanctum';
-import { Sidebar } from './components/Sidebar';
 import { CharacterSheet } from './components/CharacterSheet';
 import { BestiaryOverlay } from './components/BestiaryOverlay';
 import { DragSlider } from './components/DragSlider';
 import { GuideSection } from './components/GuideSection';
 import { RACES } from './constants';
-import { MoveRight, Zap, Check } from 'lucide-react';
+import { MoveRight, Zap, Check, Sparkles } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Lenis from 'lenis';
 
@@ -33,16 +32,15 @@ export default function App() {
   // --- Derived State ---
   const activeCharacter = savedCharacters.find(c => c.id === activeCharacterId) || null;
 
-  // --- Lenis Scroll & Cursor Logic ---
+  // --- Lenis Scroll ---
   useEffect(() => {
-    // 1. Initialize Lenis (Smooth Inertia Scroll)
     const lenis = new Lenis({
-        duration: 1.5,
+        duration: 1.2,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         orientation: 'vertical',
         gestureOrientation: 'vertical',
         smoothWheel: true,
-        wheelMultiplier: 1.2,
+        wheelMultiplier: 1.0,
     });
     lenisRef.current = lenis;
 
@@ -52,38 +50,8 @@ export default function App() {
     }
     requestAnimationFrame(raf);
 
-    // 2. Custom Magnetic Cursor Logic
-    const cursor = document.querySelector('.custom-cursor') as HTMLElement;
-    const cursorDot = document.querySelector('.custom-cursor-dot') as HTMLElement;
-    
-    const moveCursor = (e: MouseEvent) => {
-        if(cursor && cursorDot) {
-            cursor.style.left = `${e.clientX}px`;
-            cursor.style.top = `${e.clientY}px`;
-            cursorDot.style.left = `${e.clientX}px`;
-            cursorDot.style.top = `${e.clientY}px`;
-        }
-    };
-
-    const handleMouseOver = (e: MouseEvent) => {
-        const target = e.target as HTMLElement;
-        const isHoverable = target.matches('button, a, input, select, .cursor-pointer') || 
-                            target.closest('button, a, input, select, .cursor-pointer');
-        
-        if (isHoverable) {
-            cursor?.classList.add('hovered');
-        } else {
-            cursor?.classList.remove('hovered');
-        }
-    };
-
-    window.addEventListener('mousemove', moveCursor);
-    document.addEventListener('mouseover', handleMouseOver);
-
     return () => {
         lenis.destroy();
-        window.removeEventListener('mousemove', moveCursor);
-        document.removeEventListener('mouseover', handleMouseOver);
     };
   }, []);
 
@@ -116,7 +84,6 @@ export default function App() {
     setActiveCharacterId(newChar.id);
     setCurrentView('sheet');
     notify("Nova Lenda Forjada");
-    // Reset scroll to top
     lenisRef.current?.scrollTo(0, { immediate: true });
   };
 
@@ -176,39 +143,71 @@ export default function App() {
       e.target.value = '';
   };
 
-  const pageVariants = {
-    initial: { opacity: 0 },
-    animate: { opacity: 1, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
-    exit: { opacity: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } }
-  };
+  const tabs = [
+    { id: 'sanctum', label: 'Grimório' },
+    { id: 'sheet', label: activeCharacter ? activeCharacter.name.split(' ')[0] : 'Herói' },
+    { id: 'codex', label: 'Códice' },
+    { id: 'guide', label: 'Guia' },
+  ];
 
   return (
-    <div className="min-h-screen font-body selection:bg-champagne-500/30 selection:text-white">
+    <div className="min-h-screen font-body text-mystic-100 selection:bg-cyan-500/30 selection:text-white">
       
       <input type="file" ref={fileInputRef} onChange={handleImport} className="hidden" accept=".json" />
 
-      {/* 1. Minimal Sidebar (Floating Dock) */}
-      <Sidebar 
-        currentView={currentView} 
-        onChangeView={(view) => {
-            setCurrentView(view);
-            lenisRef.current?.scrollTo(0, { immediate: true });
-        }}
-        activeCharacterName={activeCharacter?.name}
-        isBestiaryOpen={isBestiaryOpen}
-        onToggleBestiary={() => setIsBestiaryOpen(!isBestiaryOpen)}
-      />
+      {/* --- Horizontal Navigation --- */}
+      <nav className="fixed top-0 left-0 w-full z-50 flex justify-center py-6 px-4 pointer-events-none">
+        <div className="bg-void-950/80 backdrop-blur-xl border border-white/5 rounded-full px-2 py-2 flex gap-1 pointer-events-auto shadow-2xl">
+          {tabs.map((tab) => {
+            const isActive = currentView === tab.id;
+            // Disable 'sheet' tab if no active character
+            if (tab.id === 'sheet' && !activeCharacter) return null;
 
-      {/* 2. Main Canvas */}
-      <main className="pl-0 md:pl-24 transition-all duration-700 min-h-screen relative pb-32">
+            return (
+              <button
+                key={tab.id}
+                onClick={() => {
+                    setCurrentView(tab.id as ViewState);
+                    lenisRef.current?.scrollTo(0, { immediate: true });
+                }}
+                className={`
+                  relative px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300
+                  ${isActive ? 'text-void-950' : 'text-mystic-300 hover:text-white hover:bg-white/5'}
+                `}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="activeTab"
+                    className="absolute inset-0 bg-mystic-100 rounded-full"
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  />
+                )}
+                <span className="relative z-10">{tab.label}</span>
+              </button>
+            );
+          })}
           
+          <div className="w-px h-6 bg-white/10 mx-2 self-center"></div>
+
+          <button
+            onClick={() => setIsBestiaryOpen(true)}
+             className="relative px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest text-mystic-300 hover:text-white hover:bg-white/5 transition-all"
+          >
+             Bestiário
+          </button>
+        </div>
+      </nav>
+
+      {/* --- Main Content --- */}
+      <main className="w-full min-h-screen pt-32 pb-20 relative z-0">
           <AnimatePresence mode="wait">
+            
             {/* View: SANCTUM */}
             {currentView === 'sanctum' && (
                 <motion.div 
                     key="sanctum"
-                    initial="initial" animate="animate" exit="exit" variants={pageVariants}
-                    className="w-full"
+                    initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, filter: 'blur(10px)' }}
+                    transition={{ duration: 0.5 }}
                 >
                     <Sanctum 
                         savedCharacters={savedCharacters}
@@ -225,21 +224,22 @@ export default function App() {
             {currentView === 'sheet' && activeCharacter && (
                 <motion.div 
                     key={`sheet-${activeCharacter.id}`}
-                    initial="initial" animate="animate" exit="exit" variants={pageVariants}
-                    className="w-full"
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    transition={{ duration: 0.6 }}
                 >
                     <CharacterSheet 
                         character={activeCharacter} 
                         isEditing={isEditing}
                         onUpdate={handleUpdateActive}
                     />
-                    {/* Floating Edit Fab */}
+                    
+                    {/* Floating Action Button */}
                     <motion.button 
-                        layoutId="edit-fab"
+                        layoutId="fab"
                         onClick={() => setIsEditing(!isEditing)}
-                        className={`fixed bottom-8 right-8 z-40 w-16 h-16 rounded-full flex items-center justify-center transition-all duration-500 cursor-pointer backdrop-blur-md border border-white/10 ${isEditing ? 'bg-champagne-500 text-obsidian-950' : 'bg-obsidian-900/50 text-champagne-400 hover:bg-obsidian-800'}`}
+                        className={`fixed bottom-8 right-8 z-40 w-14 h-14 rounded-full flex items-center justify-center shadow-glow-cyan transition-all duration-300 ${isEditing ? 'bg-cyan-500 text-void-950' : 'bg-void-800 border border-white/10 text-cyan-400 hover:bg-void-700'}`}
                     >
-                        {isEditing ? <Check size={24} /> : <Zap size={24} />}
+                        {isEditing ? <Check size={20} /> : <Zap size={20} />}
                     </motion.button>
                 </motion.div>
             )}
@@ -248,27 +248,24 @@ export default function App() {
             {currentView === 'codex' && (
                 <motion.div 
                     key="codex"
-                    initial="initial" animate="animate" exit="exit" variants={pageVariants}
-                    className="w-full pt-12 px-4 flex flex-col items-center justify-center min-h-screen"
+                    initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }}
+                    className="flex flex-col items-center justify-center py-12"
                 >
-                     <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
-                        <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[20vw] font-display font-black text-white/5 whitespace-nowrap blur-sm select-none">ORIGEM</span>
-                    </div>
-                    
-                    <div className="text-center mb-12 relative z-10">
-                        <h2 className="text-6xl font-display font-medium text-white mb-4">Códice</h2>
-                        <p className="text-champagne-200/60 font-serif italic text-xl">Linhagens antigas e seus dons.</p>
+                     <div className="text-center mb-16">
+                        <Sparkles className="mx-auto text-gold-500 mb-4" size={32} />
+                        <h2 className="text-5xl font-display font-bold text-white mb-2">Códice de Origens</h2>
+                        <p className="text-mystic-300 font-body opacity-60">Arraste para explorar as linhagens.</p>
                     </div>
                     
                     <DragSlider className="max-w-[95vw]">
                         {RACES.map(race => (
-                            <div key={race.name} className="min-w-[400px] bg-obsidian-900/40 border-l border-white/10 p-10 hover:bg-white/5 transition-colors duration-500 relative group cursor-pointer"
+                            <div key={race.name} className="min-w-[360px] glass-panel p-8 rounded-2xl hover:border-cyan-500/30 transition-all duration-500 cursor-pointer group"
                                 onClick={() => handleCreateNew(false, race.name)}
                             >
-                                <h3 className="text-5xl font-display font-medium text-white mb-6 group-hover:text-champagne-400 transition-colors">{race.name}</h3>
-                                <p className="text-zinc-400 mb-8 font-serif leading-relaxed text-lg">{race.description}</p>
-                                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-champagne-500 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-4 group-hover:translate-y-0 duration-500">
-                                    Selecionar <MoveRight size={14}/>
+                                <h3 className="text-3xl font-display text-white mb-4 group-hover:text-cyan-400 transition-colors">{race.name}</h3>
+                                <p className="text-mystic-300 text-sm leading-relaxed mb-8">{race.description}</p>
+                                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gold-500 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+                                    Escolher <MoveRight size={14}/>
                                 </div>
                             </div>
                         ))}
@@ -280,26 +277,26 @@ export default function App() {
             {currentView === 'guide' && (
                 <motion.div 
                     key="guide"
-                    initial="initial" animate="animate" exit="exit" variants={pageVariants}
-                    className="w-full pt-12"
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 >
                     <GuideSection />
                 </motion.div>
             )}
+
           </AnimatePresence>
       </main>
 
-      {/* 3. Global Overlays */}
+      {/* Global Overlays */}
       <BestiaryOverlay isOpen={isBestiaryOpen} onClose={() => setIsBestiaryOpen(false)} />
 
-      {/* 4. Notification Toast */}
+      {/* Notifications */}
       <AnimatePresence>
         {notification && (
             <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
-                className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[110] bg-obsidian-900 text-champagne-200 px-8 py-4 rounded-full border border-white/10 font-mono text-xs uppercase tracking-widest backdrop-blur-md"
+                className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] px-6 py-3 rounded-full bg-void-900 border border-gold-500/30 text-gold-400 text-xs font-bold uppercase tracking-widest shadow-glow-gold backdrop-blur-md"
             >
                 {notification}
             </motion.div>
