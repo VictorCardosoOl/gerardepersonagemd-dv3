@@ -1,12 +1,12 @@
 {
-  "name": "mestre-da-masmorra-gerador-dnd",
+  "name": "mestre-da-masmorra---gerador-d&d",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node node_modules/vite/bin/vite.js",
-    "build": "node node_modules/vite/bin/vite.js build",
-    "preview": "node node_modules/vite/bin/vite.js preview"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "react-dom": "^19.2.3",

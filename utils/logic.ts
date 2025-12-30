@@ -1,5 +1,5 @@
-import { CLASSES, RACES, BACKGROUNDS, ALIGNMENTS, NAMES_FIRST, NAMES_LAST } from "../constants";
-import { Attributes, Character, DndClass, DndRace } from "../types";
+import { CLASSES, RACES, BACKGROUNDS, ALIGNMENTS, NAMES_FIRST, NAMES_LAST, SKILL_LIST, NPC_QUOTES } from "../constants";
+import { Attributes, Character, DndClass, DndRace, Skill } from "../types";
 
 export const rollDice = (sides: number): number => Math.floor(Math.random() * sides) + 1;
 
@@ -18,22 +18,59 @@ export const generateRandomName = (): string => {
   return `${first}${last}`;
 };
 
-export const generateCharacter = (): Character => {
+const calculateAC = (dndClass: string, dexMod: number, conMod: number, wisMod: number, equipment: string[]): number => {
+  let baseAC = 10 + dexMod;
+
+  // Unarmored Defense
+  if (dndClass === 'Bárbaro') {
+    return 10 + dexMod + conMod;
+  }
+  if (dndClass === 'Monge') {
+    return 10 + dexMod + wisMod;
+  }
+
+  // Basic Equipment assumption based on class proficiencies for AC
+  // This is a simplification for the generator
+  const hasHeavy = CLASSES.find(c => c.name === dndClass)?.proficiencies.includes('Todas as Armaduras');
+  const hasMedium = CLASSES.find(c => c.name === dndClass)?.proficiencies.includes('Armaduras Médias');
+  
+  if (hasHeavy) return 16; // Chain mail
+  if (hasMedium) return 14 + Math.min(2, dexMod); // Scale mail
+  
+  // Light armor (Leather) for others
+  return 11 + dexMod;
+};
+
+export const generateCharacter = (isNPC: boolean = false): Character => {
   const race: DndRace = RACES[Math.floor(Math.random() * RACES.length)];
   const dndClass: DndClass = CLASSES[Math.floor(Math.random() * CLASSES.length)];
   const background = BACKGROUNDS[Math.floor(Math.random() * BACKGROUNDS.length)];
   const alignment = ALIGNMENTS[Math.floor(Math.random() * ALIGNMENTS.length)];
 
-  const baseStats: Attributes = {
-    Força: rollStat(),
-    Destreza: rollStat(),
-    Constituição: rollStat(),
-    Inteligência: rollStat(),
-    Sabedoria: rollStat(),
-    Carisma: rollStat(),
-  };
+  // Stats
+  let baseStats: Attributes;
+  if (isNPC) {
+    // Standard Arrayish for NPCs
+    baseStats = {
+      Força: 10 + rollDice(4),
+      Destreza: 10 + rollDice(4),
+      Constituição: 10 + rollDice(4),
+      Inteligência: 10 + rollDice(4),
+      Sabedoria: 10 + rollDice(4),
+      Carisma: 10 + rollDice(4),
+    };
+  } else {
+    baseStats = {
+      Força: rollStat(),
+      Destreza: rollStat(),
+      Constituição: rollStat(),
+      Inteligência: rollStat(),
+      Sabedoria: rollStat(),
+      Carisma: rollStat(),
+    };
+  }
 
-  // Apply Race Bonuses
+  // Race Bonuses
   const finalStats: Attributes = { ...baseStats };
   (Object.keys(race.bonuses) as Array<keyof Attributes>).forEach((key) => {
     if (race.bonuses[key]) {
@@ -50,14 +87,52 @@ export const generateCharacter = (): Character => {
     Carisma: getModifier(finalStats.Carisma),
   };
 
-  // HP Calculation: Max Hit Die + Con Mod (Level 1)
-  const hp = Math.max(1, dndClass.hitDie + modifiers.Constituição);
+  // Level & Proficiency
+  const level = 1;
+  const proficiencyBonus = 2;
+
+  // HP
+  const maxHp = Math.max(1, dndClass.hitDie + modifiers.Constituição);
+
+  // Skills
+  // 1. Pick random skills from class list
+  const chosenSkills = new Set<string>();
+  const availableSkills = [...dndClass.skillChoices];
   
-  // Simple AC Calculation
-  let ac = 10 + modifiers.Destreza;
-  // Adjust for Barbarian/Monk unarmored defense logic simplified
-  if (dndClass.name === 'Bárbaro') ac += modifiers.Constituição;
-  if (dndClass.name === 'Monge') ac += modifiers.Sabedoria;
+  while (chosenSkills.size < dndClass.numSkills && availableSkills.length > 0) {
+    const randomIndex = Math.floor(Math.random() * availableSkills.length);
+    chosenSkills.add(availableSkills[randomIndex]);
+    availableSkills.splice(randomIndex, 1);
+  }
+
+  // 2. Build Skill Objects
+  const skills: Skill[] = SKILL_LIST.map(skillDef => {
+    const isProficient = chosenSkills.has(skillDef.name);
+    const mod = modifiers[skillDef.attr];
+    const value = mod + (isProficient ? proficiencyBonus : 0);
+    return {
+      name: skillDef.name,
+      attribute: skillDef.attr,
+      proficient: isProficient,
+      value: value
+    };
+  });
+
+  // Passive Perception
+  const perceptionSkill = skills.find(s => s.name === 'Percepção');
+  const passivePerception = 10 + (perceptionSkill ? perceptionSkill.value : modifiers.Sabedoria);
+
+  // Equipment selection (Simplified)
+  const equipment = [...dndClass.proficiencies.slice(0, 3)];
+  if (dndClass.proficiencies.includes('Escudos')) equipment.push('Escudo (se equipado +2 CA)');
+
+  // AC
+  const ac = calculateAC(dndClass.name, modifiers.Destreza, modifiers.Constituição, modifiers.Sabedoria, equipment);
+
+  // Backstory/Quote
+  const backstory = isNPC 
+    ? `"${NPC_QUOTES[Math.floor(Math.random() * NPC_QUOTES.length)]}"`
+    : `Um(a) ${race.name} ${dndClass.name} com um passado de ${background}.`;
 
   return {
     id: crypto.randomUUID(),
@@ -66,12 +141,20 @@ export const generateCharacter = (): Character => {
     class: dndClass.name,
     background,
     alignment,
-    level: 1,
-    hp,
+    level,
+    proficiencyBonus,
+    hp: maxHp,
+    maxHp: maxHp,
     ac,
     attributes: finalStats,
     modifiers,
-    equipment: dndClass.proficiencies.slice(0, 3), // Grab a few standard proficiencies as "gear" for simplicity
+    skills,
+    passivePerception,
+    equipment,
+    languages: race.languages,
+    senses: race.senses,
+    backstory,
     createdAt: Date.now(),
+    isNPC
   };
 };

@@ -1,5 +1,5 @@
 {
   "name": "Mestre da Masmorra - Gerador D&D",
-  "description": "Um gerador de personagens de D&D 5e totalmente frontend, com suporte opcional a IA para histórias de fundo.",
+  "description": "Gerador de personagens e NPCs para D&D 5e com cálculo automático de fichas, exportação JSON e modo impressão.",
   "requestFramePermissions": []
 }

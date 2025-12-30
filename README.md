@@ -1,43 +1,20 @@
 <div align="center">
-  <h1 align="center">Mestre da Masmorra - Gerador de Personagem D&D</h1>
-  <p align="center">Um grimório digital para criar e gerenciar seus heróis de Dungeons & Dragons 5ª Edição.</p>
+<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
 </div>
 
-## ⚔️ Sobre o Projeto
+# Run and deploy your AI Studio app
 
-Este é um gerador de fichas de personagem para D&D 5e, desenvolvido para facilitar a criação de novos aventureiros. Com uma interface temática imersiva, o projeto permite gerar personagens aleatoriamente ou customizar cada detalhe, calculando automaticamente os modificadores baseados nos atributos.
+This contains everything you need to run your app locally.
 
-## 🛡️ Funcionalidades
+View your app in AI Studio: https://ai.studio/apps/drive/18zNWRK1JT7MZWuzBJT4nBecWuEthsHsa
 
-- **Geração Aleatória**: Crie um personagem completo com um clique.
-- **Cálculo Automático**: Modificadores de atributos (Força, Destreza, etc.) são calculados em tempo real.
-- **Grimório (Salvar)**: Salve seus personagens favoritos no armazenamento local do navegador.
-- **Edição Completa**: Ajuste nomes, raças, classes, equipamentos e histórias.
-- **Interface Temática**: Design inspirado em pergaminhos e fantasia medieval.
+## Run Locally
 
-## 🛠️ Tecnologias Utilizadas
+**Prerequisites:**  Node.js
 
-- **React** (v19)
-- **TypeScript**
-- **Vite**
-- **Tailwind CSS**
-- **Lucide React** (Ícones)
 
-## 🚀 Como Rodar o Projeto
-
-Prerequisites: Node.js instalado.
-
-1. Clone o repositório ou baixe os arquivos.
-2. Instale as dependências:
-   ```bash
-   npm install
-   ```
-3. Inicie o servidor de desenvolvimento:
-   ```bash
-   npm run dev
-   ```
-4. Acesse `http://localhost:3000` no seu navegador.
-
-## 📝 Licença
-
-Este projeto é de uso livre para fins educacionais e pessoais.
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`

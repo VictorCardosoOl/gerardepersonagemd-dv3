@@ -19,28 +19,34 @@ export const StatBlock: React.FC<Props> = ({ label, value, modifier, highlight, 
   };
 
   return (
-    <div className={`flex flex-col items-center p-3 rounded-lg border-2 ${highlight ? 'border-amber-500 bg-wood-800/50' : 'border-stone-700 bg-stone-800/50'} relative group`}>
+    <div className={`flex flex-col items-center justify-between p-2 rounded-lg border-2 ${highlight ? 'border-amber-500 bg-wood-800/80' : 'border-stone-600 bg-wood-900/60'} h-28 w-full relative group shadow-lg`}>
       <span 
         title={label} 
-        className="text-xs uppercase tracking-widest text-stone-400 font-bold mb-1 cursor-help border-b border-dashed border-stone-600 hover:text-amber-300 hover:border-amber-300 transition-colors"
+        className="text-[10px] md:text-xs uppercase tracking-widest text-stone-400 font-bold -mt-1"
       >
         {label.substring(0, 3)}
       </span>
       
-      {isEditing ? (
-        <input 
-          type="number" 
-          value={value} 
-          onChange={handleChange}
-          className="w-16 text-center text-2xl font-fantasy bg-wood-900 border-b-2 border-amber-500 text-amber-100 focus:outline-none focus:bg-wood-800"
-        />
-      ) : (
-        <span className="text-2xl font-fantasy text-amber-100">{value}</span>
-      )}
+      {/* Big Modifier */}
+      <div className="flex-grow flex items-center justify-center">
+        <span className={`text-3xl md:text-4xl font-fantasy font-bold ${modifier >= 0 ? 'text-amber-100' : 'text-red-200'}`}>
+            {modString}
+        </span>
+      </div>
       
-      <span className={`text-sm font-bold mt-1 px-2 rounded-full ${modifier >= 0 ? 'bg-green-900 text-green-200' : 'bg-red-900 text-red-200'}`}>
-        {modString}
-      </span>
+      {/* Small Score Bubble */}
+      <div className="bg-white text-wood-900 font-bold rounded-full w-8 h-8 flex items-center justify-center border-2 border-stone-500 -mb-5 z-10 text-sm shadow-md">
+        {isEditing ? (
+            <input 
+            type="number" 
+            value={value} 
+            onChange={handleChange}
+            className="w-full h-full bg-transparent text-center focus:outline-none rounded-full"
+            />
+        ) : (
+            <span>{value}</span>
+        )}
+      </div>
     </div>
   );
 };
