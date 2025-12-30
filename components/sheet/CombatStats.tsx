@@ -12,68 +12,86 @@ export const CombatStats: React.FC<Props> = ({ character, isEditing, onChange })
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
-            {/* AC Card */}
-            <div className="bg-white border border-stone-200 rounded-2xl p-6 flex items-center justify-between shadow-sm hover:shadow-hover hover:border-emerald-300 transition-all group">
-                <div className="flex flex-col">
-                    <span className="text-[10px] uppercase text-stone-400 font-bold tracking-widest mb-1">Classe de Armadura</span>
+            {/* AC Card - CYAN */}
+            <div className="relative group overflow-hidden bg-void-900/40 border border-white/10 rounded-[2rem] p-6 hover:border-accent-cyan/50 transition-all duration-500">
+                <div className="absolute -right-10 -top-10 w-32 h-32 bg-accent-cyan/20 blur-[50px] rounded-full group-hover:bg-accent-cyan/30 transition-all"></div>
+                
+                <div className="relative z-10 flex flex-col items-center">
+                    <div className="mb-4 p-3 bg-accent-cyan/10 rounded-full text-accent-cyan shadow-[0_0_15px_rgba(34,211,238,0.3)]">
+                        <Shield size={24} strokeWidth={2} />
+                    </div>
+                    <span className="text-[10px] uppercase text-mystic-400 font-bold tracking-[0.25em] mb-2">Classe de Armadura</span>
+                    
                     {isEditing ? (
                         <input 
                             type="number" 
                             value={character.ac} 
                             onChange={(e) => onChange('ac', parseInt(e.target.value))} 
-                            className="w-20 text-5xl font-serif font-black text-emerald-800 bg-transparent border-b-2 border-emerald-500 focus:outline-none"
+                            className="w-24 text-6xl font-display font-bold text-center text-white bg-transparent border-b border-accent-cyan/50 focus:border-accent-cyan focus:outline-none"
                         />
                     ) : (
-                        <span className="text-5xl font-serif font-black text-emerald-800">{character.ac}</span>
+                        <span className="text-7xl font-display font-bold text-white drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
+                            {character.ac}
+                        </span>
                     )}
-                </div>
-                <div className="bg-emerald-50 p-4 rounded-xl text-emerald-600 group-hover:bg-emerald-100 transition-colors">
-                    <Shield size={32} strokeWidth={1.5} />
                 </div>
             </div>
 
-            {/* HP Card */}
-            <div className="bg-white border border-stone-200 rounded-2xl p-6 flex items-center justify-between shadow-sm hover:shadow-hover hover:border-emerald-300 transition-all group">
-                <div className="flex flex-col">
-                    <span className="text-[10px] uppercase text-stone-400 font-bold tracking-widest mb-1">Pontos de Vida</span>
+            {/* HP Card - ROSE */}
+            <div className="relative group overflow-hidden bg-void-900/40 border border-white/10 rounded-[2rem] p-6 hover:border-accent-rose/50 transition-all duration-500">
+                <div className="absolute -right-10 -top-10 w-32 h-32 bg-accent-rose/20 blur-[50px] rounded-full group-hover:bg-accent-rose/30 transition-all"></div>
+                
+                <div className="relative z-10 flex flex-col items-center">
+                    <div className="mb-4 p-3 bg-accent-rose/10 rounded-full text-accent-rose shadow-[0_0_15px_rgba(244,63,94,0.3)]">
+                        <Heart size={24} strokeWidth={2} />
+                    </div>
+                    <span className="text-[10px] uppercase text-mystic-400 font-bold tracking-[0.25em] mb-2">Pontos de Vida</span>
+                    
                     {isEditing ? (
                         <input 
                             type="number" 
                             value={character.hp} 
                             onChange={(e) => onChange('hp', parseInt(e.target.value))} 
-                            className="w-20 text-5xl font-serif font-black text-rose-700 bg-transparent border-b-2 border-rose-500 focus:outline-none"
+                            className="w-24 text-6xl font-display font-bold text-center text-white bg-transparent border-b border-accent-rose/50 focus:border-accent-rose focus:outline-none"
                         />
                     ) : (
-                        <div className="flex items-baseline gap-1">
-                            <span className="text-5xl font-serif font-black text-stone-800">{character.hp}</span>
-                            <span className="text-sm font-bold text-stone-400">/ {character.maxHp}</span>
+                        <div className="flex flex-col items-center">
+                            <span className="text-7xl font-display font-bold text-white drop-shadow-[0_0_10px_rgba(244,63,94,0.5)]">
+                                {character.hp}
+                            </span>
+                            <div className="h-1 w-12 bg-white/10 rounded-full my-1 relative overflow-hidden">
+                                <div className="absolute top-0 left-0 h-full bg-accent-rose" style={{width: `${(character.hp / character.maxHp) * 100}%`}}></div>
+                            </div>
+                            <span className="text-xs font-mono font-bold text-mystic-500 mt-1">
+                                MAX {character.maxHp}
+                            </span>
                         </div>
                     )}
                 </div>
-                <div className="bg-rose-50 p-4 rounded-xl text-rose-500 group-hover:bg-rose-100 transition-colors">
-                    <Heart size={32} strokeWidth={1.5} />
-                </div>
             </div>
 
-            {/* Initiative Card */}
-            <div className="bg-white border border-stone-200 rounded-2xl p-6 flex items-center justify-between shadow-sm hover:shadow-hover hover:border-emerald-300 transition-all group">
-                <div className="flex flex-col">
-                    <span className="text-[10px] uppercase text-stone-400 font-bold tracking-widest mb-1">Iniciativa</span>
+            {/* Initiative Card - GOLD */}
+            <div className="relative group overflow-hidden bg-void-900/40 border border-white/10 rounded-[2rem] p-6 hover:border-accent-gold/50 transition-all duration-500">
+                <div className="absolute -right-10 -top-10 w-32 h-32 bg-accent-gold/20 blur-[50px] rounded-full group-hover:bg-accent-gold/30 transition-all"></div>
+                
+                <div className="relative z-10 flex flex-col items-center">
+                    <div className="mb-4 p-3 bg-accent-gold/10 rounded-full text-accent-gold shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+                        <Zap size={24} strokeWidth={2} />
+                    </div>
+                    <span className="text-[10px] uppercase text-mystic-400 font-bold tracking-[0.25em] mb-2">Iniciativa</span>
+                    
                     {isEditing ? (
                         <input 
                             type="number" 
                             value={character.initiative !== undefined ? character.initiative : character.modifiers.Destreza} 
                             onChange={(e) => onChange('initiative', parseInt(e.target.value))} 
-                            className="w-20 text-5xl font-serif font-black text-amber-700 bg-transparent border-b-2 border-amber-500 focus:outline-none"
+                            className="w-24 text-6xl font-display font-bold text-center text-white bg-transparent border-b border-accent-gold/50 focus:border-accent-gold focus:outline-none"
                         />
                     ) : (
-                        <span className="text-5xl font-serif font-black text-stone-800">
+                        <span className="text-7xl font-display font-bold text-white drop-shadow-[0_0_10px_rgba(212,175,55,0.5)]">
                              {(character.initiative ?? character.modifiers.Destreza) >= 0 ? `+${character.initiative ?? character.modifiers.Destreza}` : (character.initiative ?? character.modifiers.Destreza)}
                         </span>
                     )}
-                </div>
-                <div className="bg-amber-50 p-4 rounded-xl text-amber-500 group-hover:bg-amber-100 transition-colors">
-                    <Zap size={32} strokeWidth={1.5} />
                 </div>
             </div>
         </div>

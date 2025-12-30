@@ -34,25 +34,39 @@ export const DragSlider: React.FC<Props> = ({ children, className = '' }) => {
     sliderRef.current.scrollLeft = scrollLeft - walk;
   };
 
+  // Keyboard Accessibility
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+      if (!sliderRef.current) return;
+      
+      const scrollAmount = 300; // Step size
+      if (e.key === 'ArrowRight') {
+          sliderRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      } else if (e.key === 'ArrowLeft') {
+          sliderRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      }
+  };
+
   return (
     <div className={`relative w-full group ${className}`}>
-      {/* Visual Hint Overlay (fades out on interaction) */}
+      {/* Visual Hint Overlay */}
       <div className="absolute -top-6 right-0 text-xs text-stone-400 font-mono tracking-widest uppercase animate-pulse pointer-events-none">
-        Drag to Explore &rarr;
+        Drag or Use Arrows &rarr;
       </div>
 
       <div
         ref={sliderRef}
+        tabIndex={0} // Make focusable
         className={`
             flex gap-6 overflow-x-auto no-scrollbar py-4 px-2
             cursor-grab active:cursor-grabbing select-none
-            transition-all duration-300
+            transition-all duration-300 outline-none focus:ring-2 focus:ring-mystic-300 rounded-xl
             ${isDown ? 'scale-[1.005]' : ''}
         `}
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}
         onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
+        onKeyDown={handleKeyDown}
       >
         {children}
       </div>

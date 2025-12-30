@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Character, Attributes } from '../types';
 import { StatBlock } from './StatBlock';
-import { Printer, Backpack, Swords, Info, Scroll } from 'lucide-react';
+import { Printer, Scroll, Dna, Hexagon } from 'lucide-react';
 import { CLASSES } from '../constants';
 import { IdentityHeader } from './sheet/IdentityHeader';
 import { CombatStats } from './sheet/CombatStats';
@@ -31,114 +31,124 @@ export const CharacterSheet: React.FC<Props> = ({ character, isEditing = false, 
   };
 
   return (
-    <div id="character-sheet-container" className="w-full max-w-7xl mx-auto flex flex-col gap-8 animate-enter-up pb-32">
+    <div id="character-sheet-container" className="w-full max-w-7xl mx-auto flex flex-col gap-8 pb-32 relative">
         
+        {/* Ambient Glow Effects */}
+        <div className="absolute top-0 left-1/4 w-1/2 h-96 bg-accent-cyan/10 blur-[120px] rounded-full pointer-events-none -z-10 mix-blend-screen"></div>
+        <div className="absolute bottom-0 right-1/4 w-1/2 h-96 bg-accent-gold/5 blur-[100px] rounded-full pointer-events-none -z-10 mix-blend-screen"></div>
+
         {/* Action Bar */}
-        <div className="flex justify-between items-center px-4 md:px-2 no-print">
-            <div className="flex items-center gap-2 bg-white/50 backdrop-blur px-3 py-1 rounded-full border border-white/60">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Sessão Ativa</span>
+        <div className="flex justify-between items-center px-4 md:px-0 no-print animate-enter-up">
+            <div className="flex items-center gap-3">
+                <div className="h-px w-12 bg-gradient-to-r from-transparent to-white/30"></div>
+                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-mystic-300">Grimório Conectado</span>
             </div>
             <button 
                 onClick={() => window.print()}
-                className="group flex items-center gap-2 text-slate-500 hover:text-void-900 transition-colors text-xs font-bold uppercase tracking-wide px-4 py-2 rounded-full hover:bg-white/50"
+                className="group flex items-center gap-2 text-mystic-400 hover:text-white transition-all duration-300 text-xs font-bold uppercase tracking-widest px-6 py-2 rounded-full border border-white/5 hover:border-white/20 hover:bg-white/5 backdrop-blur-sm"
             >
-                <Printer size={16} /> Imprimir
+                <Printer size={14} className="group-hover:text-accent-cyan transition-colors" /> 
+                <span>Materializar</span>
             </button>
         </div>
 
-        {/* --- MAIN PAPER CONTAINER --- */}
-        <div className="glass-panel rounded-[2rem] p-8 md:p-12 relative overflow-hidden transition-all duration-500 bg-white shadow-2xl border-white/60">
-            {/* Top Decoration */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-mystic-300 to-transparent opacity-50"></div>
-
-            {/* 1. Header Section */}
-            <section className="mb-12 border-b border-scroll-200 pb-10 print:border-black/20">
-                <IdentityHeader character={character} isEditing={isEditing} onChange={handleChange} />
-            </section>
-
-            {/* 2. Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 print-grid">
+        {/* --- MAIN GLASS CONTAINER --- */}
+        <div className="animate-enter-up">
+            <div className="relative">
                 
-                {/* Left Column: Stats (Sticky) */}
-                <aside className="lg:col-span-4">
-                    <div className="lg:sticky lg:top-32 space-y-6">
-                        <div className="flex items-center justify-between mb-4 pb-2 border-b border-scroll-100">
-                            <span className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-                                <Scroll size={12}/> Atributos
-                            </span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4 lg:grid-cols-1">
-                            {(Object.keys(character.attributes) as Array<keyof Attributes>).map((key) => (
-                                <StatBlock 
-                                    key={key} 
-                                    label={key} 
-                                    value={character.attributes[key]} 
-                                    modifier={character.modifiers[key]} 
-                                    isEditing={isEditing}
-                                    onUpdate={(val) => handleAttributeChange(key, val)}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                </aside>
+                {/* 1. Header Section (Cinematic) */}
+                <section className="mb-12">
+                    <IdentityHeader character={character} isEditing={isEditing} onChange={handleChange} />
+                </section>
 
-                {/* Right Column: Dynamic Content */}
-                <main className="lg:col-span-8 flex flex-col min-h-[800px]">
+                {/* 2. Content Grid (Bento Style) */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 print-grid">
                     
-                    {/* Tab Navigation */}
-                    <div className="flex items-center gap-2 mb-10 no-print sticky top-24 bg-white/95 backdrop-blur z-20 py-2 border-b border-scroll-100">
-                        <button 
-                            onClick={() => setActiveTab('combat')}
-                            className={`
-                                px-4 py-2 rounded-lg text-xs font-bold tracking-[0.1em] uppercase transition-all duration-300
-                                ${activeTab === 'combat' 
-                                    ? 'bg-void-950 text-white' 
-                                    : 'text-slate-400 hover:text-void-900 hover:bg-scroll-50'}
-                            `}
-                        >
-                            Combate
-                        </button>
-                        <button 
-                            onClick={() => setActiveTab('inventory')}
-                            className={`
-                                px-4 py-2 rounded-lg text-xs font-bold tracking-[0.1em] uppercase transition-all duration-300
-                                ${activeTab === 'inventory' 
-                                    ? 'bg-void-950 text-white' 
-                                    : 'text-slate-400 hover:text-void-900 hover:bg-scroll-50'}
-                            `}
-                        >
-                            Inventário & Lore
-                        </button>
-                    </div>
-
-                    {/* Content Views */}
-                    <div className="flex-grow">
-                        <div className={`${activeTab === 'combat' ? 'block' : 'hidden print:block'} animate-enter-up space-y-12`}>
-                            <section>
-                                <CombatStats character={character} isEditing={isEditing} onChange={handleChange} />
-                            </section>
+                    {/* Left Column: Stats (Monolith) */}
+                    <aside className="lg:col-span-3 xl:col-span-2">
+                        <div className="lg:sticky lg:top-32 space-y-4">
+                            <div className="flex items-center gap-2 mb-6 px-2">
+                                <Hexagon size={14} className="text-accent-gold animate-spin-slow" />
+                                <span className="text-[10px] font-bold text-mystic-400 uppercase tracking-[0.2em]">
+                                    Atributos
+                                </span>
+                            </div>
                             
-                            <div className="w-full h-px bg-scroll-200 my-8 print:bg-black/20"></div>
+                            <div className="grid grid-cols-2 lg:grid-cols-1 gap-3">
+                                {(Object.keys(character.attributes) as Array<keyof Attributes>).map((key) => (
+                                    <StatBlock 
+                                        key={key} 
+                                        label={key} 
+                                        value={character.attributes[key]} 
+                                        modifier={character.modifiers[key]} 
+                                        isEditing={isEditing}
+                                        onUpdate={(val) => handleAttributeChange(key, val)}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </aside>
 
-                            <section>
-                                <SkillsList skills={character.skills} />
-                            </section>
+                    {/* Right Column: Dynamic Content */}
+                    <main className="lg:col-span-9 xl:col-span-10 flex flex-col min-h-[700px]">
+                        
+                        {/* Tab Navigation (Floating Pill) */}
+                        <div className="flex items-center gap-2 mb-10 no-print sticky top-24 z-30 pointer-events-none">
+                            <div className="pointer-events-auto bg-void-950/80 backdrop-blur-xl border border-white/10 p-1.5 rounded-full flex gap-1 shadow-2xl">
+                                <button 
+                                    onClick={() => setActiveTab('combat')}
+                                    className={`
+                                        px-6 py-2.5 rounded-full text-xs font-bold tracking-[0.15em] uppercase transition-all duration-500 relative overflow-hidden group
+                                        ${activeTab === 'combat' ? 'text-void-950 bg-white shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'text-mystic-400 hover:text-white hover:bg-white/5'}
+                                    `}
+                                >
+                                    <span className="relative z-10 flex items-center gap-2">
+                                        <Dna size={14} /> Combate
+                                    </span>
+                                </button>
+                                <button 
+                                    onClick={() => setActiveTab('inventory')}
+                                    className={`
+                                        px-6 py-2.5 rounded-full text-xs font-bold tracking-[0.15em] uppercase transition-all duration-500 relative overflow-hidden group
+                                        ${activeTab === 'inventory' ? 'text-void-950 bg-white shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'text-mystic-400 hover:text-white hover:bg-white/5'}
+                                    `}
+                                >
+                                    <span className="relative z-10 flex items-center gap-2">
+                                        <Scroll size={14} /> Grimório
+                                    </span>
+                                </button>
+                            </div>
                         </div>
 
-                        <div className={`${activeTab === 'inventory' ? 'block' : 'hidden print:block'} animate-enter-up h-full print:mt-12`}>
-                            <InventoryNotes 
-                                character={character} 
-                                classData={classData} 
-                                isEditing={isEditing} 
-                                onChange={handleChange} 
-                            />
+                        {/* Content Views */}
+                        <div className="flex-grow">
+                            <div className={activeTab === 'combat' ? 'block' : 'hidden print:block'}>
+                                <div className="space-y-8 animate-scale-in">
+                                    <section>
+                                        <CombatStats character={character} isEditing={isEditing} onChange={handleChange} />
+                                    </section>
+                                    
+                                    <section className="glass-panel rounded-[2rem] p-8 md:p-10 border-white/5 bg-void-900/40 relative overflow-hidden group">
+                                         {/* Decorative Corner */}
+                                         <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/5 to-transparent rounded-bl-[100px] pointer-events-none transition-opacity opacity-50 group-hover:opacity-100"></div>
+                                         <SkillsList skills={character.skills} />
+                                    </section>
+                                </div>
+                            </div>
+
+                            <div className={activeTab === 'inventory' ? 'block' : 'hidden print:block'}>
+                                <div className="h-full print:mt-12 animate-scale-in">
+                                    <InventoryNotes 
+                                        character={character} 
+                                        classData={classData} 
+                                        isEditing={isEditing} 
+                                        onChange={handleChange} 
+                                    />
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </main>
+                    </main>
+                </div>
             </div>
         </div>
     </div>

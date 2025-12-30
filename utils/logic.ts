@@ -1,5 +1,5 @@
 import { CLASSES, RACES, BACKGROUNDS, ALIGNMENTS, NAMES_FIRST, NAMES_LAST, SKILL_LIST, NPC_QUOTES, DICTIONARY } from "../constants";
-import { Attributes, Character, DndClass, DndRace, Skill } from "../types";
+import { Attributes, Character, DndClass, DndRace, Item, Skill } from "../types";
 
 export const rollDice = (sides: number): number => Math.floor(Math.random() * sides) + 1;
 
@@ -36,55 +36,198 @@ export const translateText = (text: string): string => {
   return translated.join(', ');
 };
 
-// --- STARTING EQUIPMENT KITS ---
-// Retorna itens reais em vez de proficiências genéricas para garantir que a ficha seja jogável.
-const getClassKit = (className: string): string[] => {
+// --- STORY ENGINE ---
+const STORY_TEMPLATES = {
+    origins: [
+        "Nascido sob uma lua de sangue,",
+        "Criado nas ruas labirínticas da capital,",
+        "Único sobrevivente de um vilarejo esquecido,",
+        "Treinado desde a infância em um monastério isolado,",
+        "Filho bastardo de um nobre decadente,",
+        "Encontrado ainda bebê flutuando em uma cesta no rio,",
+    ],
+    incidents: {
+        'Acólito': "encontrou textos proibidos que revelavam uma verdade terrível sobre sua ordem.",
+        'Charlatão': "aplicou o golpe errado na pessoa errada e agora foge de uma guilda de assassinos.",
+        'Criminoso': "foi traído por seu parceiro durante o maior roubo de sua vida.",
+        'Soldado': "viu seu batalhão ser dizimado por uma magia que não deveria existir.",
+        'Sábio': "descobriu um mapa estelar que aponta para o fim dos tempos.",
+        'Nobre': "foi deserdado após recusar um casamento arranjado com uma entidade sombria.",
+        'Herói do Povo': "liderou uma revolta contra um tirano local usando apenas ferramentas agrícolas.",
+        'generic': "decidiu que o destino não seria escrito pelos outros, mas por sua própria lâmina."
+    },
+    motivations: [
+        "Agora busca poder suficiente para desafiar os deuses.",
+        "Viaja para pagar uma dívida de sangue que jamais poderá ser quitada.",
+        "Procura o ingrediente final para uma cura impossível.",
+        "Deseja apenas esquecer os horrores que testemunhou.",
+        "Quer escrever seu nome nas estrelas, custe o que custar.",
+        "Caça a criatura de seis olhos que assombra seus pesadelos."
+    ]
+};
+
+const generateBackstory = (background: string, dndClass: string, race: string): string => {
+    const origin = STORY_TEMPLATES.origins[Math.floor(Math.random() * STORY_TEMPLATES.origins.length)];
+    
+    // Tenta pegar um incidente específico do background, ou usa um genérico
+    const incidentKey = Object.keys(STORY_TEMPLATES.incidents).find(k => background.includes(k)) || 'generic';
+    // @ts-ignore
+    const incident = STORY_TEMPLATES.incidents[incidentKey];
+    
+    const motivation = STORY_TEMPLATES.motivations[Math.floor(Math.random() * STORY_TEMPLATES.motivations.length)];
+
+    return `${origin} este ${race} ${dndClass} ${incident} ${motivation}`;
+};
+
+// --- ITEM FACTORY HELPERS ---
+const createItem = (name: string, type: Item['type'], props: Partial<Item> = {}): Item => ({
+    id: crypto.randomUUID(),
+    name,
+    type,
+    quantity: 1,
+    ...props
+});
+
+// --- STARTING EQUIPMENT KITS (Typed) ---
+const getClassKit = (className: string): Item[] => {
+    const pack = createItem('Pacote de Aventureiro', 'gear');
+    
     switch (className) {
-        case 'Bárbaro': return ['Machado Grande', 'Machadinha (2)', 'Pacote de Aventureiro', 'Azagaia (4)'];
-        case 'Bardo': return ['Rapieira', 'Alaúde', 'Armadura de Couro', 'Adaga', 'Kit de Diplomata'];
-        case 'Clérigo': return ['Maça', 'Cota de Malha', 'Escudo', 'Símbolo Sagrado', 'Pacote de Sacerdote'];
-        case 'Druida': return ['Cimitarra', 'Escudo de Madeira', 'Foco Druídico', 'Armadura de Couro', 'Pacote de Explorador'];
-        case 'Guerreiro': return ['Cota de Malha', 'Espada Longa', 'Escudo', 'Besta Leve', 'Virotes (20)', 'Pacote de Aventureiro'];
-        case 'Monge': return ['Espada Curta', 'Dardos (10)', 'Pacote de Aventureiro']; // Monges não usam armadura
-        case 'Paladino': return ['Martelo de Guerra', 'Escudo', 'Cota de Malha', 'Símbolo Sagrado', 'Pacote de Aventureiro'];
-        case 'Patrulheiro': return ['Armadura de Couro Batido', 'Espada Curta (2)', 'Arco Longo', 'Flechas (20)', 'Pacote de Explorador'];
-        case 'Ladino': return ['Rapieira', 'Arco Curto', 'Armadura de Couro', 'Adagas (2)', 'Ferramentas de Ladrão', 'Pacote de Assaltante'];
-        case 'Feiticeiro': return ['Besta Leve', 'Foco Arcano', 'Adagas (2)', 'Pacote de Aventureiro'];
-        case 'Bruxo': return ['Armadura de Couro', 'Foco Arcano', 'Adagas (2)', 'Cajado', 'Pacote de Estudioso'];
-        case 'Mago': return ['Cajado', 'Foco Arcano', 'Livro de Magias', 'Bolsa de Componentes', 'Pacote de Estudioso'];
-        default: return ['Mochila', 'Cantil', 'Rações de Viagem (5)', 'Corda (15m)'];
+        case 'Bárbaro': return [
+            createItem('Machado Grande', 'weapon', { damage: '1d12 cortante' }),
+            createItem('Machadinha', 'weapon', { quantity: 2, damage: '1d6 cortante' }),
+            createItem('Azagaia', 'weapon', { quantity: 4, damage: '1d6 perfurante' }),
+            pack
+        ];
+        case 'Bardo': return [
+            createItem('Rapieira', 'weapon', { damage: '1d8 perfurante' }),
+            createItem('Alaúde', 'instrument'),
+            createItem('Armadura de Couro', 'armor', { acBase: 11 }),
+            createItem('Adaga', 'weapon', { damage: '1d4 perfurante' }),
+            createItem('Kit de Diplomata', 'gear')
+        ];
+        case 'Clérigo': return [
+            createItem('Maça', 'weapon', { damage: '1d6 concussão' }),
+            createItem('Cota de Malha', 'armor', { acBase: 16, dexBonusCap: 0, stealthDisadvantage: true }),
+            createItem('Escudo', 'shield', { acBonus: 2 }),
+            createItem('Símbolo Sagrado', 'gear'),
+            createItem('Pacote de Sacerdote', 'gear')
+        ];
+        case 'Druida': return [
+            createItem('Cimitarra', 'weapon', { damage: '1d6 cortante' }),
+            createItem('Escudo de Madeira', 'shield', { acBonus: 2 }),
+            createItem('Foco Druídico', 'gear'),
+            createItem('Armadura de Couro', 'armor', { acBase: 11 }),
+            createItem('Pacote de Explorador', 'gear')
+        ];
+        case 'Guerreiro': return [
+            createItem('Cota de Malha', 'armor', { acBase: 16, dexBonusCap: 0, stealthDisadvantage: true }),
+            createItem('Espada Longa', 'weapon', { damage: '1d8 cortante' }),
+            createItem('Escudo', 'shield', { acBonus: 2 }),
+            createItem('Besta Leve', 'weapon', { damage: '1d8 perfurante' }),
+            createItem('Virotes', 'gear', { quantity: 20 }),
+            pack
+        ];
+        case 'Monge': return [
+            createItem('Espada Curta', 'weapon', { damage: '1d6 perfurante' }),
+            createItem('Dardos', 'weapon', { quantity: 10, damage: '1d4 perfurante' }),
+            pack
+        ];
+        case 'Paladino': return [
+            createItem('Martelo de Guerra', 'weapon', { damage: '1d8 concussão' }),
+            createItem('Escudo', 'shield', { acBonus: 2 }),
+            createItem('Cota de Malha', 'armor', { acBase: 16, dexBonusCap: 0, stealthDisadvantage: true }),
+            createItem('Símbolo Sagrado', 'gear'),
+            pack
+        ];
+        case 'Patrulheiro': return [
+            createItem('Couro Batido', 'armor', { acBase: 12, dexBonusCap: 99 }), // 99 as "unlimited" logic flag
+            createItem('Espada Curta', 'weapon', { quantity: 2, damage: '1d6 perfurante' }),
+            createItem('Arco Longo', 'weapon', { damage: '1d8 perfurante' }),
+            createItem('Flechas', 'gear', { quantity: 20 }),
+            createItem('Pacote de Explorador', 'gear')
+        ];
+        case 'Ladino': return [
+            createItem('Rapieira', 'weapon', { damage: '1d8 perfurante' }),
+            createItem('Arco Curto', 'weapon', { damage: '1d6 perfurante' }),
+            createItem('Armadura de Couro', 'armor', { acBase: 11 }),
+            createItem('Adaga', 'weapon', { quantity: 2, damage: '1d4 perfurante' }),
+            createItem('Ferramentas de Ladrão', 'tool'),
+            createItem('Pacote de Assaltante', 'gear')
+        ];
+        case 'Feiticeiro': return [
+            createItem('Besta Leve', 'weapon', { damage: '1d8 perfurante' }),
+            createItem('Foco Arcano', 'gear'),
+            createItem('Adaga', 'weapon', { quantity: 2, damage: '1d4 perfurante' }),
+            pack
+        ];
+        case 'Bruxo': return [
+            createItem('Armadura de Couro', 'armor', { acBase: 11 }),
+            createItem('Foco Arcano', 'gear'),
+            createItem('Adaga', 'weapon', { quantity: 2, damage: '1d4 perfurante' }),
+            createItem('Cajado', 'weapon', { damage: '1d6 concussão' }),
+            createItem('Pacote de Estudioso', 'gear')
+        ];
+        case 'Mago': return [
+            createItem('Cajado', 'weapon', { damage: '1d6 concussão' }),
+            createItem('Foco Arcano', 'gear'),
+            createItem('Livro de Magias', 'gear'),
+            createItem('Bolsa de Componentes', 'gear'),
+            createItem('Pacote de Estudioso', 'gear')
+        ];
+        default: return [
+            createItem('Mochila', 'gear'),
+            createItem('Cantil', 'gear'),
+            createItem('Rações', 'consumable', { quantity: 5 }),
+            createItem('Corda (15m)', 'gear')
+        ];
     }
 };
 
-const calculateAC = (dndClass: string, dexMod: number, conMod: number, wisMod: number, equipment: string[]): number => {
-  // Base AC for no armor
-  let ac = 10 + dexMod;
+// --- AC CALCULATION (Deterministic) ---
+const calculateAC = (dndClass: string, dexMod: number, conMod: number, wisMod: number, equipment: Item[]): number => {
+  // 1. Check for Armor
+  const armor = equipment.find(i => i.type === 'armor');
+  const shield = equipment.find(i => i.type === 'shield');
 
-  // Unarmored Defense
-  if (dndClass === 'Bárbaro') return 10 + dexMod + conMod;
-  if (dndClass === 'Monge') return 10 + dexMod + wisMod;
+  let baseAC = 10 + dexMod;
 
-  // Check Equipment Strings for Armor Logic
-  const equipStr = equipment.join(' ').toLowerCase();
-  
-  // Heavy Armor (No Dex Mod)
-  if (equipStr.includes('cota de malha')) ac = 16;
-  else if (equipStr.includes('placas')) ac = 18;
-  // Medium Armor (Max Dex +2)
-  else if (equipStr.includes('brunea') || equipStr.includes('peitoral')) ac = 14 + Math.min(2, dexMod);
-  else if (equipStr.includes('camisão de malha')) ac = 13 + Math.min(2, dexMod);
-  // Light Armor (Full Dex Mod)
-  else if (equipStr.includes('couro batido')) ac = 12 + dexMod;
-  else if (equipStr.includes('couro') || equipStr.includes('armadura de couro')) ac = 11 + dexMod;
+  // Unarmored Defense Handling (Only applies if no armor is worn)
+  if (!armor) {
+      if (dndClass === 'Bárbaro') {
+          // Barbarian: 10 + Dex + Con (Shield allowed)
+          baseAC = 10 + dexMod + conMod;
+      } else if (dndClass === 'Monge') {
+          // Monk: 10 + Dex + Wis (No Shield allowed usually, but check strictly)
+          // Rules as Written: Monk unarmored defense doesn't work with shields.
+          // Check if holding shield:
+          if (!shield) {
+            baseAC = 10 + dexMod + wisMod;
+          } else {
+             baseAC = 10 + dexMod; // Just Dex if monk holds shield (rare edge case in logic)
+          }
+      }
+  } else if (armor.acBase) {
+      // Armored Calculation
+      let dexBonus = dexMod;
+      
+      // Cap Dex bonus if specified (Medium Armor usually caps at 2, Heavy at 0)
+      if (armor.dexBonusCap !== undefined) {
+          dexBonus = Math.min(dexMod, armor.dexBonusCap);
+      }
+      
+      baseAC = armor.acBase + dexBonus;
+  }
 
-  // Shields
-  if (equipStr.includes('escudo')) ac += 2;
+  // Add Shield Bonus
+  if (shield && shield.acBonus) {
+      baseAC += shield.acBonus;
+  }
 
-  return ac;
+  return baseAC;
 };
 
 // --- RECALCULATION LOGIC ---
-// Recalcula todas as estatísticas derivadas com base nos atributos base
 export const recalculateCharacterStats = (char: Character): Character => {
     // 1. Recalculate Modifiers
     const newMods: Attributes = {
@@ -99,15 +242,12 @@ export const recalculateCharacterStats = (char: Character): Character => {
     // 2. Recalculate Max HP
     const classData = CLASSES.find(c => c.name === char.class);
     const hitDie = classData ? classData.hitDie : 8;
-    // HP = Max Hit Die at lvl 1 + (Avg Hit Die * (Lvl - 1)) + (CON Mod * Lvl)
     const avgHitDie = (hitDie / 2) + 1;
     const conBonus = newMods.Constituição * char.level;
     const baseHp = char.level === 1 ? hitDie : hitDie + (avgHitDie * (char.level - 1));
     const newMaxHp = Math.max(1, Math.floor(baseHp + conBonus));
     
-    // Adjust current HP if it exceeds new Max (or if it was full)
-    // Simple logic: If current HP is suspiciously close to old max or invalid, reset it. 
-    // Otherwise clamp it.
+    // Clamp HP
     const newHp = Math.min(char.hp, newMaxHp) || newMaxHp;
 
     // 3. Recalculate Skills
@@ -123,10 +263,10 @@ export const recalculateCharacterStats = (char: Character): Character => {
     const percSkill = newSkills.find(s => s.name === 'Percepção');
     const newPassive = 10 + (percSkill ? percSkill.value : newMods.Sabedoria);
 
-    // 5. Recalculate AC (Consider Equipment + New Dex/Con/Wis)
+    // 5. Recalculate AC (Now using Item objects)
     const newAC = calculateAC(char.class, newMods.Destreza, newMods.Constituição, newMods.Sabedoria, char.equipment);
     
-    // 6. Recalculate Initiative (Base Dex Mod)
+    // 6. Recalculate Initiative
     const newInit = newMods.Destreza;
 
     return {
@@ -220,15 +360,16 @@ export const generateCharacter = (isNPC: boolean = false, raceOverride?: string)
   const perceptionSkill = skills.find(s => s.name === 'Percepção');
   const passivePerception = 10 + (perceptionSkill ? perceptionSkill.value : modifiers.Sabedoria);
 
-  // Equipment selection
+  // Equipment selection (Now returns Items)
   const equipment = getClassKit(dndClass.name);
 
   // AC
   const ac = calculateAC(dndClass.name, modifiers.Destreza, modifiers.Constituição, modifiers.Sabedoria, equipment);
 
+  // STORY GENERATION
   const backstory = isNPC 
     ? `"${NPC_QUOTES[Math.floor(Math.random() * NPC_QUOTES.length)]}"`
-    : `Um(a) ${raceDef.name} ${dndClass.name} com um passado de ${background}.`;
+    : generateBackstory(background, dndClass.name, raceDef.name);
 
   return {
     id: crypto.randomUUID(),

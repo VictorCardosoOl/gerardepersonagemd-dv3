@@ -18,7 +18,6 @@
               serif: ['Cormorant Garamond', 'serif'],
             },
             colors: {
-              // Nova Paleta: Mystic Grimoire
               mystic: {
                 50: '#f5f3ff',
                 100: '#ede9fe',
@@ -33,7 +32,7 @@
                 950: '#2e1065',
               },
               scroll: {
-                50: '#fafaf9', // Stone-ish white
+                50: '#fafaf9', 
                 100: '#f5f5f4',
                 200: '#e7e5e4',
                 300: '#d6d3d1',
@@ -51,96 +50,93 @@
                 rose: '#f43f5e',
               }
             },
-            backgroundImage: {
-              'mystic-gradient': 'radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.08), transparent 70%), radial-gradient(circle at 90% 40%, rgba(34, 211, 238, 0.05), transparent 60%)',
-              'paper-texture': 'url("data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z\' fill=\'%239C92AC\' fill-opacity=\'0.03\' fill-rule=\'evenodd\'/%3E%3C/svg%3E")',
-            },
             animation: {
               'float': 'float 8s ease-in-out infinite',
+              'morph': 'morph 15s ease-in-out infinite',
               'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
               'enter-up': 'enterUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
               'scale-in': 'scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-              'fade-in': 'fadeIn 0.6s ease-out forwards',
+              'spin-slow': 'spin 20s linear infinite',
             },
             keyframes: {
               float: {
                 '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-10px)' },
+                '50%': { transform: 'translateY(-15px)' },
+              },
+              morph: {
+                '0%': { borderRadius: '60% 40% 30% 70%/60% 30% 70% 40%' },
+                '50%': { borderRadius: '30% 60% 70% 40%/50% 60% 30% 60%' },
+                '100%': { borderRadius: '60% 40% 30% 70%/60% 30% 70% 40%' }
               },
               enterUp: {
-                '0%': { opacity: '0', transform: 'translateY(30px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
+                '0%': { opacity: '0', transform: 'translateY(40px) scale(0.95)' },
+                '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
               },
               scaleIn: {
-                '0%': { opacity: '0', transform: 'scale(0.95)' },
+                '0%': { opacity: '0', transform: 'scale(0.9)' },
                 '100%': { opacity: '1', transform: 'scale(1)' },
-              },
-              fadeIn: {
-                '0%': { opacity: '0' },
-                '100%': { opacity: '1' },
               }
             },
             boxShadow: {
-              'glow': '0 0 40px -10px rgba(139, 92, 246, 0.15)',
-              'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.05)',
-              'hover': '0 20px 40px -5px rgba(0, 0, 0, 0.05)',
+              'glow': '0 0 50px -10px rgba(139, 92, 246, 0.25)',
+              'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.1)',
+              'neon': '0 0 10px rgba(139, 92, 246, 0.5), 0 0 20px rgba(139, 92, 246, 0.3)',
             }
           }
         }
       }
     </script>
     <style>
-      /* --- Base Experience --- */
+      /* --- Organic Base --- */
       body {
-        background-color: #fafaf9; /* scroll-50 */
-        color: #1e1b4b; /* void-800 */
+        background-color: #0f172a; /* Void-900 base for better contrast */
+        color: #f5f3ff;
         overflow-x: hidden;
       }
       
-      .texture-overlay {
+      /* Noise Filter for Texture */
+      .bg-noise {
         position: fixed;
-        inset: 0;
-        pointer-events: none;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
         z-index: -1;
-        opacity: 0.6;
-        background-image: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.8)), url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236d28d9' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.04;
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
       }
 
-      /* Glassmorphism Utility (Premium) */
+      /* Enhanced Glassmorphism */
       .glass-panel {
-        background: rgba(255, 255, 255, 0.75);
-        backdrop-filter: blur(20px) saturate(180%);
-        -webkit-backdrop-filter: blur(20px) saturate(180%);
-        border: 1px solid rgba(255, 255, 255, 0.8);
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
       }
       
-      /* Subtle border gradient for active elements */
-      .border-gradient {
-        border: 1px solid transparent;
-        background-origin: border-box;
-        background-clip: padding-box, border-box;
-        background-image: linear-gradient(#fff, #fff), linear-gradient(to right, #c4b5fd, #a78bfa); 
+      .glass-panel-light {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.05);
       }
 
       /* Custom Scrollbar */
       ::-webkit-scrollbar { width: 6px; }
       ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 99px; }
-      ::-webkit-scrollbar-thumb:hover { background: #a8a29e; }
+      ::-webkit-scrollbar-thumb { background: #4c1d95; border-radius: 99px; }
+      ::-webkit-scrollbar-thumb:hover { background: #7c3aed; }
 
-      /* --- PRINT STYLES (A4 Optimized) --- */
+      /* Print Overrides */
       @media print {
         @page { size: A4; margin: 1cm; }
         body * { visibility: hidden; }
         body { background: white !important; color: black !important; }
         #character-sheet-container, #character-sheet-container * { visibility: visible; }
-        #character-sheet-container { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: white !important; box-shadow: none !important; border: none !important; }
-        .no-print, button, .tooltip-container { display: none !important; }
-        h1, h2, h3, h4 { color: #000 !important; font-family: 'Cinzel', serif !important; }
-        p, span, li, div { color: #1c1917 !important; font-family: 'Cormorant Garamond', serif !important; }
-        .print-grid { display: grid !important; grid-template-columns: 1fr 2fr !important; gap: 2rem !important; }
-        input { border: none !important; background: transparent !important; color: black !important; }
+        #character-sheet-container { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: white !important; color: black !important; box-shadow: none !important; border: none !important; }
+        .no-print { display: none !important; }
       }
     </style>
   <script type="importmap">
@@ -155,7 +151,7 @@
 </script>
 </head>
   <body>
-    <div class="texture-overlay"></div>
+    <div class="bg-noise"></div>
     <div id="root"></div>
     <script type="module" src="./index.tsx"></script>
   </body>

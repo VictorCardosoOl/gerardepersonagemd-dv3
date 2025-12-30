@@ -6,6 +6,22 @@ export type SkillName =
   'Investigação' | 'Medicina' | 'Natureza' | 'Percepção' | 'Persuasão' | 
   'Prestidigitação' | 'Religião' | 'Sobrevivência';
 
+export type ItemType = 'weapon' | 'armor' | 'shield' | 'gear' | 'tool' | 'instrument' | 'consumable';
+
+export interface Item {
+  id: string;
+  name: string;
+  type: ItemType;
+  quantity: number;
+  description?: string;
+  // Propriedades de Regra
+  acBase?: number; // Para armaduras
+  acBonus?: number; // Para escudos ou itens mágicos
+  dexBonusCap?: number; // Max destreza (ex: 2 para armaduras médias)
+  stealthDisadvantage?: boolean;
+  damage?: string; // ex: "1d8"
+}
+
 export interface Attributes {
   Força: number;
   Destreza: number;
@@ -34,12 +50,12 @@ export interface Character {
   hp: number;
   maxHp: number; 
   ac: number;
-  initiative: number; // Added field for manual override
+  initiative: number;
   attributes: Attributes;
   modifiers: Attributes;
   skills: Skill[];
   passivePerception: number;
-  equipment: string[];
+  equipment: Item[]; // Mudança estrutural: Array de Objetos em vez de strings
   languages: string[];
   senses: string[];
   backstory?: string;
@@ -80,8 +96,8 @@ export interface Monster {
   size: string;
   type: string;
   alignment: string;
-  armor_class_value: number; // Normalized
-  armor_class_desc: string; // Normalized
+  armor_class_value: number; 
+  armor_class_desc: string; 
   hit_points: number;
   hit_dice: string;
   speed: { walk: string, fly?: string, swim?: string };

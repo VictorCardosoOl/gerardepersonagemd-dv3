@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Character } from '../types';
-import { User, Users, Trash2, Crown, Ghost, Plus, Save, X, RefreshCw } from 'lucide-react';
+import { User, Users, Trash2, Crown, Ghost, Plus, Save, X, RefreshCw, Download, Upload, FileJson } from 'lucide-react';
 import { generateCharacter } from '../utils/logic';
 
 interface Props {
@@ -8,12 +8,14 @@ interface Props {
     onSelect: (char: Character) => void;
     onDelete: (id: string) => void;
     onGenerate: (isNPC: boolean) => void;
-    onSaveNew?: (npc: Character) => void; // New callback for streamlined UX
+    onSaveNew?: (npc: Character) => void; 
+    onExport: (char: Character) => void;
+    onImport: () => void;
     isOpen: boolean;
     onClose: () => void;
 }
 
-export const DMPanel: React.FC<Props> = ({ savedCharacters, onSelect, onDelete, onGenerate, onSaveNew, isOpen, onClose }) => {
+export const DMPanel: React.FC<Props> = ({ savedCharacters, onSelect, onDelete, onGenerate, onSaveNew, onExport, onImport, isOpen, onClose }) => {
     const [quickNPC, setQuickNPC] = useState<Character | null>(null);
 
     const handleQuickGenerate = () => {
@@ -51,6 +53,18 @@ export const DMPanel: React.FC<Props> = ({ savedCharacters, onSelect, onDelete, 
 
                 <div className="flex-grow overflow-y-auto custom-scrollbar space-y-8 pr-1">
                     
+                    {/* --- IMPORT / EXPORT TOOLS --- */}
+                     <div className="space-y-3">
+                        <h3 className="text-xs uppercase tracking-widest text-royal-400 font-bold">Gestão de Almas</h3>
+                        <button 
+                            onClick={onImport}
+                            className="w-full py-3 px-4 rounded-xl border border-royal-200 text-royal-600 font-bold flex items-center justify-center gap-2 hover:bg-royal-50 transition-colors"
+                        >
+                            <Upload size={16} /> Carregar JSON (Ressuscitar)
+                        </button>
+                     </div>
+                     <div className="w-full h-px bg-royal-100"></div>
+
                     {/* --- QUICK NPC SECTION --- */}
                     <div className="space-y-3">
                          <div className="flex items-center justify-between">
@@ -150,20 +164,30 @@ export const DMPanel: React.FC<Props> = ({ savedCharacters, onSelect, onDelete, 
                                         className="p-3 rounded-xl bg-white border border-canvas-200 hover:border-royal-400 hover:shadow-md cursor-pointer group transition-all relative"
                                     >
                                         <div className="flex justify-between items-start">
-                                            <div>
-                                                <h4 className="font-bold text-royal-900 group-hover:text-royal-600 transition-colors text-sm flex items-center gap-1.5">
+                                            <div className="max-w-[70%]">
+                                                <h4 className="font-bold text-royal-900 group-hover:text-royal-600 transition-colors text-sm flex items-center gap-1.5 truncate">
                                                     {char.name}
                                                 </h4>
-                                                <p className="text-xs text-slate-500 mt-0.5 font-medium">
+                                                <p className="text-xs text-slate-500 mt-0.5 font-medium truncate">
                                                     {char.race} {char.class} <span className="text-royal-200">•</span> Nv {char.level}
                                                 </p>
                                             </div>
-                                            <button 
-                                                onClick={(e) => { e.stopPropagation(); onDelete(char.id); }}
-                                                className="text-canvas-300 hover:text-rose-500 p-1.5 rounded-md hover:bg-rose-50 transition-colors"
-                                            >
-                                                <Trash2 size={14} />
-                                            </button>
+                                            <div className="flex gap-1">
+                                                <button 
+                                                    onClick={(e) => { e.stopPropagation(); onExport(char); }}
+                                                    className="text-canvas-300 hover:text-royal-600 p-1.5 rounded-md hover:bg-royal-50 transition-colors"
+                                                    title="Baixar JSON"
+                                                >
+                                                    <Download size={14} />
+                                                </button>
+                                                <button 
+                                                    onClick={(e) => { e.stopPropagation(); onDelete(char.id); }}
+                                                    className="text-canvas-300 hover:text-rose-500 p-1.5 rounded-md hover:bg-rose-50 transition-colors"
+                                                    title="Excluir"
+                                                >
+                                                    <Trash2 size={14} />
+                                                </button>
+                                            </div>
                                         </div>
                                         {char.isNPC && (
                                             <span className="absolute bottom-3 right-3 text-[9px] font-bold text-slate-400 bg-canvas-100 px-1.5 rounded border border-canvas-200">NPC</span>
