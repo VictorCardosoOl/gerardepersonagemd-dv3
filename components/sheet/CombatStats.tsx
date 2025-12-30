@@ -13,7 +13,7 @@ export const CombatStats: React.FC<Props> = ({ character, isEditing, onChange })
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
             {/* AC Card - CYAN */}
-            <div className="relative group overflow-hidden bg-void-900/40 border border-white/10 rounded-[2rem] p-6 hover:border-accent-cyan/50 transition-all duration-500">
+            <div className="relative group overflow-hidden bg-void-900/40 border border-white/10 shadow-inner-light rounded-[2rem] p-6 hover:border-accent-cyan/50 transition-all duration-500">
                 <div className="absolute -right-10 -top-10 w-32 h-32 bg-accent-cyan/20 blur-[50px] rounded-full group-hover:bg-accent-cyan/30 transition-all"></div>
                 
                 <div className="relative z-10 flex flex-col items-center">
@@ -38,7 +38,7 @@ export const CombatStats: React.FC<Props> = ({ character, isEditing, onChange })
             </div>
 
             {/* HP Card - ROSE */}
-            <div className="relative group overflow-hidden bg-void-900/40 border border-white/10 rounded-[2rem] p-6 hover:border-accent-rose/50 transition-all duration-500">
+            <div className="relative group overflow-hidden bg-void-900/40 border border-white/10 shadow-inner-light rounded-[2rem] p-6 hover:border-accent-rose/50 transition-all duration-500">
                 <div className="absolute -right-10 -top-10 w-32 h-32 bg-accent-rose/20 blur-[50px] rounded-full group-hover:bg-accent-rose/30 transition-all"></div>
                 
                 <div className="relative z-10 flex flex-col items-center">
@@ -71,7 +71,7 @@ export const CombatStats: React.FC<Props> = ({ character, isEditing, onChange })
             </div>
 
             {/* Initiative Card - GOLD */}
-            <div className="relative group overflow-hidden bg-void-900/40 border border-white/10 rounded-[2rem] p-6 hover:border-accent-gold/50 transition-all duration-500">
+            <div className="relative group overflow-hidden bg-void-900/40 border border-white/10 shadow-inner-light rounded-[2rem] p-6 hover:border-accent-gold/50 transition-all duration-500">
                 <div className="absolute -right-10 -top-10 w-32 h-32 bg-accent-gold/20 blur-[50px] rounded-full group-hover:bg-accent-gold/30 transition-all"></div>
                 
                 <div className="relative z-10 flex flex-col items-center">

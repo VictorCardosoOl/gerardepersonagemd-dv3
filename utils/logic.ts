@@ -37,7 +37,13 @@ export const translateText = (text: string): string => {
 };
 
 // --- STORY ENGINE ---
-const STORY_TEMPLATES = {
+interface StoryTemplateStructure {
+    origins: string[];
+    incidents: Record<string, string>;
+    motivations: string[];
+}
+
+const STORY_TEMPLATES: StoryTemplateStructure = {
     origins: [
         "Nascido sob uma lua de sangue,",
         "Criado nas ruas labirínticas da capital,",
@@ -70,8 +76,10 @@ const generateBackstory = (background: string, dndClass: string, race: string): 
     const origin = STORY_TEMPLATES.origins[Math.floor(Math.random() * STORY_TEMPLATES.origins.length)];
     
     // Tenta pegar um incidente específico do background, ou usa um genérico
-    const incidentKey = Object.keys(STORY_TEMPLATES.incidents).find(k => background.includes(k)) || 'generic';
-    // @ts-ignore
+    // A chave precisa ser verificada como existente em incidents
+    const foundKey = Object.keys(STORY_TEMPLATES.incidents).find(k => background.includes(k));
+    const incidentKey = foundKey || 'generic';
+    
     const incident = STORY_TEMPLATES.incidents[incidentKey];
     
     const motivation = STORY_TEMPLATES.motivations[Math.floor(Math.random() * STORY_TEMPLATES.motivations.length)];

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="scroll-smooth antialiased">
+<html lang="pt-BR" class="antialiased">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mestre da Masmorra | Grimório Digital</title>
+    <title>Mestre da Masmorra | Artefato Digital</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
@@ -16,142 +16,184 @@
               display: ['Cinzel', 'serif'],
               body: ['Inter', 'sans-serif'],
               serif: ['Cormorant Garamond', 'serif'],
+              mono: ['Space Mono', 'monospace'],
             },
             colors: {
-              mystic: {
-                50: '#f5f3ff',
-                100: '#ede9fe',
-                200: '#ddd6fe',
-                300: '#c4b5fd',
-                400: '#a78bfa',
-                500: '#8b5cf6',
-                600: '#7c3aed',
-                700: '#6d28d9',
-                800: '#5b21b6',
-                900: '#4c1d95',
-                950: '#2e1065',
+              obsidian: {
+                800: '#1a1a1a',
+                900: '#0a0a0a',
+                950: '#050505', // Deep Void
               },
-              scroll: {
-                50: '#fafaf9', 
-                100: '#f5f5f4',
-                200: '#e7e5e4',
-                300: '#d6d3d1',
-                800: '#57534e',
-                900: '#44403c',
+              champagne: {
+                100: '#fcfbf7',
+                200: '#f5f0e1',
+                300: '#e8dfc5',
+                400: '#dcc694',
+                500: '#d4af37', // Gold base
+                600: '#aa8c2c',
               },
-              void: {
-                800: '#1e1b4b',
-                900: '#0f172a',
-                950: '#020617',
-              },
-              accent: {
-                gold: '#d4af37',
-                cyan: '#22d3ee',
-                rose: '#f43f5e',
+              iridescent: {
+                300: 'rgba(255, 255, 255, 0.1)',
+                500: 'rgba(255, 255, 255, 0.2)',
               }
             },
             animation: {
-              'float': 'float 8s ease-in-out infinite',
-              'morph': 'morph 15s ease-in-out infinite',
-              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-              'enter-up': 'enterUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-              'scale-in': 'scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-              'spin-slow': 'spin 20s linear infinite',
+              'float': 'float 10s ease-in-out infinite',
+              'grain': 'grain 1s steps(1) infinite',
+              'aurora': 'aurora 20s linear infinite',
             },
             keyframes: {
               float: {
                 '0%, 100%': { transform: 'translateY(0)' },
                 '50%': { transform: 'translateY(-15px)' },
               },
-              morph: {
-                '0%': { borderRadius: '60% 40% 30% 70%/60% 30% 70% 40%' },
-                '50%': { borderRadius: '30% 60% 70% 40%/50% 60% 30% 60%' },
-                '100%': { borderRadius: '60% 40% 30% 70%/60% 30% 70% 40%' }
+              grain: {
+                '0%, 100%': { transform: 'translate(0, 0)' },
+                '10%': { transform: 'translate(-5%, -10%)' },
+                '20%': { transform: 'translate(-15%, 5%)' },
+                '30%': { transform: 'translate(7%, -25%)' },
+                '40%': { transform: 'translate(-5%, 25%)' },
+                '50%': { transform: 'translate(-15%, 10%)' },
+                '60%': { transform: 'translate(15%, 0%)' },
+                '70%': { transform: 'translate(0%, 15%)' },
+                '80%': { transform: 'translate(3%, 35%)' },
+                '90%': { transform: 'translate(-10%, 10%)' },
               },
-              enterUp: {
-                '0%': { opacity: '0', transform: 'translateY(40px) scale(0.95)' },
-                '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
-              },
-              scaleIn: {
-                '0%': { opacity: '0', transform: 'scale(0.9)' },
-                '100%': { opacity: '1', transform: 'scale(1)' },
+              aurora: {
+                '0%': { backgroundPosition: '0% 50%' },
+                '50%': { backgroundPosition: '100% 50%' },
+                '100%': { backgroundPosition: '0% 50%' },
               }
             },
-            boxShadow: {
-              'glow': '0 0 50px -10px rgba(139, 92, 246, 0.25)',
-              'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.1)',
-              'neon': '0 0 10px rgba(139, 92, 246, 0.5), 0 0 20px rgba(139, 92, 246, 0.3)',
+            backgroundImage: {
+              'noise': "url('data:image/svg+xml,%3Csvg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cfilter id=\"noiseFilter\"%3E%3CfeTurbulence type=\"fractalNoise\" baseFrequency=\"0.65\" numOctaves=\"3\" stitchTiles=\"stitch\"/%3E%3C/filter%3E%3Crect width=\"100%\" height=\"100%\" filter=\"url(%23noiseFilter)\" opacity=\"0.05\"/%3E%3C/svg%3E')",
+              'editorial-gradient': 'radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.08) 0%, rgba(5, 5, 5, 0) 70%)',
             }
           }
         }
       }
     </script>
     <style>
-      /* --- Organic Base --- */
+      :root {
+        --cursor-size: 20px;
+        --cursor-hover-size: 60px;
+      }
+
       body {
-        background-color: #0f172a; /* Void-900 base for better contrast */
-        color: #f5f3ff;
+        background-color: #050505;
+        color: #f5f0e1;
         overflow-x: hidden;
+        cursor: none; /* Hide default cursor */
+      }
+
+      /* --- Fluid Data Background (Refik Anadol style) --- */
+      .fluid-bg {
+        position: fixed;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.03), transparent 60%),
+                    radial-gradient(circle at 80% 20%, rgba(100, 100, 255, 0.02), transparent 50%);
+        filter: blur(80px);
+        z-index: -2;
+        animation: aurora 30s infinite linear;
       }
       
-      /* Noise Filter for Texture */
-      .bg-noise {
+      .noise-overlay {
+        position: fixed;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        opacity: 0.04;
+        z-index: -1;
+        pointer-events: none;
+        animation: grain 0.5s steps(1) infinite;
+      }
+
+      /* --- Custom Cursor --- */
+      .custom-cursor {
         position: fixed;
         top: 0;
         left: 0;
-        width: 100vw;
-        height: 100vh;
-        z-index: -1;
-        opacity: 0.04;
+        width: var(--cursor-size);
+        height: var(--cursor-size);
+        border: 1px solid rgba(245, 240, 225, 0.4);
+        border-radius: 50%;
         pointer-events: none;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-      }
-
-      /* Enhanced Glassmorphism */
-      .glass-panel {
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        transition: width 0.4s cubic-bezier(0.19, 1, 0.22, 1), 
+                    height 0.4s cubic-bezier(0.19, 1, 0.22, 1),
+                    background-color 0.4s;
+        mix-blend-mode: difference;
       }
       
-      .glass-panel-light {
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+      .custom-cursor.hovered {
+        width: var(--cursor-hover-size);
+        height: var(--cursor-hover-size);
+        background-color: #f5f0e1;
+        border-color: transparent;
+        mix-blend-mode: exclusion;
       }
 
-      /* Custom Scrollbar */
-      ::-webkit-scrollbar { width: 6px; }
-      ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb { background: #4c1d95; border-radius: 99px; }
-      ::-webkit-scrollbar-thumb:hover { background: #7c3aed; }
+      .custom-cursor-dot {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 4px;
+        background-color: #f5f0e1;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 10000;
+        transform: translate(-50%, -50%);
+      }
+
+      @media (hover: none) {
+        .custom-cursor, .custom-cursor-dot { display: none; }
+        body { cursor: auto; }
+      }
+
+      /* --- Typography & Utilities --- */
+      .text-balance { text-wrap: balance; }
+      
+      /* Hide Scrollbar but keep functionality */
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+      ::selection {
+        background: rgba(212, 175, 55, 0.3);
+        color: white;
+      }
 
       /* Print Overrides */
       @media print {
-        @page { size: A4; margin: 1cm; }
-        body * { visibility: hidden; }
-        body { background: white !important; color: black !important; }
-        #character-sheet-container, #character-sheet-container * { visibility: visible; }
-        #character-sheet-container { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: white !important; color: black !important; box-shadow: none !important; border: none !important; }
-        .no-print { display: none !important; }
+        body { background: white; color: black; cursor: auto; }
+        .fluid-bg, .noise-overlay, .custom-cursor, .custom-cursor-dot, .no-print { display: none !important; }
+        #character-sheet-container { position: relative; width: 100%; top: 0; left: 0; }
       }
     </style>
   <script type="importmap">
 {
   "imports": {
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
+    "react-dom/": "https://esm.sh/react-dom@^18.2.0/",
+    "react/": "https://esm.sh/react@^18.2.0/",
+    "react": "https://esm.sh/react@^18.2.0",
+    "lucide-react": "https://esm.sh/lucide-react@0.344.0",
+    "framer-motion": "https://esm.sh/framer-motion@11.0.3",
+    "lenis": "https://esm.sh/@studio-freight/lenis@1.0.42"
   }
 }
 </script>
 </head>
   <body>
-    <div class="bg-noise"></div>
+    <div class="custom-cursor-dot"></div>
+    <div class="custom-cursor"></div>
+    <div class="fluid-bg"></div>
+    <div class="noise-overlay"></div>
     <div id="root"></div>
     <script type="module" src="./index.tsx"></script>
   </body>
