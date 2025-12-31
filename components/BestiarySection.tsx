@@ -4,6 +4,10 @@ import { fetchMonsterList, fetchMonsterDetails } from '../services/dndApi';
 import { MonsterCard } from './MonsterCard';
 import { Search, Loader2, Skull } from 'lucide-react';
 
+interface Props {
+    preLoadedList?: APIMonsterIndex[];
+}
+
 interface MonsterListItemProps {
     name: string;
     active: boolean;
@@ -25,18 +29,20 @@ const MonsterListItem: React.FC<MonsterListItemProps> = ({ name, active, onClick
     </button>
 );
 
-export const BestiarySection: React.FC = () => {
-    const [monsterList, setMonsterList] = useState<APIMonsterIndex[]>([]);
+export const BestiarySection: React.FC<Props> = ({ preLoadedList = [] }) => {
+    const [monsterList, setMonsterList] = useState<APIMonsterIndex[]>(preLoadedList);
     const [search, setSearch] = useState('');
     const [selectedMonster, setSelectedMonster] = useState<Monster | null>(null);
     const [isLoadingDetails, setIsLoadingDetails] = useState(false);
     
-    // Initial Fetch
+    // Initial Fetch (Fallback if not provided via props, though App.tsx handles this now)
     useEffect(() => {
-        if (monsterList.length === 0) {
+        if (preLoadedList.length > 0) {
+            setMonsterList(preLoadedList);
+        } else if (monsterList.length === 0) {
             fetchMonsterList().then(data => setMonsterList(data));
         }
-    }, []);
+    }, [preLoadedList]);
 
     const handleSelect = async (index: string) => {
         setIsLoadingDetails(true);

@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Monster } from '../types';
-import { Skull, Shield, Heart, Activity } from 'lucide-react';
-import { translateTerm, translateText } from '../utils/logic';
+import { translateTerm } from '../utils/logic';
 import { DICTIONARY } from '../constants';
 
 interface Props {
@@ -9,28 +8,22 @@ interface Props {
   onClose: () => void;
 }
 
+// Pre-compile Regex and Keys outside the component for performance
 const DICTIONARY_KEYS = Object.keys(DICTIONARY).sort((a, b) => b.length - a.length);
+const TRANSLATION_REGEX = new RegExp(`\\b(${DICTIONARY_KEYS.join('|')})\\b`, 'gi');
 
 export const MonsterCard: React.FC<Props> = ({ monster, onClose }) => {
   if (!monster) return null;
 
-  const translateDescription = (text: string) => {
+  // Optimized translation using useMemo
+  const renderTranslatedDescription = (text: string) => {
       if (!text) return "";
-      let translated = text;
-      DICTIONARY_KEYS.forEach(term => {
-          const regex = new RegExp(`\\b${term}\\b`, 'gi');
-          if (regex.test(translated)) {
-             translated = translated.replace(regex, (match) => translateTerm(match));
-          }
-      });
-      return translated;
+      // Replace only matched terms
+      return text.replace(TRANSLATION_REGEX, (match) => translateTerm(match));
   };
 
   return (
-    // Component is rendered inside a scrolling container in BestiarySection, 
-    // but specific text areas might need lenis prevent if they scroll independently.
-    // For this design, the main card flows naturally.
-    <div className="w-full max-w-4xl mx-auto relative">
+    <div className="w-full max-w-4xl mx-auto relative" data-lenis-prevent>
       
       {/* Decorative Glow */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-accent-rose/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen"></div>
@@ -50,7 +43,7 @@ export const MonsterCard: React.FC<Props> = ({ monster, onClose }) => {
         <div className="w-24 h-1 bg-gradient-to-r from-accent-rose to-transparent"></div>
       </header>
 
-      {/* Vitals (Minimal) */}
+      {/* Vitals */}
       <div className="grid grid-cols-3 gap-8 mb-16 border-y border-white/5 py-12">
         <div className="flex flex-col gap-2">
              <span className="text-[10px] uppercase tracking-widest text-mystic-500 font-bold">Classe de Armadura</span>
@@ -82,7 +75,7 @@ export const MonsterCard: React.FC<Props> = ({ monster, onClose }) => {
             const val = monster[attrKey as keyof Monster] as number || 10;
             const mod = Math.floor((val - 10) / 2);
             return (
-                <div key={attrKey} className="flex flex-col items-center text-center p-4 rounded-2xl bg-white/5 border border-white/5">
+                <div key={attrKey} className="flex flex-col items-center text-center p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
                     <span className="text-[10px] uppercase tracking-widest text-mystic-500 font-bold mb-2">{label}</span>
                     <span className="font-mono text-2xl text-white mb-1">{val}</span>
                     <span className={`text-xs font-bold ${mod >= 0 ? 'text-cyan-400' : 'text-accent-rose'}`}>{mod >= 0 ? `+${mod}` : mod}</span>
@@ -91,7 +84,7 @@ export const MonsterCard: React.FC<Props> = ({ monster, onClose }) => {
          })}
       </div>
 
-      {/* Actions (Editorial Style) */}
+      {/* Actions (Memoized translation) */}
       <div className="space-y-12">
          <div>
              <h3 className="font-display font-bold text-2xl text-white mb-8 flex items-center gap-4">
@@ -104,7 +97,7 @@ export const MonsterCard: React.FC<Props> = ({ monster, onClose }) => {
                             <span className="font-display font-bold text-xl text-white">{translateTerm(action.name)}</span>
                             {action.attack_bonus && <span className="text-[10px] bg-white/10 px-2 py-1 rounded text-cyan-300 font-mono font-bold tracking-wider">+{action.attack_bonus} ACERTO</span>}
                          </div>
-                         <p className="text-mystic-300 text-base leading-relaxed font-body" dangerouslySetInnerHTML={{__html: translateDescription(action.desc)}} />
+                         <p className="text-mystic-300 text-base leading-relaxed font-body" dangerouslySetInnerHTML={{__html: renderTranslatedDescription(action.desc)}} />
                      </div>
                  ))}
              </div>

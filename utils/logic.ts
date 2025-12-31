@@ -74,14 +74,9 @@ const STORY_TEMPLATES: StoryTemplateStructure = {
 
 const generateBackstory = (background: string, dndClass: string, race: string): string => {
     const origin = STORY_TEMPLATES.origins[Math.floor(Math.random() * STORY_TEMPLATES.origins.length)];
-    
-    // Tenta pegar um incidente específico do background, ou usa um genérico
-    // A chave precisa ser verificada como existente em incidents
     const foundKey = Object.keys(STORY_TEMPLATES.incidents).find(k => background.includes(k));
     const incidentKey = foundKey || 'generic';
-    
     const incident = STORY_TEMPLATES.incidents[incidentKey];
-    
     const motivation = STORY_TEMPLATES.motivations[Math.floor(Math.random() * STORY_TEMPLATES.motivations.length)];
 
     return `${origin} este ${race} ${dndClass} ${incident} ${motivation}`;
@@ -149,7 +144,7 @@ const getClassKit = (className: string): Item[] => {
             pack
         ];
         case 'Patrulheiro': return [
-            createItem('Couro Batido', 'armor', { acBase: 12, dexBonusCap: 99 }), // 99 as "unlimited" logic flag
+            createItem('Couro Batido', 'armor', { acBase: 12, dexBonusCap: 99 }), 
             createItem('Espada Curta', 'weapon', { quantity: 2, damage: '1d6 perfurante' }),
             createItem('Arco Longo', 'weapon', { damage: '1d8 perfurante' }),
             createItem('Flechas', 'gear', { quantity: 20 }),
@@ -192,42 +187,38 @@ const getClassKit = (className: string): Item[] => {
     }
 };
 
-// --- AC CALCULATION (Deterministic) ---
+// --- AC CALCULATION ---
 const calculateAC = (dndClass: string, dexMod: number, conMod: number, wisMod: number, equipment: Item[]): number => {
-  // 1. Check for Armor
   const armor = equipment.find(i => i.type === 'armor');
   const shield = equipment.find(i => i.type === 'shield');
 
   let baseAC = 10 + dexMod;
 
-  // Unarmored Defense Handling (Only applies if no armor is worn)
-  if (!armor) {
-      if (dndClass === 'Bárbaro') {
-          // Barbarian: 10 + Dex + Con (Shield allowed)
-          baseAC = 10 + dexMod + conMod;
-      } else if (dndClass === 'Monge') {
-          // Monk: 10 + Dex + Wis (No Shield allowed usually, but check strictly)
-          // Rules as Written: Monk unarmored defense doesn't work with shields.
-          // Check if holding shield:
-          if (!shield) {
-            baseAC = 10 + dexMod + wisMod;
-          } else {
-             baseAC = 10 + dexMod; // Just Dex if monk holds shield (rare edge case in logic)
-          }
-      }
-  } else if (armor.acBase) {
-      // Armored Calculation
+  if (armor && armor.acBase) {
+      // 1. Armored Calculation
       let dexBonus = dexMod;
-      
-      // Cap Dex bonus if specified (Medium Armor usually caps at 2, Heavy at 0)
       if (armor.dexBonusCap !== undefined) {
           dexBonus = Math.min(dexMod, armor.dexBonusCap);
       }
-      
       baseAC = armor.acBase + dexBonus;
+  } else {
+      // 2. Unarmored Defense Logic
+      if (dndClass === 'Bárbaro') {
+          // Barbarian: 10 + Dex + Con (Shield is allowed)
+          baseAC = 10 + dexMod + conMod;
+      } else if (dndClass === 'Monge') {
+          // Monk: 10 + Dex + Wis.
+          // Rule Requirement: NO Armor AND NO Shield.
+          if (!shield) {
+            baseAC = 10 + dexMod + wisMod;
+          } else {
+             // If monk holds shield (and no armor), they lose Wis bonus.
+             baseAC = 10 + dexMod;
+          }
+      }
   }
 
-  // Add Shield Bonus
+  // 3. Add Shield Bonus (applies to standard, armored, and Barbarian unarmored)
   if (shield && shield.acBonus) {
       baseAC += shield.acBonus;
   }
@@ -254,8 +245,6 @@ export const recalculateCharacterStats = (char: Character): Character => {
     const conBonus = newMods.Constituição * char.level;
     const baseHp = char.level === 1 ? hitDie : hitDie + (avgHitDie * (char.level - 1));
     const newMaxHp = Math.max(1, Math.floor(baseHp + conBonus));
-    
-    // Clamp HP
     const newHp = Math.min(char.hp, newMaxHp) || newMaxHp;
 
     // 3. Recalculate Skills
@@ -271,7 +260,7 @@ export const recalculateCharacterStats = (char: Character): Character => {
     const percSkill = newSkills.find(s => s.name === 'Percepção');
     const newPassive = 10 + (percSkill ? percSkill.value : newMods.Sabedoria);
 
-    // 5. Recalculate AC (Now using Item objects)
+    // 5. Recalculate AC
     const newAC = calculateAC(char.class, newMods.Destreza, newMods.Constituição, newMods.Sabedoria, char.equipment);
     
     // 6. Recalculate Initiative
@@ -340,7 +329,7 @@ export const generateCharacter = (isNPC: boolean = false, raceOverride?: string)
   const level = 1;
   const proficiencyBonus = 2;
 
-  // HP Calculation
+  // HP
   const maxHp = Math.max(1, dndClass.hitDie + modifiers.Constituição);
 
   // Skills
@@ -368,13 +357,13 @@ export const generateCharacter = (isNPC: boolean = false, raceOverride?: string)
   const perceptionSkill = skills.find(s => s.name === 'Percepção');
   const passivePerception = 10 + (perceptionSkill ? perceptionSkill.value : modifiers.Sabedoria);
 
-  // Equipment selection (Now returns Items)
+  // Equipment
   const equipment = getClassKit(dndClass.name);
 
   // AC
   const ac = calculateAC(dndClass.name, modifiers.Destreza, modifiers.Constituição, modifiers.Sabedoria, equipment);
 
-  // STORY GENERATION
+  // Story
   const backstory = isNPC 
     ? `"${NPC_QUOTES[Math.floor(Math.random() * NPC_QUOTES.length)]}"`
     : generateBackstory(background, dndClass.name, raceDef.name);

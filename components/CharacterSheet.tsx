@@ -1,12 +1,11 @@
 import React from 'react';
 import { Character, Attributes } from '../types';
 import { StatBlock } from './StatBlock';
-import { Shield, Heart, Zap, Box, Tag, Swords, Sparkles, Feather, Backpack } from 'lucide-react';
+import { Swords, Target, Backpack, Feather } from 'lucide-react';
 import { IdentityHeader } from './sheet/IdentityHeader';
 import { SkillsList } from './sheet/SkillsList';
 import { InventoryNotes } from './sheet/InventoryNotes';
 import { CombatStats } from './sheet/CombatStats';
-import { motion } from 'framer-motion';
 
 interface Props {
   character: Character;
@@ -27,10 +26,10 @@ export const CharacterSheet: React.FC<Props> = ({ character, isEditing = false, 
   };
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto px-4 md:px-12 py-8 space-y-8">
+    <div className="w-full max-w-[1400px] mx-auto px-4 md:px-8 py-10 space-y-8">
         
         {/* --- Header Section (Full Width) --- */}
-        <div className="mb-8 relative z-10">
+        <div className="mb-8 relative z-10 animate-fade-in-down">
             <IdentityHeader character={character} isEditing={isEditing} onChange={handleChange} />
         </div>
 
@@ -38,13 +37,13 @@ export const CharacterSheet: React.FC<Props> = ({ character, isEditing = false, 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 relative z-10">
             
             {/* Area 1: Atributos (Top Bar - 12 cols) */}
-            <div className="md:col-span-12 glass-panel rounded-3xl p-8 relative overflow-hidden flex flex-wrap justify-between items-center gap-6 bg-void-900/60 backdrop-blur-xl border border-white/5 shadow-glass">
+            <div className="md:col-span-12 glass-panel rounded-[2rem] p-8 relative overflow-hidden flex flex-wrap justify-between items-center gap-6 bg-void-900/60 backdrop-blur-2xl border border-white/5 shadow-glass">
                 {/* Decorative Elements */}
                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 mix-blend-overlay"></div>
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
                 
                 {(Object.keys(character.attributes) as Array<keyof Attributes>).map((key) => (
-                    <div key={key} className="relative z-10 flex-1 min-w-[80px]">
+                    <div key={key} className="relative z-10 flex-1 min-w-[90px]">
                         <StatBlock 
                             label={key} 
                             value={character.attributes[key]} 
@@ -57,21 +56,22 @@ export const CharacterSheet: React.FC<Props> = ({ character, isEditing = false, 
             </div>
 
             {/* Area 2: Combat Vitals (Left Column - 4 cols) */}
-            <div className="md:col-span-4 flex flex-col gap-6">
-                <div className="glass-panel rounded-3xl p-8 relative overflow-hidden flex-grow bg-gradient-to-b from-void-800/50 to-void-950/50 backdrop-blur-xl border border-white/10 shadow-glass">
+            <div className="md:col-span-12 lg:col-span-4 flex flex-col gap-6 h-full">
+                <div className="glass-panel rounded-[2rem] p-8 relative overflow-hidden h-full bg-gradient-to-b from-void-800/40 to-void-950/60 backdrop-blur-2xl border border-white/10 shadow-glass group">
                      {/* Decorative Glows */}
-                     <div className="absolute -top-10 -right-10 w-40 h-40 bg-cyan-500/10 rounded-full blur-[60px]"></div>
+                     <div className="absolute -top-10 -right-10 w-40 h-40 bg-cyan-500/10 rounded-full blur-[80px] group-hover:bg-cyan-500/15 transition-all duration-700"></div>
+                     <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent"></div>
                      
                      <h3 className="font-display font-bold text-white/40 text-xs uppercase tracking-[0.25em] mb-8 flex items-center gap-3">
-                        <Swords size={16} className="text-white" /> Combate
+                        <Swords size={16} className="text-cyan-400" /> Status de Combate
                      </h3>
                      <CombatStats character={character} isEditing={isEditing} onChange={handleChange} />
                 </div>
             </div>
 
             {/* Area 3: Skills Matrix (Center - 8 cols) */}
-            <div className="md:col-span-8">
-                <div className="glass-panel rounded-3xl p-8 h-full relative overflow-hidden bg-void-900/30 backdrop-blur-md border border-white/5">
+            <div className="md:col-span-12 lg:col-span-8 h-full">
+                <div className="glass-panel rounded-[2rem] p-8 h-full relative overflow-hidden bg-void-900/30 backdrop-blur-xl border border-white/5 shadow-glass">
                     <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-white/5 to-transparent pointer-events-none opacity-30"></div>
                     <SkillsList skills={character.skills} />
                 </div>
@@ -80,29 +80,30 @@ export const CharacterSheet: React.FC<Props> = ({ character, isEditing = false, 
             {/* Area 4: Inventory & Lore (Bottom - 12 cols split) */}
             <div className="md:col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-6">
                  {/* Inventory */}
-                 <div className="glass-panel rounded-3xl p-8 min-h-[350px] relative">
+                 <div className="glass-panel rounded-[2rem] p-8 min-h-[400px] relative border border-white/5 bg-void-900/40">
                     <h3 className="font-display font-bold text-white/40 text-xs uppercase tracking-[0.25em] mb-6 flex items-center gap-3">
-                        <Backpack size={16} /> Equipamento
+                        <Backpack size={16} className="text-gold-500" /> Equipamento
                     </h3>
                     <InventoryNotes character={character} isEditing={isEditing} onChange={handleChange} />
                  </div>
                  
                  {/* Lore */}
-                 <div className="glass-panel rounded-3xl p-8 min-h-[350px] relative flex flex-col">
+                 <div className="glass-panel rounded-[2rem] p-8 min-h-[400px] relative flex flex-col border border-white/5 bg-void-900/40">
                     <h3 className="font-display font-bold text-white/40 text-xs uppercase tracking-[0.25em] mb-6 flex items-center gap-3">
-                        <Feather size={16} /> História & Notas
+                        <Feather size={16} className="text-purple-400" /> História & Notas
                     </h3>
-                    <div className="flex-grow">
+                    <div className="flex-grow relative">
                         {isEditing ? (
                             <textarea 
                                 value={character.backstory || ''} 
                                 onChange={(e) => handleChange('backstory', e.target.value)}
-                                className="w-full h-full bg-void-950/50 rounded-xl p-6 text-mystic-300 text-sm leading-relaxed focus:outline-none focus:border-cyan-500/50 border border-white/5 resize-none font-body shadow-inner"
+                                className="w-full h-full bg-void-950/50 rounded-xl p-6 text-mystic-300 text-sm leading-relaxed focus:outline-none focus:border-cyan-500/50 border border-white/5 resize-none font-body shadow-inner tracking-wide"
                                 placeholder="Escreva a lenda deste herói..."
+                                data-lenis-prevent
                             />
                         ) : (
-                            <div className="h-full overflow-y-auto custom-scrollbar pr-4" data-lenis-prevent>
-                                <p className="text-mystic-200 text-base leading-8 font-serif opacity-90">
+                            <div className="absolute inset-0 overflow-y-auto custom-scrollbar pr-4" data-lenis-prevent>
+                                <p className="text-mystic-200 text-base leading-8 font-serif opacity-90 first-letter:text-5xl first-letter:font-display first-letter:text-white first-letter:float-left first-letter:mr-3 first-letter:mt-[-10px]">
                                     {character.backstory || "Sem história definida."}
                                 </p>
                             </div>

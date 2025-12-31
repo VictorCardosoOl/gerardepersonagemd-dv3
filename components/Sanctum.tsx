@@ -40,6 +40,13 @@ export const Sanctum: React.FC<Props> = ({ savedCharacters, onSelect, onCreate, 
         e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent, action: () => void) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            action();
+        }
+    };
+
     return (
         <div className="w-full max-w-7xl mx-auto px-6 md:px-12 py-12 relative">
             
@@ -87,7 +94,8 @@ export const Sanctum: React.FC<Props> = ({ savedCharacters, onSelect, onCreate, 
                 <motion.button 
                     variants={item}
                     onClick={onCreate}
-                    className="group relative h-64 rounded-3xl border border-white/10 hover:border-accent-cyan/50 bg-white/5 hover:bg-white/10 transition-all flex flex-col items-center justify-center gap-4 cursor-pointer overflow-hidden"
+                    className="group relative h-64 rounded-3xl border border-white/10 hover:border-accent-cyan/50 bg-white/5 hover:bg-white/10 transition-all flex flex-col items-center justify-center gap-4 cursor-pointer overflow-hidden text-left"
+                    aria-label="Criar Novo Personagem"
                 >
                     <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
                     <div className="w-16 h-16 rounded-full bg-void-900 flex items-center justify-center group-hover:scale-110 transition-transform border border-white/10 group-hover:border-accent-cyan shadow-lg relative z-10">
@@ -102,8 +110,11 @@ export const Sanctum: React.FC<Props> = ({ savedCharacters, onSelect, onCreate, 
                         key={char.id}
                         variants={item}
                         onClick={() => onSelect(char)}
+                        onKeyDown={(e) => handleKeyDown(e, () => onSelect(char))}
                         onMouseMove={handleMouseMove}
-                        className="group relative h-64 glass-panel rounded-3xl p-6 cursor-pointer hover:-translate-y-2 transition-transform duration-300 overflow-hidden flex flex-col justify-between spotlight-card"
+                        role="button"
+                        tabIndex={0}
+                        className="group relative h-64 glass-panel rounded-3xl p-6 cursor-pointer hover:-translate-y-2 transition-transform duration-300 overflow-hidden flex flex-col justify-between spotlight-card focus:outline-none focus:ring-2 focus:ring-cyan-400"
                     >
                         {/* Background Gradient based on Class */}
                         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -141,8 +152,8 @@ export const Sanctum: React.FC<Props> = ({ savedCharacters, onSelect, onCreate, 
                             </div>
                         </div>
 
-                        {/* Bottom: Actions (Visible on Hover) */}
-                        <div className="relative z-10 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0">
+                        {/* Bottom: Actions (Visible on Hover or Focus) */}
+                        <div className="relative z-10 flex justify-end gap-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 group-focus:translate-y-0">
                             <button 
                                 onClick={(e) => { e.stopPropagation(); onExport(char); }}
                                 className="p-2 rounded-full bg-void-950 text-mystic-400 hover:text-white hover:bg-accent-gold/20 transition-colors z-20 cursor-pointer"
