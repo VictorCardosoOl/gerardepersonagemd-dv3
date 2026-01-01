@@ -1,7 +1,8 @@
 import React from 'react';
 import { Character } from '../types';
-import { Plus, Upload, Trash2, Download, Wand2 } from 'lucide-react';
+import { Plus, Upload, Trash2, Download, Wand2, Printer } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { RACE_IMAGES } from '../constants';
 
 interface Props {
     savedCharacters: Character[];
@@ -10,9 +11,10 @@ interface Props {
     onImport: () => void;
     onDelete: (id: string) => void;
     onExport: (char: Character) => void;
+    onPrint: (char: Character) => void;
 }
 
-export const Sanctum: React.FC<Props> = ({ savedCharacters, onSelect, onCreate, onImport, onDelete, onExport }) => {
+export const Sanctum: React.FC<Props> = ({ savedCharacters, onSelect, onCreate, onImport, onDelete, onExport, onPrint }) => {
     
     // Parallax logic
     const { scrollY } = useScroll();
@@ -94,7 +96,7 @@ export const Sanctum: React.FC<Props> = ({ savedCharacters, onSelect, onCreate, 
                 <motion.button 
                     variants={item}
                     onClick={onCreate}
-                    className="group relative h-64 rounded-3xl border border-white/10 hover:border-accent-cyan/50 bg-white/5 hover:bg-white/10 transition-all flex flex-col items-center justify-center gap-4 cursor-pointer overflow-hidden text-left"
+                    className="group relative h-72 rounded-3xl border border-white/10 hover:border-accent-cyan/50 bg-white/5 hover:bg-white/10 transition-all flex flex-col items-center justify-center gap-4 cursor-pointer overflow-hidden text-left"
                     aria-label="Criar Novo Personagem"
                 >
                     <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
@@ -105,7 +107,11 @@ export const Sanctum: React.FC<Props> = ({ savedCharacters, onSelect, onCreate, 
                 </motion.button>
 
                 {/* Character Cards with Spotlight */}
-                {savedCharacters.map(char => (
+                {savedCharacters.map(char => {
+                    // Fallback for image
+                    const raceImg = RACE_IMAGES[char.race] || 'https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?q=80&w=1000&auto=format&fit=crop';
+                    
+                    return (
                     <motion.div 
                         key={char.id}
                         variants={item}
@@ -114,63 +120,76 @@ export const Sanctum: React.FC<Props> = ({ savedCharacters, onSelect, onCreate, 
                         onMouseMove={handleMouseMove}
                         role="button"
                         tabIndex={0}
-                        className="group relative h-64 glass-panel rounded-3xl p-6 cursor-pointer hover:-translate-y-2 transition-transform duration-300 overflow-hidden flex flex-col justify-between spotlight-card focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                        className="group relative h-72 glass-panel rounded-3xl p-6 cursor-pointer hover:-translate-y-2 transition-transform duration-500 overflow-hidden flex flex-col justify-between spotlight-card focus:outline-none focus:ring-2 focus:ring-cyan-400"
                     >
-                        {/* Background Gradient based on Class */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <div className="absolute -right-10 -top-10 w-32 h-32 bg-accent-cyan/10 blur-[50px] rounded-full group-hover:bg-accent-cyan/20 transition-all"></div>
+                        {/* 1. Background Image (The fix for missing image) */}
+                        <div 
+                            className="absolute inset-0 bg-cover bg-center transition-all duration-700 opacity-40 group-hover:opacity-60 group-hover:scale-110 grayscale group-hover:grayscale-0"
+                            style={{ backgroundImage: `url(${raceImg})` }}
+                        ></div>
+
+                        {/* 2. Dark Overlays for Readability */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-void-950 via-void-950/80 to-void-950/40 mix-blend-multiply"></div>
+                        <div className="absolute inset-0 bg-void-950/20 group-hover:bg-transparent transition-colors duration-500"></div>
 
                         {/* Top: Header */}
                         <div className="relative z-10">
                             <div className="flex justify-between items-start mb-2">
-                                <span className="px-2 py-1 rounded bg-white/5 border border-white/5 text-[10px] font-bold uppercase tracking-widest text-mystic-400">
+                                <span className="px-2 py-1 rounded bg-white/10 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur-sm">
                                     Nv. {char.level}
                                 </span>
                                 {char.isNPC && (
-                                    <span className="px-2 py-1 rounded bg-void-950 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-mystic-600">
+                                    <span className="px-2 py-1 rounded bg-accent-rose/20 border border-accent-rose/20 text-[10px] font-bold uppercase tracking-widest text-accent-rose backdrop-blur-sm">
                                         NPC
                                     </span>
                                 )}
                             </div>
-                            <h3 className="font-display font-bold text-2xl text-white leading-tight mb-1 group-hover:text-accent-cyan transition-colors truncate">
+                            <h3 className="font-display font-bold text-2xl text-white leading-tight mb-1 group-hover:text-accent-cyan transition-colors truncate drop-shadow-md">
                                 {char.name}
                             </h3>
-                            <p className="text-xs text-mystic-400 font-mono uppercase tracking-wider">
+                            <p className="text-xs text-mystic-300 font-mono uppercase tracking-wider opacity-80 group-hover:opacity-100">
                                 {char.race} {char.class}
                             </p>
                         </div>
 
                         {/* Middle: Mini Stats */}
-                        <div className="grid grid-cols-2 gap-2 relative z-10 my-4">
-                            <div className="bg-void-950/50 rounded-lg p-2 text-center border border-white/5">
-                                <span className="block text-[9px] text-slate-500 uppercase font-bold">HP</span>
+                        <div className="grid grid-cols-2 gap-2 relative z-10 my-4 opacity-70 group-hover:opacity-100 transition-opacity">
+                            <div className="bg-void-950/60 rounded-lg p-2 text-center border border-white/5 backdrop-blur-sm">
+                                <span className="block text-[9px] text-mystic-400 uppercase font-bold">HP</span>
                                 <span className="font-mono font-bold text-white text-lg">{char.hp}</span>
                             </div>
-                            <div className="bg-void-950/50 rounded-lg p-2 text-center border border-white/5">
-                                <span className="block text-[9px] text-slate-500 uppercase font-bold">CA</span>
+                            <div className="bg-void-950/60 rounded-lg p-2 text-center border border-white/5 backdrop-blur-sm">
+                                <span className="block text-[9px] text-mystic-400 uppercase font-bold">CA</span>
                                 <span className="font-mono font-bold text-white text-lg">{char.ac}</span>
                             </div>
                         </div>
 
                         {/* Bottom: Actions (Visible on Hover or Focus) */}
-                        <div className="relative z-10 flex justify-end gap-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 group-focus:translate-y-0">
+                        <div className="relative z-10 flex justify-end gap-2 translate-y-8 group-hover:translate-y-0 transition-transform duration-300">
+                             <button 
+                                onClick={(e) => { e.stopPropagation(); onPrint(char); }}
+                                className="p-2 rounded-full bg-void-950 text-mystic-400 hover:text-white hover:bg-white/10 transition-colors z-20 cursor-pointer border border-white/10 hover:border-white/50"
+                                title="Imprimir / PDF"
+                            >
+                                <Printer size={14} />
+                            </button>
                             <button 
                                 onClick={(e) => { e.stopPropagation(); onExport(char); }}
-                                className="p-2 rounded-full bg-void-950 text-mystic-400 hover:text-white hover:bg-accent-gold/20 transition-colors z-20 cursor-pointer"
-                                title="Exportar"
+                                className="p-2 rounded-full bg-void-950 text-mystic-400 hover:text-white hover:bg-accent-gold/20 transition-colors z-20 cursor-pointer border border-white/10 hover:border-accent-gold/50"
+                                title="Exportar JSON"
                             >
                                 <Download size={14} />
                             </button>
                             <button 
                                 onClick={(e) => { e.stopPropagation(); onDelete(char.id); }}
-                                className="p-2 rounded-full bg-void-950 text-mystic-400 hover:text-accent-rose hover:bg-accent-rose/20 transition-colors z-20 cursor-pointer"
+                                className="p-2 rounded-full bg-void-950 text-mystic-400 hover:text-accent-rose hover:bg-accent-rose/20 transition-colors z-20 cursor-pointer border border-white/10 hover:border-accent-rose/50"
                                 title="Deletar"
                             >
                                 <Trash2 size={14} />
                             </button>
                         </div>
                     </motion.div>
-                ))}
+                )})}
             </motion.div>
 
             {savedCharacters.length === 0 && (

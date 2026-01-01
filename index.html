@@ -109,6 +109,64 @@
         -webkit-appearance: none;
         margin: 0;
       }
+
+      /* --- PRINT STYLES (PDF EXPORT) --- */
+      @media print {
+        @page { margin: 1cm; size: A4; }
+        
+        body { 
+          background-color: white !important; 
+          color: black !important; 
+          overflow: visible !important;
+        }
+
+        /* Hide UI Elements */
+        header, footer, nav, button, .no-print, .fixed, .bg-noise, input[type="file"], .ui-control {
+          display: none !important;
+        }
+
+        /* Reset Containers */
+        #root, main { 
+            position: relative !important; 
+            top: 0 !important; 
+            padding: 0 !important; 
+            margin: 0 !important;
+            width: 100% !important;
+            height: auto !important;
+            overflow: visible !important;
+        }
+
+        /* Transform Glass Panels to Ink-Friendly Borders */
+        .glass-panel, .bg-void-950, .bg-void-900, .bg-void-800 {
+          background: transparent !important;
+          backdrop-filter: none !important;
+          border: 2px solid #000 !important;
+          box-shadow: none !important;
+          color: black !important;
+          border-radius: 12px !important;
+          page-break-inside: avoid;
+        }
+
+        /* Typography Colors Reset */
+        .text-white, .text-mystic-100, .text-mystic-200, .text-mystic-300, .text-mystic-400, .text-cyan-400, .text-gold-400, .text-gold-500 {
+          color: black !important;
+          text-shadow: none !important;
+        }
+
+        /* Accent Colors to Dark Grey/Black for readability */
+        .text-accent-rose { color: #cc0000 !important; }
+        
+        /* Layout Adjustments for Paper */
+        .grid { display: grid !important; }
+        .gap-6 { gap: 1rem !important; }
+        
+        /* Ensure Inputs/Textareas print their content */
+        textarea, input {
+            border: none !important;
+            background: transparent !important;
+            color: black !important;
+        }
+      }
     </style>
   <script type="importmap">
 {
@@ -124,7 +182,7 @@
 </script>
 </head>
   <body>
-    <div class="fixed inset-0 pointer-events-none z-0 bg-noise opacity-30"></div>
+    <div class="fixed inset-0 pointer-events-none z-0 bg-noise opacity-30 no-print"></div>
     <div id="root" class="relative z-10"></div>
     <script type="module" src="./index.tsx"></script>
   </body>
