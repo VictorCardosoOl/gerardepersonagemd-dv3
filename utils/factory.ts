@@ -1,4 +1,5 @@
-import { CLASSES, RACES, BACKGROUNDS, ALIGNMENTS, NAMES_FIRST, NAMES_LAST, SKILL_LIST, NPC_QUOTES } from "../constants";
+import { NAMES_FIRST, NAMES_LAST, SKILL_LIST, NPC_QUOTES } from "../constants";
+import { RulesRepository } from "../services/RulesRepository";
 import { Attributes, Character, DndClass, DndRace, Item, Skill, Wealth } from "../types";
 import { rollDice, rollStat, getModifier } from "./dice";
 import { calculateAC } from "./rules";
@@ -195,13 +196,18 @@ const getClassKit = (className: string): Item[] => {
 };
 
 export const generateCharacter = (isNPC: boolean = false, raceOverride?: string): Character => {
+  const races = RulesRepository.getRaces();
+  const classes = RulesRepository.getClasses();
+  const backgrounds = RulesRepository.getBackgrounds();
+  const alignments = RulesRepository.getAlignments();
+
   const raceDef: DndRace = raceOverride 
-    ? RACES.find(r => r.name === raceOverride) || RACES[0]
-    : RACES[Math.floor(Math.random() * RACES.length)];
+    ? races.find(r => r.name === raceOverride) || races[0]
+    : races[Math.floor(Math.random() * races.length)];
     
-  const dndClass: DndClass = CLASSES[Math.floor(Math.random() * CLASSES.length)];
-  const background = BACKGROUNDS[Math.floor(Math.random() * BACKGROUNDS.length)];
-  const alignment = ALIGNMENTS[Math.floor(Math.random() * ALIGNMENTS.length)];
+  const dndClass: DndClass = classes[Math.floor(Math.random() * classes.length)];
+  const background = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+  const alignment = alignments[Math.floor(Math.random() * alignments.length)];
 
   // Stats
   let baseStats: Attributes;

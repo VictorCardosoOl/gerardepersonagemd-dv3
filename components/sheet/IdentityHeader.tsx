@@ -1,7 +1,8 @@
 import React from 'react';
 import { Character } from '../../types';
 import { Crown, Swords, Scroll } from 'lucide-react';
-import { CLASSES, RACES, RACE_IMAGES } from '../../constants';
+import { RACE_IMAGES } from '../../constants';
+import { RulesRepository } from '../../services/RulesRepository';
 
 interface Props {
     character: Character;
@@ -10,6 +11,10 @@ interface Props {
 }
 
 export const IdentityHeader: React.FC<Props> = ({ character, isEditing, onChange }) => {
+    // Data from Repository
+    const RACES = RulesRepository.getRaces();
+    const CLASSES = RulesRepository.getClasses();
+
     // Fallback image logic
     const bgImage = RACE_IMAGES[character.race] || 'https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?q=80&w=1000&auto=format&fit=crop';
 

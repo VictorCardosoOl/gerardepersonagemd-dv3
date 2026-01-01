@@ -1,0 +1,1 @@
+// This file has been superseded by data/rules.ts to avoid JSON module resolution issues in browser environments.

@@ -1,4 +1,4 @@
-import { CLASSES } from "../constants";
+import { RulesRepository } from "../services/RulesRepository";
 import { Attributes, Character, Item } from "../types";
 import { getModifier } from "./dice";
 
@@ -54,7 +54,7 @@ export const recalculateCharacterStats = (char: Character): Character => {
     };
 
     // 2. Recalculate Max HP
-    const classData = CLASSES.find(c => c.name === char.class);
+    const classData = RulesRepository.getClassByName(char.class);
     const hitDie = classData ? classData.hitDie : 8;
     const avgHitDie = (hitDie / 2) + 1;
     const conBonus = newMods.Constituição * char.level;

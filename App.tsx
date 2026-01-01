@@ -1,63 +1,51 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Character, APIMonsterIndex } from './types';
-import { generateCharacter } from './utils/factory';
-import { recalculateCharacterStats } from './utils/rules';
-import { Sanctum } from './components/Sanctum';
-import { CharacterSheet } from './components/CharacterSheet';
+import { Sanctum } from './features/sanctum/Sanctum';
+import { CharacterSheet } from './features/character-sheet/CharacterSheet';
 import { BestiarySection } from './components/BestiarySection';
 import { DragSlider } from './components/DragSlider';
 import { GuideSection } from './components/GuideSection';
 import { DMPanel } from './components/DMPanel'; 
-import { RACES } from './constants';
+import { RulesRepository } from './services/RulesRepository'; // Replacing direct constants import
 import { MoveRight, Zap, Check, Sparkles, Book, Skull, Map, Shield, Hammer, ExternalLink, Printer } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { fetchMonsterList } from './services/dndApi';
 import Lenis from 'lenis';
+import { CharacterProvider, useCharacter } from './context/CharacterContext';
 
-const LOCAL_STORAGE_KEY = 'dnd_saved_characters_v5';
-type TabId = 'sanctum' | 'sheet' | 'codex' | 'bestiary' | 'guide';
-
-const TABS: { id: TabId; label: string; icon: React.ElementType; hidden?: boolean }[] = [
+const TABS: { id: string; label: string; icon: React.ElementType; hidden?: boolean }[] = [
   { id: 'sanctum', label: 'Grimório', icon: Shield },
-  { id: 'sheet', label: 'Ficha', icon: Zap, hidden: true }, // Hidden from main nav unless active
+  { id: 'sheet', label: 'Ficha', icon: Zap, hidden: true },
   { id: 'codex', label: 'Códice', icon: Book },
   { id: 'bestiary', label: 'Bestiário', icon: Skull },
   { id: 'guide', label: 'Guia', icon: Map },
 ];
 
-export default function App() {
-  // --- Global State ---
-  const [activeTab, setActiveTab] = useState<TabId>('sanctum');
-  const [savedCharacters, setSavedCharacters] = useState<Character[]>([]);
-  const [activeCharacterId, setActiveCharacterId] = useState<string | null>(null);
-  
-  // --- Tool States ---
+const MainApp: React.FC = () => {
+  const { 
+    savedCharacters, 
+    activeCharacter, 
+    activeCharacterId, 
+    selectCharacter, 
+    createCharacter, 
+    deleteCharacter,
+    importCharacter,
+    isEditing,
+    setIsEditing,
+    notification
+  } = useCharacter();
+
+  const [activeTab, setActiveTab] = useState<string>('sanctum');
   const [isDMPanelOpen, setIsDMPanelOpen] = useState(false); 
   const [monsterList, setMonsterList] = useState<APIMonsterIndex[]>([]); 
-  const [notification, setNotification] = useState<string | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  
-  // Refs
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const lenisRef = useRef<Lenis | null>(null);
 
-  // --- Derived State ---
-  const activeCharacter = savedCharacters.find(c => c.id === activeCharacterId) || null;
-
-  // --- Initial Data Loading ---
+  // Load Monsters
   useEffect(() => {
     fetchMonsterList().then(list => {
       if (Array.isArray(list)) setMonsterList(list);
     });
     
-    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (saved) {
-      try { 
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) setSavedCharacters(parsed);
-      } catch (e) { console.error("Erro ao carregar do LocalStorage:", e); }
-    }
-
     const lenis = new Lenis({ 
       duration: 1.5, 
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
@@ -70,57 +58,12 @@ export default function App() {
     return () => lenis.destroy();
   }, []);
 
-  useEffect(() => {
-    if (savedCharacters.length >= 0) {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(savedCharacters));
-    }
-  }, [savedCharacters]);
-
-  // --- Notification System ---
-  const notify = (msg: string) => {
-    setNotification(msg);
-    setTimeout(() => setNotification(null), 3000);
-  };
-
-  // --- Print / PDF Logic ---
-  const handlePrint = () => {
-      window.print();
-  };
+  const handlePrint = () => window.print();
 
   const handlePrintCharacter = (char: Character) => {
-      // 1. Select Character
-      setActiveCharacterId(char.id);
-      // 2. Switch to Sheet
+      selectCharacter(char.id);
       setActiveTab('sheet');
-      // 3. Wait for render then Print
-      setTimeout(() => {
-          window.print();
-      }, 500);
-  };
-
-  // --- Actions ---
-  const handleCreateNew = (isNPC: boolean = false, raceOverride?: string) => {
-    const newChar = generateCharacter(isNPC, raceOverride);
-    setSavedCharacters(prev => [newChar, ...prev]);
-    setActiveCharacterId(newChar.id);
-    setActiveTab('sheet');
-    notify(isNPC ? "NPC Invocado" : "Nova Lenda Forjada");
-    lenisRef.current?.scrollTo(0, { immediate: true });
-  };
-
-  const handleDelete = (id: string) => {
-    setSavedCharacters(prev => prev.filter(c => c.id !== id));
-    if (activeCharacterId === id) {
-        setActiveCharacterId(null);
-        setActiveTab('sanctum');
-    }
-    notify("Lenda esquecida");
-  };
-
-  const handleUpdateActive = (updates: Partial<Character>) => {
-    if (!activeCharacter) return;
-    const updated = recalculateCharacterStats({ ...activeCharacter, ...updates });
-    setSavedCharacters(prev => prev.map(c => c.id === updated.id ? updated : c));
+      setTimeout(() => window.print(), 500);
   };
 
   const handleExport = (char: Character) => {
@@ -129,52 +72,41 @@ export default function App() {
       el.setAttribute("href", dataStr);
       el.setAttribute("download", `${char.name}_ficha.json`);
       el.click();
-      notify("Exportado com sucesso");
   };
 
-  const handleImport = () => fileInputRef.current?.click();
-
-  const onImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-          try {
-              const char = JSON.parse(ev.target?.result as string);
-              if (char && char.id) {
-                setSavedCharacters(prev => [char, ...prev]);
-                notify("Importado com sucesso");
-              }
-          } catch (err) { notify("Erro no arquivo"); }
-      };
-      reader.readAsText(file);
-      e.target.value = ''; 
-  };
-
-  // Animation Variants for Page Transitions
   const pageVariants = {
     initial: { opacity: 0, y: 10, filter: 'blur(4px)' },
     animate: { opacity: 1, y: 0, filter: 'blur(0px)' },
     exit: { opacity: 0, y: -10, filter: 'blur(4px)' }
   };
+  
+  const races = RulesRepository.getRaces();
 
   return (
     <div className="min-h-screen font-body text-mystic-100 bg-void-950 flex flex-col selection:bg-cyan-500/30">
-      <input type="file" ref={fileInputRef} onChange={onImportFile} className="hidden" accept=".json" />
-
-      {/* --- DMPanel Component --- */}
+      
+      {/* DMPanel still expects props for now, we can refactor it later to use context too */}
       <DMPanel 
         isOpen={isDMPanelOpen} 
         onClose={() => setIsDMPanelOpen(false)}
         savedCharacters={savedCharacters}
-        onSelect={(c) => { setActiveCharacterId(c.id); setActiveTab('sheet'); setIsDMPanelOpen(false); }}
-        onDelete={handleDelete}
-        onGenerate={handleCreateNew}
+        onSelect={(c) => { selectCharacter(c.id); setActiveTab('sheet'); setIsDMPanelOpen(false); }}
+        onDelete={deleteCharacter}
+        onGenerate={createCharacter}
         onExport={handleExport}
-        onImport={handleImport}
+        onImport={() => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = (e.target as HTMLInputElement).files?.[0];
+                if(file) importCharacter(file);
+            }
+            input.click();
+        }}
       />
 
-      {/* --- Elegant Horizontal Navigation --- */}
+      {/* Navigation */}
       <header className="fixed top-0 left-0 w-full z-40 flex justify-center pt-8 px-4 pointer-events-none no-print">
         <nav className="glass-panel rounded-full p-2 flex items-center gap-2 shadow-2xl pointer-events-auto border-white/10 bg-void-950/80 backdrop-blur-xl">
             {TABS.filter(t => !t.hidden || (t.id === 'sheet' && activeCharacterId && activeTab === 'sheet')).map((tab) => {
@@ -183,76 +115,44 @@ export default function App() {
                     <button
                         key={tab.id}
                         onClick={() => { 
-                          setActiveTab(tab.id as TabId); 
-                          if (tab.id === 'sanctum') setActiveCharacterId(null); 
+                          setActiveTab(tab.id); 
+                          if (tab.id === 'sanctum') selectCharacter(''); // Clear selection on sanctum 
                           lenisRef.current?.scrollTo(0, { immediate: true });
                         }}
-                        className={`
-                            relative px-6 py-2.5 rounded-full text-xs font-display font-bold tracking-[0.15em] uppercase transition-colors duration-500
-                            ${isActive ? 'text-void-950' : 'text-mystic-500 hover:text-white'}
-                        `}
+                        className={`relative px-6 py-2.5 rounded-full text-xs font-display font-bold tracking-[0.15em] uppercase transition-colors duration-500 ${isActive ? 'text-void-950' : 'text-mystic-500 hover:text-white'}`}
                     >
                         {isActive && (
-                            <motion.div 
-                                layoutId="nav-pill" 
-                                className="absolute inset-0 bg-white rounded-full shadow-[0_0_25px_rgba(255,255,255,0.4)]" 
-                                transition={{ type: "spring", stiffness: 350, damping: 25 }}
-                            />
+                            <motion.div layoutId="nav-pill" className="absolute inset-0 bg-white rounded-full shadow-[0_0_25px_rgba(255,255,255,0.4)]" transition={{ type: "spring", stiffness: 350, damping: 25 }} />
                         )}
-                        <span className="relative z-10 flex items-center gap-2.5">
-                             <tab.icon size={14} strokeWidth={isActive ? 2.5 : 1.5} /> 
-                             {tab.label}
-                        </span>
+                        <span className="relative z-10 flex items-center gap-2.5"><tab.icon size={14} strokeWidth={isActive ? 2.5 : 1.5} /> {tab.label}</span>
                     </button>
                 )
             })}
-            
             <div className="w-px h-6 bg-white/10 mx-2"></div>
-            
-            <button 
-                onClick={() => setIsDMPanelOpen(true)}
-                className="p-2.5 rounded-full hover:bg-white/10 text-mystic-500 hover:text-cyan-400 transition-colors duration-300 group"
-                title="Painel do Mestre"
-            >
+            <button onClick={() => setIsDMPanelOpen(true)} className="p-2.5 rounded-full hover:bg-white/10 text-mystic-500 hover:text-cyan-400 transition-colors duration-300 group" title="Painel do Mestre">
                 <Hammer size={16} className="group-hover:rotate-12 transition-transform" />
             </button>
         </nav>
       </header>
 
-      {/* --- Main Content --- */}
+      {/* Main Content */}
       <main className="w-full flex-grow pt-32 relative print:pt-0 print:bg-white">
           <AnimatePresence mode="wait">
             {activeTab === 'sanctum' && (
                 <motion.div key="sanctum" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }}>
-                    <Sanctum 
-                      savedCharacters={savedCharacters} 
-                      onSelect={(c) => { setActiveCharacterId(c.id); setActiveTab('sheet'); }} 
-                      onCreate={() => handleCreateNew(false)} 
-                      onImport={handleImport} 
-                      onDelete={handleDelete} 
-                      onExport={handleExport}
-                      onPrint={handlePrintCharacter} 
-                    />
+                    <Sanctum onSelect={(c) => { selectCharacter(c.id); setActiveTab('sheet'); }} onPrint={handlePrintCharacter} onExport={handleExport} />
                 </motion.div>
             )}
             {activeTab === 'sheet' && activeCharacter && (
                 <motion.div key={`sheet-${activeCharacter.id}`} variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }}>
-                    <CharacterSheet character={activeCharacter} isEditing={isEditing} onUpdate={handleUpdateActive} />
+                    <CharacterSheet />
                     
                     {/* Floating Actions */}
                     <div className="fixed bottom-8 right-8 z-40 flex flex-col gap-3 no-print">
-                        <button 
-                            onClick={handlePrint}
-                            className="w-14 h-14 rounded-full flex items-center justify-center bg-void-800 border border-white/10 text-mystic-300 hover:text-white hover:bg-void-700 hover:border-white/30 transition-all shadow-lg"
-                            title="Exportar PDF / Imprimir"
-                        >
+                        <button onClick={handlePrint} className="w-14 h-14 rounded-full flex items-center justify-center bg-void-800 border border-white/10 text-mystic-300 hover:text-white hover:bg-void-700 hover:border-white/30 transition-all shadow-lg" title="Imprimir">
                             <Printer size={20} />
                         </button>
-                        <button 
-                            onClick={() => setIsEditing(!isEditing)} 
-                            className={`w-14 h-14 rounded-full flex items-center justify-center shadow-glow-cyan transition-all ${isEditing ? 'bg-cyan-500 text-void-950' : 'bg-void-800 border border-white/10 text-cyan-400 hover:bg-void-700'}`}
-                            title={isEditing ? "Salvar" : "Editar"}
-                        >
+                        <button onClick={() => setIsEditing(!isEditing)} className={`w-14 h-14 rounded-full flex items-center justify-center shadow-glow-cyan transition-all ${isEditing ? 'bg-cyan-500 text-void-950' : 'bg-void-800 border border-white/10 text-cyan-400 hover:bg-void-700'}`} title={isEditing ? "Salvar" : "Editar"}>
                             {isEditing ? <Check size={20} /> : <Zap size={20} />}
                         </button>
                     </div>
@@ -270,8 +170,8 @@ export default function App() {
                         <h2 className="text-5xl font-display font-black text-white mb-4 tracking-tight uppercase drop-shadow-lg">Códice de Origens</h2>
                     </div>
                     <DragSlider className="max-w-[95vw]">
-                        {RACES.map(race => (
-                            <div key={race.name} className="min-w-[360px] glass-panel p-10 rounded-[2rem] hover:border-cyan-500/30 transition-all cursor-pointer group relative overflow-hidden bg-void-900/40" onClick={() => handleCreateNew(false, race.name)}>
+                        {races.map(race => (
+                            <div key={race.name} className="min-w-[360px] glass-panel p-10 rounded-[2rem] hover:border-cyan-500/30 transition-all cursor-pointer group relative overflow-hidden bg-void-900/40" onClick={() => createCharacter(false, race.name)}>
                                 <div className="absolute -right-10 -top-10 w-40 h-40 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
                                 <h3 className="text-3xl font-display font-bold text-white mb-6 group-hover:text-cyan-400">{race.name}</h3>
                                 <p className="text-mystic-400 text-sm leading-relaxed mb-8">{race.description}</p>
@@ -289,15 +189,10 @@ export default function App() {
           </AnimatePresence>
       </main>
 
-      {/* --- Footer --- */}
+      {/* Footer */}
       <footer className="w-full py-8 text-center relative z-10 border-t border-white/5 bg-void-950/50 backdrop-blur-sm mt-auto no-print">
           <div className="flex flex-col items-center gap-2">
-             <a 
-                href="https://seusite.com.br" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="group flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.2em] text-white hover:text-cyan-400 transition-colors"
-            >
+             <a href="https://seusite.com.br" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.2em] text-white hover:text-cyan-400 transition-colors">
                 <span>MESTRE DA MASMORRA</span>
                 <span className="w-1 h-1 rounded-full bg-mystic-500/50 group-hover:bg-cyan-400"></span>
                 <span>© 2024</span>
@@ -315,4 +210,12 @@ export default function App() {
       </AnimatePresence>
     </div>
   );
+};
+
+export default function App() {
+    return (
+        <CharacterProvider>
+            <MainApp />
+        </CharacterProvider>
+    );
 }
