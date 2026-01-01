@@ -1,25 +1,19 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { Character, APIMonsterIndex } from './types';
-// Remove direct imports for heavy components to enable Lazy Loading
-// import { Sanctum } from './features/sanctum/Sanctum';
-// import { CharacterSheet } from './features/character-sheet/CharacterSheet';
-// import { BestiarySection } from './components/BestiarySection';
-// import { GuideSection } from './components/GuideSection';
-import { DragSlider } from './components/DragSlider';
 import { DMPanel } from './components/DMPanel'; 
-import { RulesRepository } from './services/RulesRepository'; 
-import { MoveRight, Zap, Check, Sparkles, Book, Skull, Map, Shield, Hammer, ExternalLink, Printer, Loader2 } from 'lucide-react';
+import { MoveRight, Zap, Check, Sparkles, Book, Skull, Map, Shield, Hammer, ExternalLink, Printer, Loader2, ArrowRight } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { fetchMonsterList } from './services/dndApi';
 import Lenis from 'lenis';
 import { CharacterProvider, useCharacter } from './context/CharacterContext';
+import { RACE_IMAGES } from './constants';
 
 // --- LAZY LOADED COMPONENTS (Performance Optimization) ---
-// These are only downloaded when the user clicks the tab
 const Sanctum = React.lazy(() => import('./features/sanctum/Sanctum').then(module => ({ default: module.Sanctum })));
 const CharacterSheet = React.lazy(() => import('./features/character-sheet/CharacterSheet').then(module => ({ default: module.CharacterSheet })));
 const BestiarySection = React.lazy(() => import('./components/BestiarySection').then(module => ({ default: module.BestiarySection })));
 const GuideSection = React.lazy(() => import('./components/GuideSection').then(module => ({ default: module.GuideSection })));
+const Codex = React.lazy(() => import('./features/codex/Codex').then(module => ({ default: module.Codex })));
 
 const TABS: { id: string; label: string; icon: React.ElementType; hidden?: boolean }[] = [
   { id: 'sanctum', label: 'Grimório', icon: Shield },
@@ -106,8 +100,6 @@ const MainApp: React.FC = () => {
     exit: { opacity: 0, y: -10, filter: 'blur(4px)' }
   };
   
-  const races = RulesRepository.getRaces();
-
   return (
     <div className="min-h-screen font-body text-mystic-100 bg-void-950 flex flex-col selection:bg-cyan-500/30">
       
@@ -189,25 +181,14 @@ const MainApp: React.FC = () => {
                         <BestiarySection preLoadedList={monsterList} />
                     </motion.div>
                 )}
+                
+                {/* --- CODEX REFACTORED (Fluid Snap Scroll) --- */}
                 {activeTab === 'codex' && (
                     <motion.div key="codex" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }}>
-                        <div className="text-center mb-20 px-4 mt-10">
-                            <Sparkles className="mx-auto text-gold-500 mb-6 animate-pulse" size={40} />
-                            <h2 className="text-6xl md:text-7xl font-display font-black text-white mb-6 tracking-tight uppercase drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">Códice de Origens</h2>
-                            <p className="text-mystic-400 text-lg max-w-2xl mx-auto">Conheça as linhagens antigas que moldam o destino deste mundo.</p>
-                        </div>
-                        <DragSlider className="max-w-[95vw] mx-auto">
-                            {races.map(race => (
-                                <div key={race.name} className="min-w-[400px] glass-panel p-12 rounded-[2.5rem] hover:border-cyan-500/30 transition-all cursor-pointer group relative overflow-hidden bg-void-900/40" onClick={() => createCharacter(false, race.name)}>
-                                    <div className="absolute -right-10 -top-10 w-48 h-48 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
-                                    <h3 className="text-4xl font-display font-bold text-white mb-8 group-hover:text-cyan-400 transition-colors">{race.name}</h3>
-                                    <p className="text-mystic-300 text-base leading-relaxed mb-10 font-light">{race.description}</p>
-                                    <div className="text-xs font-bold uppercase tracking-[0.2em] text-gold-500 flex items-center gap-3">Explorar Linhagem <MoveRight size={16}/></div>
-                                </div>
-                            ))}
-                        </DragSlider>
+                        <Codex />
                     </motion.div>
                 )}
+
                 {activeTab === 'guide' && (
                     <motion.div key="guide" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }}>
                         <GuideSection />

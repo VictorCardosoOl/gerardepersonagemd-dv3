@@ -1,13 +1,14 @@
-
 import React, { useState } from 'react';
 import { GUIDE_STEPS } from '../constants';
-import { Compass, BookOpen, Dices, ShieldAlert, Sparkles, Sword, Eye, Search, Zap, Hand, Footprints, Clock, Flame, Heart, Skull, Ghost, Brain, BicepsFlexed, Moon, Sun, HeartPulse, Activity } from 'lucide-react';
+import { Compass, BookOpen, Dices, ShieldAlert, Sparkles, Sword, Eye, Search, Zap, Hand, Footprints, Clock, Flame, Heart, Skull, Ghost, Brain, BicepsFlexed, Moon, Sun, Backpack, Hammer, Crown, Shield } from 'lucide-react';
 import { SPELLS_BR, Spell } from '../data/spells_br';
-import { motion } from 'framer-motion';
+import { RulesRepository } from '../services/RulesRepository';
 
 const GUIDE_TABS = [
     { id: 'basics', label: 'Fundamentos' },
+    { id: 'classes', label: 'Classes' },
     { id: 'attributes', label: 'Atributos' },
+    { id: 'equipment', label: 'Equipamento' },
     { id: 'combat', label: 'Combate' },
     { id: 'survival', label: 'Sobrevivência' },
     { id: 'magic', label: 'Magia' },
@@ -16,11 +17,22 @@ const GUIDE_TABS = [
 
 const ATTRIBUTE_INFO = [
     { name: "Força", abbr: "FOR", icon: BicepsFlexed, color: "text-red-400", desc: "Potência física natural.", skills: ["Atletismo", "Dano Corpo-a-Corpo", "Capacidade de Carga"] },
-    { name: "Destreza", abbr: "DES", icon: Activity, color: "text-cyan-400", desc: "Agilidade, reflexos e equilíbrio.", skills: ["Furtividade", "Acrobacia", "Iniciativa", "Classe de Armadura (CA)"] },
+    { name: "Destreza", abbr: "DES", icon: ActivityIcon, color: "text-cyan-400", desc: "Agilidade, reflexos e equilíbrio.", skills: ["Furtividade", "Acrobacia", "Iniciativa", "Classe de Armadura (CA)"] },
     { name: "Constituição", abbr: "CON", icon: Heart, color: "text-green-400", desc: "Saúde, vigor e força vital.", skills: ["Pontos de Vida (HP)", "Resistir a Veneno", "Concentração em Magias"] },
     { name: "Inteligência", abbr: "INT", icon: Brain, color: "text-blue-400", desc: "Acuidade mental e memória.", skills: ["Arcanismo", "Investigação", "História", "Natureza"] },
     { name: "Sabedoria", abbr: "SAB", icon: Eye, color: "text-gold-400", desc: "Percepção e intuição.", skills: ["Percepção", "Medicina", "Sobrevivência", "Intuição"] },
     { name: "Carisma", abbr: "CAR", icon: Sparkles, color: "text-purple-400", desc: "Força de personalidade.", skills: ["Persuasão", "Intimidação", "Enganação", "Atuação"] },
+];
+
+const WEAPON_TYPES = [
+    { name: "Armas Simples", desc: "Clavas, adagas, maças, lanças. Quase todo mundo sabe usar.", examples: "Dano: 1d4 a 1d8" },
+    { name: "Armas Marciais", desc: "Espadas, machados grandes, arcos longos. Requer treinamento militar.", examples: "Dano: 1d8 a 2d6" },
+];
+
+const ARMOR_TYPES = [
+    { name: "Armadura Leve", desc: "Couro, Couro Batido. Favorita de ladinos e patrulheiros.", stat: "+ Mod. Destreza total na CA" },
+    { name: "Armadura Média", desc: "Gibão de Peles, Cota de Escamas. Equilíbrio entre proteção e mobilidade.", stat: "+ Mod. Destreza (máx +2) na CA" },
+    { name: "Armadura Pesada", desc: "Cota de Malha, Placas. Para guerreiros e paladinos na linha de frente.", stat: "Sem bônus de Destreza. Desvantagem em Furtividade." },
 ];
 
 const CONDITIONS = [
@@ -41,6 +53,9 @@ const GLOSSARY_ITEMS = [
     { term: "Proficiência", desc: "Seu bônus de treinamento (+2 no nv 1). Você soma isso em tudo que seu personagem 'sabe fazer' (armas, perícias).", color: "text-orange-400" },
     { term: "Rodada vs Turno", desc: "Uma Rodada é o ciclo completo onde todos agem (aprox. 6 segundos). Turno é a vez de um personagem específico.", color: "text-mystic-300" },
 ];
+
+// --- HELPER ICONS ---
+function ActivityIcon(props: any) { return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> }
 
 // --- SUB-COMPONENTS ---
 
@@ -111,6 +126,8 @@ export const GuideSection: React.FC = () => {
     const [glossarySearch, setGlossarySearch] = useState('');
     const [spellLevelFilter, setSpellLevelFilter] = useState<'all' | number>('all');
     
+    const allClasses = RulesRepository.getClasses();
+
     // Dice Simulator State
     const [simResult, setSimResult] = useState<{ die: number, total: number, success: boolean } | null>(null);
     const [isRolling, setIsRolling] = useState(false);
@@ -257,12 +274,50 @@ export const GuideSection: React.FC = () => {
                     </div>
                 )}
 
-                {/* --- ATTRIBUTES TAB (NEW) --- */}
+                {/* --- CLASSES TAB (NEW) --- */}
+                {activeTab === 'classes' && (
+                    <div className="animate-fade-in-up">
+                        <div className="text-center mb-10">
+                            <h3 className="text-3xl font-display font-bold text-white mb-4">Caminhos Heroicos</h3>
+                            <p className="text-mystic-400 font-light max-w-2xl mx-auto">Sua classe define como você luta, que magias usa e qual seu papel no grupo.</p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {allClasses.map(cls => (
+                                <div key={cls.name} className="glass-panel p-6 rounded-[2rem] hover:bg-white/[0.03] transition-all group border border-white/5 hover:border-gold-500/30">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <h4 className="font-display font-bold text-xl text-white group-hover:text-gold-400 transition-colors">{cls.name}</h4>
+                                        <span className="text-[10px] font-bold uppercase bg-white/5 px-2 py-1 rounded text-mystic-500">d{cls.hitDie} Vida</span>
+                                    </div>
+                                    
+                                    <div className="space-y-4">
+                                        <div>
+                                            <span className="text-[10px] uppercase font-bold text-mystic-600 tracking-wider">Atributos Principais</span>
+                                            <div className="flex gap-2 mt-1">
+                                                {cls.primaryAttributes.map(attr => (
+                                                    <span key={attr} className="text-xs text-cyan-300 font-mono bg-cyan-900/20 px-1.5 py-0.5 rounded border border-cyan-500/20">{attr.substring(0,3).toUpperCase()}</span>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <span className="text-[10px] uppercase font-bold text-mystic-600 tracking-wider">Proficiências</span>
+                                            <p className="text-xs text-mystic-300 mt-1 leading-relaxed">
+                                                {cls.proficiencies.slice(0, 3).join(", ")}...
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* --- ATTRIBUTES TAB --- */}
                 {activeTab === 'attributes' && (
                     <div className="animate-fade-in-up">
                         <div className="text-center mb-10">
                             <h3 className="text-3xl font-display font-bold text-white mb-4">Os 6 Pilares</h3>
-                            <p className="text-mystic-400 font-light max-w-2xl mx-auto">Cada criatura no multiverso é definida por estes seis números. Eles determinam o que você consegue fazer.</p>
+                            <p className="text-mystic-400 font-light max-w-2xl mx-auto">Cada criatura no multiverso é definida por estes seis números.</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {ATTRIBUTE_INFO.map(attr => (
@@ -288,6 +343,49 @@ export const GuideSection: React.FC = () => {
                                 </div>
                             ))}
                         </div>
+                    </div>
+                )}
+
+                {/* --- EQUIPMENT TAB (NEW) --- */}
+                {activeTab === 'equipment' && (
+                    <div className="animate-fade-in-up space-y-12">
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                             {/* Weapons */}
+                             <div className="glass-panel p-8 rounded-[2.5rem] bg-rose-900/10 border-rose-500/20">
+                                <h3 className="text-2xl font-display font-bold text-white mb-6 flex items-center gap-3">
+                                    <Sword className="text-rose-400" /> Arsenal
+                                </h3>
+                                <div className="space-y-6">
+                                    {WEAPON_TYPES.map((wpn, i) => (
+                                        <div key={i} className="bg-void-950/50 p-4 rounded-xl border border-white/5">
+                                            <div className="flex justify-between mb-2">
+                                                <h4 className="font-bold text-white">{wpn.name}</h4>
+                                                <span className="text-xs text-rose-300 font-mono">{wpn.examples}</span>
+                                            </div>
+                                            <p className="text-sm text-mystic-400">{wpn.desc}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                             </div>
+
+                             {/* Armor */}
+                             <div className="glass-panel p-8 rounded-[2.5rem] bg-blue-900/10 border-blue-500/20">
+                                <h3 className="text-2xl font-display font-bold text-white mb-6 flex items-center gap-3">
+                                    <Shield className="text-blue-400" /> Proteção
+                                </h3>
+                                <div className="space-y-6">
+                                    {ARMOR_TYPES.map((arm, i) => (
+                                        <div key={i} className="bg-void-950/50 p-4 rounded-xl border border-white/5">
+                                            <div className="flex justify-between mb-2">
+                                                <h4 className="font-bold text-white">{arm.name}</h4>
+                                            </div>
+                                            <p className="text-sm text-mystic-400 mb-2">{arm.desc}</p>
+                                            <span className="text-xs text-blue-300 font-mono bg-blue-900/20 px-2 py-1 rounded">{arm.stat}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                             </div>
+                         </div>
                     </div>
                 )}
 
@@ -354,7 +452,7 @@ export const GuideSection: React.FC = () => {
                     </div>
                 )}
 
-                {/* --- SURVIVAL TAB (NEW) --- */}
+                {/* --- SURVIVAL TAB --- */}
                 {activeTab === 'survival' && (
                     <div className="animate-fade-in-up space-y-8">
                         {/* Resting Section */}

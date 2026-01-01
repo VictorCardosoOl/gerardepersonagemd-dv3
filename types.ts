@@ -118,7 +118,9 @@ export interface Monster {
   intelligence: number;
   wisdom: number;
   charisma: number;
-  proficiencies: { value: number, proficiency: { name: string } }[];
+  proficiencies: { value: number, proficiency: { name: string } }[]; // Mantido para compatibilidade, mas preferimos os campos abaixo
+  saving_throws?: { name: string, value: number }[]; // NOVO
+  skills?: { name: string, value: number }[]; // NOVO
   damage_vulnerabilities: string[];
   damage_resistances: string[];
   damage_immunities: string[];

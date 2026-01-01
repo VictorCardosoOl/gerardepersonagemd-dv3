@@ -63,18 +63,32 @@ export const DICTIONARY: Record<string, string> = {
 };
 
 // --- VISUAL ASSETS (RACE IMAGES) ---
-// Optimized with Unsplash params for performance (width 600px, quality 60, auto format)
-const OPTIM = "&w=600&q=60&auto=format&fit=crop";
+const OPTIM = "&w=600&q=80&auto=format&fit=crop";
 
 export const RACE_IMAGES: Record<string, string> = {
-    'Humano': `https://images.unsplash.com/photo-1542259681-d3d63b82a0d7?${OPTIM}`,
+    // Humano: Knight/Warrior concept (Dark Souls/Elden Ring vibe)
+    'Humano': `https://images.unsplash.com/photo-1598556851352-19e6d089151c?${OPTIM}`,
+    
+    // Elfo: Mystical Forest/Magic (Not cosplay, but environment/mood)
     'Elfo': `https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?${OPTIM}`,
-    'Anão': `https://images.unsplash.com/photo-1506422748879-887454f9cdff?${OPTIM}`,
-    'Halfling': `https://images.unsplash.com/photo-1502477612301-44703a557b77?${OPTIM}`,
-    'Draconato': `https://images.unsplash.com/photo-1535581652167-3d6b9353a90b?${OPTIM}`,
-    'Gnomo': `https://images.unsplash.com/photo-1534447677768-be436bb09401?${OPTIM}`,
-    'Meio-Orc': `https://images.unsplash.com/photo-1599789197514-dd7273dc766f?${OPTIM}`,
-    'Tiefling': `https://images.unsplash.com/photo-1634918737676-e8d12cc49942?${OPTIM}`,
+    
+    // Anão: Forge, Fire, Sparks (Industrial Fantasy)
+    'Anão': `https://images.unsplash.com/photo-1542152399-6e3717dfb38f?${OPTIM}`,
+    
+    // Halfling: Cozy Hobbit-hole vibe, Greenery
+    'Halfling': `https://images.unsplash.com/photo-1448375240586-dfd8d395ea6c?${OPTIM}`,
+    
+    // Draconato: Reptile eye texture (Abstract representation)
+    'Draconato': `https://images.unsplash.com/photo-1550751827-4bd374c3f58b?${OPTIM}`,
+    
+    // Gnomo: Clockwork, mechanisms, curiosity
+    'Gnomo': `https://images.unsplash.com/photo-1580234533033-66779471927e?${OPTIM}`,
+    
+    // Meio-Orc: War paint, intense tribal look (Shadowy)
+    'Meio-Orc': `https://images.unsplash.com/photo-1531384441138-2736e62e0919?${OPTIM}`,
+    
+    // Tiefling: Red, Demonic, Atmospheric smoke
+    'Tiefling': `https://images.unsplash.com/photo-1620662758800-4b35e2197e93?${OPTIM}`,
 };
 
 export const SKILL_LIST: { name: SkillName; attr: Attribute }[] = [

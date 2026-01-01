@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Character } from '../types';
-import { User, Users, Trash2, Crown, Ghost, Plus, Save, X, RefreshCw, Download, Upload } from 'lucide-react';
+import { User, Users, Trash2, Crown, Ghost, Plus, Save, X, RefreshCw, Download } from 'lucide-react';
 import { generateCharacter } from '../utils/factory';
 
 interface Props {
@@ -15,7 +15,7 @@ interface Props {
     onClose: () => void;
 }
 
-export const DMPanel: React.FC<Props> = ({ savedCharacters, onSelect, onDelete, onGenerate, onSaveNew, onExport, onImport, isOpen, onClose }) => {
+export const DMPanel: React.FC<Props> = ({ savedCharacters, onSelect, onDelete, onGenerate, onSaveNew, onExport, isOpen, onClose }) => {
     const [quickNPC, setQuickNPC] = useState<Character | null>(null);
 
     const handleQuickGenerate = () => {
@@ -53,18 +53,6 @@ export const DMPanel: React.FC<Props> = ({ savedCharacters, onSelect, onDelete, 
 
                 <div className="flex-grow overflow-y-auto custom-scrollbar space-y-8 pr-1">
                     
-                    {/* --- IMPORT / EXPORT TOOLS --- */}
-                     <div className="space-y-3">
-                        <h3 className="text-xs uppercase tracking-widest text-royal-400 font-bold">Gestão de Almas</h3>
-                        <button 
-                            onClick={onImport}
-                            className="w-full py-3 px-4 rounded-xl border border-royal-200 text-royal-600 font-bold flex items-center justify-center gap-2 hover:bg-royal-50 transition-colors"
-                        >
-                            <Upload size={16} /> Carregar JSON (Ressuscitar)
-                        </button>
-                     </div>
-                     <div className="w-full h-px bg-royal-100"></div>
-
                     {/* --- QUICK NPC SECTION --- */}
                     <div className="space-y-3">
                          <div className="flex items-center justify-between">
