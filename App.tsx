@@ -136,7 +136,7 @@ const MainApp: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main className="w-full flex-grow pt-32 relative print:pt-0 print:bg-white">
+      <main className="w-full flex-grow pt-32 md:pt-40 relative print:pt-0 print:bg-white">
           <AnimatePresence mode="wait">
             {activeTab === 'sanctum' && (
                 <motion.div key="sanctum" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }}>
@@ -148,34 +148,35 @@ const MainApp: React.FC = () => {
                     <CharacterSheet />
                     
                     {/* Floating Actions */}
-                    <div className="fixed bottom-8 right-8 z-40 flex flex-col gap-3 no-print">
-                        <button onClick={handlePrint} className="w-14 h-14 rounded-full flex items-center justify-center bg-void-800 border border-white/10 text-mystic-300 hover:text-white hover:bg-void-700 hover:border-white/30 transition-all shadow-lg" title="Imprimir">
-                            <Printer size={20} />
+                    <div className="fixed bottom-10 right-10 z-40 flex flex-col gap-4 no-print">
+                        <button onClick={handlePrint} className="w-16 h-16 rounded-full flex items-center justify-center bg-void-800 border border-white/10 text-mystic-300 hover:text-white hover:bg-void-700 hover:border-white/30 transition-all shadow-glass active:scale-95" title="Imprimir">
+                            <Printer size={22} />
                         </button>
-                        <button onClick={() => setIsEditing(!isEditing)} className={`w-14 h-14 rounded-full flex items-center justify-center shadow-glow-cyan transition-all ${isEditing ? 'bg-cyan-500 text-void-950' : 'bg-void-800 border border-white/10 text-cyan-400 hover:bg-void-700'}`} title={isEditing ? "Salvar" : "Editar"}>
-                            {isEditing ? <Check size={20} /> : <Zap size={20} />}
+                        <button onClick={() => setIsEditing(!isEditing)} className={`w-16 h-16 rounded-full flex items-center justify-center shadow-glow-cyan transition-all active:scale-95 ${isEditing ? 'bg-cyan-500 text-void-950' : 'bg-void-800 border border-white/10 text-cyan-400 hover:bg-void-700'}`} title={isEditing ? "Salvar" : "Editar"}>
+                            {isEditing ? <Check size={22} /> : <Zap size={22} />}
                         </button>
                     </div>
                 </motion.div>
             )}
             {activeTab === 'bestiary' && (
-                <motion.div key="bestiary" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }} className="max-w-7xl mx-auto px-4">
+                <motion.div key="bestiary" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }}>
                     <BestiarySection preLoadedList={monsterList} />
                 </motion.div>
             )}
             {activeTab === 'codex' && (
                 <motion.div key="codex" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }}>
-                    <div className="text-center mb-16 px-4">
-                        <Sparkles className="mx-auto text-gold-500 mb-4 animate-pulse" size={32} />
-                        <h2 className="text-5xl font-display font-black text-white mb-4 tracking-tight uppercase drop-shadow-lg">Códice de Origens</h2>
+                    <div className="text-center mb-20 px-4 mt-10">
+                        <Sparkles className="mx-auto text-gold-500 mb-6 animate-pulse" size={40} />
+                        <h2 className="text-6xl md:text-7xl font-display font-black text-white mb-6 tracking-tight uppercase drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">Códice de Origens</h2>
+                        <p className="text-mystic-400 text-lg max-w-2xl mx-auto">Conheça as linhagens antigas que moldam o destino deste mundo.</p>
                     </div>
-                    <DragSlider className="max-w-[95vw]">
+                    <DragSlider className="max-w-[95vw] mx-auto">
                         {races.map(race => (
-                            <div key={race.name} className="min-w-[360px] glass-panel p-10 rounded-[2rem] hover:border-cyan-500/30 transition-all cursor-pointer group relative overflow-hidden bg-void-900/40" onClick={() => createCharacter(false, race.name)}>
-                                <div className="absolute -right-10 -top-10 w-40 h-40 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
-                                <h3 className="text-3xl font-display font-bold text-white mb-6 group-hover:text-cyan-400">{race.name}</h3>
-                                <p className="text-mystic-400 text-sm leading-relaxed mb-8">{race.description}</p>
-                                <div className="text-[10px] font-bold uppercase tracking-widest text-gold-500 flex items-center gap-2">Explorar Linhagem <MoveRight size={14}/></div>
+                            <div key={race.name} className="min-w-[400px] glass-panel p-12 rounded-[2.5rem] hover:border-cyan-500/30 transition-all cursor-pointer group relative overflow-hidden bg-void-900/40" onClick={() => createCharacter(false, race.name)}>
+                                <div className="absolute -right-10 -top-10 w-48 h-48 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
+                                <h3 className="text-4xl font-display font-bold text-white mb-8 group-hover:text-cyan-400 transition-colors">{race.name}</h3>
+                                <p className="text-mystic-300 text-base leading-relaxed mb-10 font-light">{race.description}</p>
+                                <div className="text-xs font-bold uppercase tracking-[0.2em] text-gold-500 flex items-center gap-3">Explorar Linhagem <MoveRight size={16}/></div>
                             </div>
                         ))}
                     </DragSlider>
@@ -190,20 +191,20 @@ const MainApp: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="w-full py-8 text-center relative z-10 border-t border-white/5 bg-void-950/50 backdrop-blur-sm mt-auto no-print">
+      <footer className="w-full py-10 text-center relative z-10 border-t border-white/5 bg-void-950/50 backdrop-blur-sm mt-auto no-print">
           <div className="flex flex-col items-center gap-2">
-             <a href="https://seusite.com.br" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.2em] text-white hover:text-cyan-400 transition-colors">
+             <a href="#" className="group flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.25em] text-white hover:text-cyan-400 transition-colors">
                 <span>MESTRE DA MASMORRA</span>
-                <span className="w-1 h-1 rounded-full bg-mystic-500/50 group-hover:bg-cyan-400"></span>
+                <span className="w-1.5 h-1.5 rounded-full bg-mystic-500/50 group-hover:bg-cyan-400 transition-colors"></span>
                 <span>© 2024</span>
-                <ExternalLink size={10} className="opacity-0 group-hover:opacity-100 transition-opacity -ml-1" />
+                <ExternalLink size={12} className="opacity-0 group-hover:opacity-100 transition-opacity -ml-2" />
              </a>
           </div>
       </footer>
 
       <AnimatePresence>
         {notification && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-full bg-void-900 border border-gold-500/30 text-gold-400 text-[10px] font-bold uppercase tracking-widest shadow-glow-gold backdrop-blur-md no-print">
+            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 px-8 py-4 rounded-full bg-void-900 border border-gold-500/30 text-gold-400 text-xs font-bold uppercase tracking-[0.15em] shadow-glow-gold backdrop-blur-xl no-print">
                 {String(notification)}
             </motion.div>
         )}

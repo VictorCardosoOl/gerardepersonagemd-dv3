@@ -42,11 +42,11 @@ export const BestiarySection: React.FC<Props> = ({ preLoadedList = [] }) => {
     } = useBestiary(preLoadedList);
 
     return (
-        <div className="w-full h-[80vh] flex gap-6 animate-fade-in">
+        <div className="w-full max-w-[1600px] mx-auto h-[80vh] flex gap-8 animate-fade-in px-6 md:px-12 py-8">
             
             {/* 1. Sidebar List (Left) */}
-            <div className="w-1/3 max-w-sm flex flex-col gap-4">
-                <div className="glass-panel rounded-[2rem] p-6">
+            <div className="w-1/3 max-w-sm flex flex-col gap-6">
+                <div className="glass-panel rounded-[2rem] p-8">
                     <h2 className="font-display font-black text-white text-3xl mb-6 flex items-center gap-3">
                         <Skull className="text-accent-rose" /> Bestiário
                     </h2>
@@ -91,20 +91,20 @@ export const BestiarySection: React.FC<Props> = ({ preLoadedList = [] }) => {
             <div className="flex-grow glass-panel rounded-[2.5rem] overflow-hidden relative border-white/10">
                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5"></div>
                 
-                <div className="h-full overflow-y-auto custom-scrollbar p-8 md:p-12" data-lenis-prevent>
+                <div className="h-full overflow-y-auto custom-scrollbar p-10 md:p-16" data-lenis-prevent>
                     {isLoadingDetails ? (
-                        <div className="h-full flex flex-col items-center justify-center text-slate-500 gap-4">
-                            <Loader2 className="animate-spin text-cyan-500" size={48} />
-                            <span className="text-xs font-bold uppercase tracking-[0.3em] text-cyan-500/50 animate-pulse">Consultando Arcanos...</span>
+                        <div className="h-full flex flex-col items-center justify-center text-slate-500 gap-6">
+                            <Loader2 className="animate-spin text-cyan-500" size={64} />
+                            <span className="text-sm font-bold uppercase tracking-[0.3em] text-cyan-500/50 animate-pulse">Consultando Arcanos...</span>
                         </div>
                     ) : selectedMonster ? (
                         <MonsterCard monster={selectedMonster} onClose={clearSelection} />
                     ) : (
                         <div className="h-full flex flex-col items-center justify-center opacity-20">
-                            <div className="w-32 h-32 rounded-full border-2 border-dashed border-white/30 flex items-center justify-center mb-6">
-                                <Search size={48} className="text-white" />
+                            <div className="w-40 h-40 rounded-full border-2 border-dashed border-white/30 flex items-center justify-center mb-8">
+                                <Search size={64} className="text-white" />
                             </div>
-                            <p className="font-display text-white text-2xl font-bold tracking-widest">Selecione uma Ameaça</p>
+                            <p className="font-display text-white text-3xl font-bold tracking-widest">Selecione uma Ameaça</p>
                         </div>
                     )}
                 </div>
