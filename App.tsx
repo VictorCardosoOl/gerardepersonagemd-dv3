@@ -1,17 +1,25 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { Character, APIMonsterIndex } from './types';
-import { Sanctum } from './features/sanctum/Sanctum';
-import { CharacterSheet } from './features/character-sheet/CharacterSheet';
-import { BestiarySection } from './components/BestiarySection';
+// Remove direct imports for heavy components to enable Lazy Loading
+// import { Sanctum } from './features/sanctum/Sanctum';
+// import { CharacterSheet } from './features/character-sheet/CharacterSheet';
+// import { BestiarySection } from './components/BestiarySection';
+// import { GuideSection } from './components/GuideSection';
 import { DragSlider } from './components/DragSlider';
-import { GuideSection } from './components/GuideSection';
 import { DMPanel } from './components/DMPanel'; 
-import { RulesRepository } from './services/RulesRepository'; // Replacing direct constants import
-import { MoveRight, Zap, Check, Sparkles, Book, Skull, Map, Shield, Hammer, ExternalLink, Printer } from 'lucide-react';
+import { RulesRepository } from './services/RulesRepository'; 
+import { MoveRight, Zap, Check, Sparkles, Book, Skull, Map, Shield, Hammer, ExternalLink, Printer, Loader2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { fetchMonsterList } from './services/dndApi';
 import Lenis from 'lenis';
 import { CharacterProvider, useCharacter } from './context/CharacterContext';
+
+// --- LAZY LOADED COMPONENTS (Performance Optimization) ---
+// These are only downloaded when the user clicks the tab
+const Sanctum = React.lazy(() => import('./features/sanctum/Sanctum').then(module => ({ default: module.Sanctum })));
+const CharacterSheet = React.lazy(() => import('./features/character-sheet/CharacterSheet').then(module => ({ default: module.CharacterSheet })));
+const BestiarySection = React.lazy(() => import('./components/BestiarySection').then(module => ({ default: module.BestiarySection })));
+const GuideSection = React.lazy(() => import('./components/GuideSection').then(module => ({ default: module.GuideSection })));
 
 const TABS: { id: string; label: string; icon: React.ElementType; hidden?: boolean }[] = [
   { id: 'sanctum', label: 'Grimório', icon: Shield },
@@ -20,6 +28,24 @@ const TABS: { id: string; label: string; icon: React.ElementType; hidden?: boole
   { id: 'bestiary', label: 'Bestiário', icon: Skull },
   { id: 'guide', label: 'Guia', icon: Map },
 ];
+
+// --- LOADING FALLBACK ---
+const LoadingScreen = () => (
+    <motion.div 
+        initial={{ opacity: 0 }} 
+        animate={{ opacity: 1 }} 
+        exit={{ opacity: 0 }}
+        className="w-full h-[60vh] flex flex-col items-center justify-center gap-4"
+    >
+        <div className="relative">
+            <div className="absolute inset-0 bg-cyan-500 blur-xl opacity-20 animate-pulse"></div>
+            <Loader2 className="animate-spin text-cyan-400 relative z-10" size={48} />
+        </div>
+        <span className="text-xs font-display font-bold uppercase tracking-[0.3em] text-mystic-500 animate-pulse">
+            Materializando...
+        </span>
+    </motion.div>
+);
 
 const MainApp: React.FC = () => {
   const { 
@@ -85,7 +111,6 @@ const MainApp: React.FC = () => {
   return (
     <div className="min-h-screen font-body text-mystic-100 bg-void-950 flex flex-col selection:bg-cyan-500/30">
       
-      {/* DMPanel still expects props for now, we can refactor it later to use context too */}
       <DMPanel 
         isOpen={isDMPanelOpen} 
         onClose={() => setIsDMPanelOpen(false)}
@@ -137,57 +162,59 @@ const MainApp: React.FC = () => {
 
       {/* Main Content */}
       <main className="w-full flex-grow pt-32 md:pt-40 relative print:pt-0 print:bg-white">
-          <AnimatePresence mode="wait">
-            {activeTab === 'sanctum' && (
-                <motion.div key="sanctum" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }}>
-                    <Sanctum onSelect={(c) => { selectCharacter(c.id); setActiveTab('sheet'); }} onPrint={handlePrintCharacter} onExport={handleExport} />
-                </motion.div>
-            )}
-            {activeTab === 'sheet' && activeCharacter && (
-                <motion.div key={`sheet-${activeCharacter.id}`} variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }}>
-                    <CharacterSheet />
-                    
-                    {/* Floating Actions */}
-                    <div className="fixed bottom-10 right-10 z-40 flex flex-col gap-4 no-print">
-                        <button onClick={handlePrint} className="w-16 h-16 rounded-full flex items-center justify-center bg-void-800 border border-white/10 text-mystic-300 hover:text-white hover:bg-void-700 hover:border-white/30 transition-all shadow-glass active:scale-95" title="Imprimir">
-                            <Printer size={22} />
-                        </button>
-                        <button onClick={() => setIsEditing(!isEditing)} className={`w-16 h-16 rounded-full flex items-center justify-center shadow-glow-cyan transition-all active:scale-95 ${isEditing ? 'bg-cyan-500 text-void-950' : 'bg-void-800 border border-white/10 text-cyan-400 hover:bg-void-700'}`} title={isEditing ? "Salvar" : "Editar"}>
-                            {isEditing ? <Check size={22} /> : <Zap size={22} />}
-                        </button>
-                    </div>
-                </motion.div>
-            )}
-            {activeTab === 'bestiary' && (
-                <motion.div key="bestiary" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }}>
-                    <BestiarySection preLoadedList={monsterList} />
-                </motion.div>
-            )}
-            {activeTab === 'codex' && (
-                <motion.div key="codex" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }}>
-                    <div className="text-center mb-20 px-4 mt-10">
-                        <Sparkles className="mx-auto text-gold-500 mb-6 animate-pulse" size={40} />
-                        <h2 className="text-6xl md:text-7xl font-display font-black text-white mb-6 tracking-tight uppercase drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">Códice de Origens</h2>
-                        <p className="text-mystic-400 text-lg max-w-2xl mx-auto">Conheça as linhagens antigas que moldam o destino deste mundo.</p>
-                    </div>
-                    <DragSlider className="max-w-[95vw] mx-auto">
-                        {races.map(race => (
-                            <div key={race.name} className="min-w-[400px] glass-panel p-12 rounded-[2.5rem] hover:border-cyan-500/30 transition-all cursor-pointer group relative overflow-hidden bg-void-900/40" onClick={() => createCharacter(false, race.name)}>
-                                <div className="absolute -right-10 -top-10 w-48 h-48 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
-                                <h3 className="text-4xl font-display font-bold text-white mb-8 group-hover:text-cyan-400 transition-colors">{race.name}</h3>
-                                <p className="text-mystic-300 text-base leading-relaxed mb-10 font-light">{race.description}</p>
-                                <div className="text-xs font-bold uppercase tracking-[0.2em] text-gold-500 flex items-center gap-3">Explorar Linhagem <MoveRight size={16}/></div>
-                            </div>
-                        ))}
-                    </DragSlider>
-                </motion.div>
-            )}
-            {activeTab === 'guide' && (
-                <motion.div key="guide" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }}>
-                    <GuideSection />
-                </motion.div>
-            )}
-          </AnimatePresence>
+          <Suspense fallback={<LoadingScreen />}>
+              <AnimatePresence mode="wait">
+                {activeTab === 'sanctum' && (
+                    <motion.div key="sanctum" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }}>
+                        <Sanctum onSelect={(c) => { selectCharacter(c.id); setActiveTab('sheet'); }} onPrint={handlePrintCharacter} onExport={handleExport} />
+                    </motion.div>
+                )}
+                {activeTab === 'sheet' && activeCharacter && (
+                    <motion.div key={`sheet-${activeCharacter.id}`} variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }}>
+                        <CharacterSheet />
+                        
+                        {/* Floating Actions */}
+                        <div className="fixed bottom-10 right-10 z-40 flex flex-col gap-4 no-print">
+                            <button onClick={handlePrint} className="w-16 h-16 rounded-full flex items-center justify-center bg-void-800 border border-white/10 text-mystic-300 hover:text-white hover:bg-void-700 hover:border-white/30 transition-all shadow-glass active:scale-95" title="Imprimir">
+                                <Printer size={22} />
+                            </button>
+                            <button onClick={() => setIsEditing(!isEditing)} className={`w-16 h-16 rounded-full flex items-center justify-center shadow-glow-cyan transition-all active:scale-95 ${isEditing ? 'bg-cyan-500 text-void-950' : 'bg-void-800 border border-white/10 text-cyan-400 hover:bg-void-700'}`} title={isEditing ? "Salvar" : "Editar"}>
+                                {isEditing ? <Check size={22} /> : <Zap size={22} />}
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+                {activeTab === 'bestiary' && (
+                    <motion.div key="bestiary" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }}>
+                        <BestiarySection preLoadedList={monsterList} />
+                    </motion.div>
+                )}
+                {activeTab === 'codex' && (
+                    <motion.div key="codex" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }}>
+                        <div className="text-center mb-20 px-4 mt-10">
+                            <Sparkles className="mx-auto text-gold-500 mb-6 animate-pulse" size={40} />
+                            <h2 className="text-6xl md:text-7xl font-display font-black text-white mb-6 tracking-tight uppercase drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">Códice de Origens</h2>
+                            <p className="text-mystic-400 text-lg max-w-2xl mx-auto">Conheça as linhagens antigas que moldam o destino deste mundo.</p>
+                        </div>
+                        <DragSlider className="max-w-[95vw] mx-auto">
+                            {races.map(race => (
+                                <div key={race.name} className="min-w-[400px] glass-panel p-12 rounded-[2.5rem] hover:border-cyan-500/30 transition-all cursor-pointer group relative overflow-hidden bg-void-900/40" onClick={() => createCharacter(false, race.name)}>
+                                    <div className="absolute -right-10 -top-10 w-48 h-48 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
+                                    <h3 className="text-4xl font-display font-bold text-white mb-8 group-hover:text-cyan-400 transition-colors">{race.name}</h3>
+                                    <p className="text-mystic-300 text-base leading-relaxed mb-10 font-light">{race.description}</p>
+                                    <div className="text-xs font-bold uppercase tracking-[0.2em] text-gold-500 flex items-center gap-3">Explorar Linhagem <MoveRight size={16}/></div>
+                                </div>
+                            ))}
+                        </DragSlider>
+                    </motion.div>
+                )}
+                {activeTab === 'guide' && (
+                    <motion.div key="guide" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }}>
+                        <GuideSection />
+                    </motion.div>
+                )}
+              </AnimatePresence>
+          </Suspense>
       </main>
 
       {/* Footer */}

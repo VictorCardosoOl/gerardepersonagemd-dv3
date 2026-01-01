@@ -1,13 +1,33 @@
+
 import React, { useState } from 'react';
 import { GUIDE_STEPS } from '../constants';
-import { Compass, BookOpen, Dices, ShieldAlert, Sparkles, Sword, Eye, Search, Zap, Hand, Footprints, Clock, Flame, Droplets, Skull, Ghost, Heart } from 'lucide-react';
+import { Compass, BookOpen, Dices, ShieldAlert, Sparkles, Sword, Eye, Search, Zap, Hand, Footprints, Clock, Flame, Heart, Skull, Ghost, Brain, BicepsFlexed, Moon, Sun, HeartPulse, Activity } from 'lucide-react';
 import { SPELLS_BR, Spell } from '../data/spells_br';
+import { motion } from 'framer-motion';
 
 const GUIDE_TABS = [
     { id: 'basics', label: 'Fundamentos' },
+    { id: 'attributes', label: 'Atributos' },
     { id: 'combat', label: 'Combate' },
+    { id: 'survival', label: 'Sobrevivência' },
     { id: 'magic', label: 'Magia' },
     { id: 'glossary', label: 'Glossário' }
+];
+
+const ATTRIBUTE_INFO = [
+    { name: "Força", abbr: "FOR", icon: BicepsFlexed, color: "text-red-400", desc: "Potência física natural.", skills: ["Atletismo", "Dano Corpo-a-Corpo", "Capacidade de Carga"] },
+    { name: "Destreza", abbr: "DES", icon: Activity, color: "text-cyan-400", desc: "Agilidade, reflexos e equilíbrio.", skills: ["Furtividade", "Acrobacia", "Iniciativa", "Classe de Armadura (CA)"] },
+    { name: "Constituição", abbr: "CON", icon: Heart, color: "text-green-400", desc: "Saúde, vigor e força vital.", skills: ["Pontos de Vida (HP)", "Resistir a Veneno", "Concentração em Magias"] },
+    { name: "Inteligência", abbr: "INT", icon: Brain, color: "text-blue-400", desc: "Acuidade mental e memória.", skills: ["Arcanismo", "Investigação", "História", "Natureza"] },
+    { name: "Sabedoria", abbr: "SAB", icon: Eye, color: "text-gold-400", desc: "Percepção e intuição.", skills: ["Percepção", "Medicina", "Sobrevivência", "Intuição"] },
+    { name: "Carisma", abbr: "CAR", icon: Sparkles, color: "text-purple-400", desc: "Força de personalidade.", skills: ["Persuasão", "Intimidação", "Enganação", "Atuação"] },
+];
+
+const CONDITIONS = [
+    { name: "Caído", desc: "Você está no chão. Ataques contra você têm Vantagem se o atacante estiver perto. Seus ataques têm Desvantagem.", icon: Footprints },
+    { name: "Cego", desc: "Você falha automaticamente em testes de visão. Ataques contra você têm Vantagem. Seus ataques têm Desvantagem.", icon: Eye },
+    { name: "Agarrado", desc: "Seu deslocamento torna-se 0. Você não pode se mover até se soltar (Ação de Atletismo/Acrobacia).", icon: Hand },
+    { name: "Envenenado", desc: "Você tem Desvantagem em jogadas de ataque e testes de habilidade.", icon: Skull },
 ];
 
 const GLOSSARY_ITEMS = [
@@ -18,6 +38,8 @@ const GLOSSARY_ITEMS = [
     { term: "Reação", desc: "Uma resposta instantânea a um gatilho, como o Ataque de Oportunidade quando inimigo foge.", color: "text-cyan-400" },
     { term: "Iniciativa", desc: "Teste de Destreza no início do combate para decidir quem age primeiro.", color: "text-white" },
     { term: "Classe de Armadura (CA)", desc: "O número que o inimigo precisa tirar no dado para te acertar.", color: "text-blue-400" },
+    { term: "Proficiência", desc: "Seu bônus de treinamento (+2 no nv 1). Você soma isso em tudo que seu personagem 'sabe fazer' (armas, perícias).", color: "text-orange-400" },
+    { term: "Rodada vs Turno", desc: "Uma Rodada é o ciclo completo onde todos agem (aprox. 6 segundos). Turno é a vez de um personagem específico.", color: "text-mystic-300" },
 ];
 
 // --- SUB-COMPONENTS ---
@@ -129,13 +151,13 @@ export const GuideSection: React.FC = () => {
             </div>
 
             {/* Floating Navigation Tabs */}
-            <div className="flex justify-center mb-16">
+            <div className="flex justify-center mb-16 sticky top-28 z-30">
                 <div className="flex flex-wrap justify-center gap-2 p-2 rounded-full bg-void-950/80 border border-white/10 backdrop-blur-xl shadow-2xl">
                     {GUIDE_TABS.map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`px-8 py-3 rounded-full font-bold text-xs uppercase tracking-[0.15em] transition-all duration-300 ${activeTab === tab.id ? 'bg-white text-void-950 shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'text-mystic-500 hover:text-white hover:bg-white/5'}`}
+                            className={`px-6 py-2 rounded-full font-bold text-[10px] md:text-xs uppercase tracking-[0.15em] transition-all duration-300 ${activeTab === tab.id ? 'bg-white text-void-950 shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'text-mystic-500 hover:text-white hover:bg-white/5'}`}
                         >
                             {tab.label}
                         </button>
@@ -162,7 +184,7 @@ export const GuideSection: React.FC = () => {
                                 </div>
                                 
                                 <p className="text-mystic-200 leading-relaxed mb-8 text-lg font-light">
-                                    Tudo no D&D segue esta fórmula simples: role um <strong>d20</strong>, some seu atributo e tente superar a Dificuldade (CD).
+                                    Tudo no D&D segue esta fórmula simples: role um <strong>d20</strong>, some seu modificador e tente superar a Dificuldade (CD).
                                 </p>
                                 
                                 <div className="mt-auto grid grid-cols-1 sm:grid-cols-2 gap-6 items-end">
@@ -235,43 +257,174 @@ export const GuideSection: React.FC = () => {
                     </div>
                 )}
 
+                {/* --- ATTRIBUTES TAB (NEW) --- */}
+                {activeTab === 'attributes' && (
+                    <div className="animate-fade-in-up">
+                        <div className="text-center mb-10">
+                            <h3 className="text-3xl font-display font-bold text-white mb-4">Os 6 Pilares</h3>
+                            <p className="text-mystic-400 font-light max-w-2xl mx-auto">Cada criatura no multiverso é definida por estes seis números. Eles determinam o que você consegue fazer.</p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {ATTRIBUTE_INFO.map(attr => (
+                                <div key={attr.name} className="glass-panel p-6 rounded-[2rem] hover:border-white/20 transition-all group">
+                                    <div className="flex items-center gap-4 mb-4">
+                                        <div className={`p-3 rounded-xl bg-white/5 ${attr.color}`}>
+                                            <attr.icon size={24} />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-display font-bold text-xl text-white">{attr.name}</h4>
+                                            <span className="text-xs font-bold uppercase tracking-widest text-mystic-500">{attr.abbr}</span>
+                                        </div>
+                                    </div>
+                                    <p className="text-sm text-mystic-300 font-light mb-6 border-b border-white/5 pb-4">{attr.desc}</p>
+                                    <div>
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-mystic-600 block mb-2">Usado para:</span>
+                                        <div className="flex flex-wrap gap-2">
+                                            {attr.skills.map(s => (
+                                                <span key={s} className="px-2 py-1 rounded bg-white/5 text-[10px] text-mystic-200 border border-white/5">{s}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {/* --- COMBAT TAB --- */}
                 {activeTab === 'combat' && (
-                    <div className="animate-fade-in-up space-y-10">
-                        <div className="text-center mb-8">
-                             <h3 className="text-3xl font-display font-bold text-white mb-4">Economia de Ação</h3>
-                             <p className="text-mystic-400 font-light max-w-2xl mx-auto">Em seu turno, você pode se mover e realizar <strong>uma Ação</strong>. Se sua classe permitir, você também pode ter uma <strong>Ação Bônus</strong>.</p>
+                    <div className="animate-fade-in-up space-y-16">
+                        {/* Action Economy */}
+                        <div className="space-y-8">
+                            <div className="text-center">
+                                 <h3 className="text-3xl font-display font-bold text-white mb-4">Economia de Ação</h3>
+                                 <p className="text-mystic-400 font-light max-w-2xl mx-auto">Em seu turno, você pode se mover e realizar <strong>uma Ação</strong>. Se sua classe permitir, você também pode ter uma <strong>Ação Bônus</strong>.</p>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-auto md:h-[400px]">
+                                <CombatActionCard 
+                                    title="Ação"
+                                    icon={Sword}
+                                    color="text-rose-400"
+                                    desc="A principal coisa que você faz. Atacar, lançar uma magia poderosa ou tentar algo arriscado."
+                                    examples={["Atacar", "Conjurar Magia", "Disparada", "Desengajar", "Ajudar", "Esconder"]}
+                                />
+                                <CombatActionCard 
+                                    title="Ação Bônus"
+                                    icon={Sparkles}
+                                    color="text-gold-400"
+                                    desc="Uma ação extra, muito rápida. Nem todo mundo tem. Depende da sua Classe ou Feitiços."
+                                    examples={["Ataque com 2ª arma", "Fúria (Bárbaro)", "Inspiração (Bardo)", "Passo Nebuloso"]}
+                                />
+                                <CombatActionCard 
+                                    title="Movimento"
+                                    icon={Footprints}
+                                    color="text-emerald-400"
+                                    desc="Você pode se mover até seu deslocamento máximo (geralmente 9m). Pode quebrar o movimento antes e depois da ação."
+                                    examples={["Andar", "Subir escadas", "Levantar-se (gasta metade)", "Saltar"]}
+                                />
+                                <CombatActionCard 
+                                    title="Reação"
+                                    icon={Clock}
+                                    color="text-cyan-400"
+                                    desc="Uma resposta instantânea a algo que acontece fora do seu turno. Você só tem UMA por rodada."
+                                    examples={["Ataque de Oportunidade", "Magia 'Escudo Arcano'", "Magia 'Contra-Mágica'"]}
+                                />
+                            </div>
                         </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-[400px]">
-                            <CombatActionCard 
-                                title="Ação"
-                                icon={Sword}
-                                color="text-rose-400"
-                                desc="A principal coisa que você faz. Atacar, lançar uma magia poderosa ou tentar algo arriscado."
-                                examples={["Atacar", "Conjurar Magia", "Disparada", "Desengajar", "Ajudar", "Esconder"]}
-                            />
-                            <CombatActionCard 
-                                title="Ação Bônus"
-                                icon={Sparkles}
-                                color="text-gold-400"
-                                desc="Uma ação extra, muito rápida. Nem todo mundo tem. Depende da sua Classe ou Feitiços."
-                                examples={["Ataque com 2ª arma", "Fúria (Bárbaro)", "Inspiração (Bardo)", "Passo Nebuloso"]}
-                            />
-                            <CombatActionCard 
-                                title="Movimento"
-                                icon={Footprints}
-                                color="text-emerald-400"
-                                desc="Você pode se mover até seu deslocamento máximo (geralmente 9m). Pode quebrar o movimento antes e depois da ação."
-                                examples={["Andar", "Subir escadas", "Levantar-se (gasta metade)", "Saltar"]}
-                            />
-                            <CombatActionCard 
-                                title="Reação"
-                                icon={Clock}
-                                color="text-cyan-400"
-                                desc="Uma resposta instantânea a algo que acontece fora do seu turno. Você só tem UMA por rodada."
-                                examples={["Ataque de Oportunidade", "Magia 'Escudo Arcano'", "Magia 'Contra-Mágica'"]}
-                            />
+
+                        {/* Conditions */}
+                        <div className="space-y-8">
+                            <div className="flex items-center gap-4 border-b border-white/5 pb-4">
+                                <h3 className="text-2xl font-display font-bold text-white">Condições Comuns</h3>
+                                <span className="px-2 py-1 bg-rose-500/10 text-rose-400 text-[10px] font-bold uppercase rounded border border-rose-500/20">Debuffs</span>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                {CONDITIONS.map(cond => (
+                                    <div key={cond.name} className="bg-void-950/50 border border-white/5 p-4 rounded-xl flex items-start gap-4">
+                                        <cond.icon className="text-rose-400 shrink-0 mt-1" size={20} />
+                                        <div>
+                                            <h4 className="font-bold text-white mb-1">{cond.name}</h4>
+                                            <p className="text-xs text-mystic-400 leading-relaxed">{cond.desc}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* --- SURVIVAL TAB (NEW) --- */}
+                {activeTab === 'survival' && (
+                    <div className="animate-fade-in-up space-y-8">
+                        {/* Resting Section */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="glass-panel p-8 rounded-[2.5rem] bg-emerald-900/10 border-emerald-500/20 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-8 opacity-10 text-emerald-400"><Sun size={100} /></div>
+                                <h3 className="text-2xl font-display font-bold text-white mb-4 flex items-center gap-3">
+                                    <Clock className="text-emerald-400" /> Descanso Curto
+                                </h3>
+                                <p className="text-mystic-300 font-light mb-4">
+                                    Uma pausa de pelo menos <strong>1 hora</strong> para enfaixar feridas e recuperar fôlego.
+                                </p>
+                                <ul className="space-y-2 text-sm text-mystic-200">
+                                    <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div> Você pode gastar Dados de Vida para se curar.</li>
+                                    <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div> Bruxo recupera magias.</li>
+                                    <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div> Guerreiro recupera "Retomar o Fôlego".</li>
+                                </ul>
+                            </div>
+
+                            <div className="glass-panel p-8 rounded-[2.5rem] bg-indigo-900/10 border-indigo-500/20 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-8 opacity-10 text-indigo-400"><Moon size={100} /></div>
+                                <h3 className="text-2xl font-display font-bold text-white mb-4 flex items-center gap-3">
+                                    <Moon className="text-indigo-400" /> Descanso Longo
+                                </h3>
+                                <p className="text-mystic-300 font-light mb-4">
+                                    Um período de <strong>8 horas</strong> de sono e atividades leves. Só pode fazer 1 a cada 24h.
+                                </p>
+                                <ul className="space-y-2 text-sm text-mystic-200">
+                                    <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div> Recupera TODOS os Pontos de Vida (HP).</li>
+                                    <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div> Recupera metade dos Dados de Vida gastos.</li>
+                                    <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div> Conjuradores recuperam todas as magias.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        {/* Death Saves Section */}
+                        <div className="glass-panel p-8 md:p-12 rounded-[3rem] bg-void-950 border-rose-900/30 text-center relative overflow-hidden">
+                            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5"></div>
+                            <div className="relative z-10 max-w-3xl mx-auto">
+                                <Skull size={48} className="text-rose-500 mx-auto mb-6 animate-pulse" />
+                                <h3 className="text-3xl font-display font-bold text-white mb-6">Testes de Morte</h3>
+                                <p className="text-mystic-300 text-lg font-light mb-8 leading-relaxed">
+                                    Quando seus Pontos de Vida chegam a <strong>0</strong>, você não morre imediatamente. Você cai inconsciente e começa a lutar pela vida.
+                                </p>
+                                
+                                <div className="flex flex-col md:flex-row justify-center gap-8 md:gap-16 mb-8">
+                                    <div className="text-center">
+                                        <div className="flex gap-2 justify-center mb-2">
+                                            <div className="w-6 h-6 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
+                                            <div className="w-6 h-6 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
+                                            <div className="w-6 h-6 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
+                                        </div>
+                                        <p className="text-sm font-bold text-green-400 uppercase tracking-widest">3 Sucessos</p>
+                                        <p className="text-xs text-mystic-500 mt-1">Você estabiliza (não morre).</p>
+                                    </div>
+                                    <div className="w-px bg-white/10 hidden md:block"></div>
+                                    <div className="text-center">
+                                        <div className="flex gap-2 justify-center mb-2">
+                                            <div className="w-6 h-6 rounded-full bg-rose-600 shadow-[0_0_10px_rgba(225,29,72,0.5)] relative flex items-center justify-center"><XMark /></div>
+                                            <div className="w-6 h-6 rounded-full bg-rose-600 shadow-[0_0_10px_rgba(225,29,72,0.5)] relative flex items-center justify-center"><XMark /></div>
+                                            <div className="w-6 h-6 rounded-full bg-rose-600 shadow-[0_0_10px_rgba(225,29,72,0.5)] relative flex items-center justify-center"><XMark /></div>
+                                        </div>
+                                        <p className="text-sm font-bold text-rose-500 uppercase tracking-widest">3 Falhas</p>
+                                        <p className="text-xs text-mystic-500 mt-1">Seu personagem morre.</p>
+                                    </div>
+                                </div>
+                                <p className="text-xs text-mystic-500 italic">
+                                    * Role 1d20 no início do turno. 10 ou mais é sucesso. 1 é duas falhas. 20 você acorda com 1 PV.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -284,9 +437,11 @@ export const GuideSection: React.FC = () => {
                             <div className="flex flex-col md:flex-row justify-between items-end gap-6 relative z-10">
                                 <div>
                                     <h3 className="text-4xl font-display font-bold text-white mb-2 flex items-center gap-3">
-                                        <Sparkles className="text-purple-400" /> Grimório do Iniciante
+                                        <Sparkles className="text-purple-400" /> Magia & Slots
                                     </h3>
-                                    <p className="text-mystic-300 font-light">Uma seleção de magias essenciais para começar sua jornada arcana.</p>
+                                    <p className="text-mystic-300 font-light max-w-xl">
+                                        Magias de Nível 1 ou superior gastam <strong>Espaços de Magia (Slots)</strong>. Pense neles como sua "munição" diária. Truques (Nível 0) são infinitos.
+                                    </p>
                                 </div>
                                 <div className="flex bg-void-950/50 p-1 rounded-xl border border-white/10">
                                     <button onClick={() => setSpellLevelFilter('all')} className={`px-4 py-2 rounded-lg text-xs font-bold uppercase transition-all ${spellLevelFilter === 'all' ? 'bg-white text-void-950' : 'text-mystic-500 hover:text-white'}`}>Todas</button>
@@ -347,3 +502,10 @@ export const GuideSection: React.FC = () => {
         </div>
     );
 };
+
+// Mini helper for the X mark in Death Saves
+const XMark = () => (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="text-white opacity-80">
+        <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+    </svg>
+);
