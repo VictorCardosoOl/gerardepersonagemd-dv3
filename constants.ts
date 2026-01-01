@@ -1,3 +1,4 @@
+
 import { DndClass, DndRace, SkillName, Attribute } from "./types";
 
 // --- ATTRIBUTE DESCRIPTIONS (TOOLTIPS) ---
@@ -400,7 +401,10 @@ export const CLASSES: DndClass[] = [
 
 export const BACKGROUNDS = [
   'Acólito', 'Charlatão', 'Criminoso', 'Artista', 'Herói do Povo', 'Artesão da Guilda', 
-  'Eremita', 'Nobre', 'Forasteiro', 'Sábio', 'Marinheiro', 'Soldado', 'Órfão'
+  'Eremita', 'Nobre', 'Forasteiro', 'Sábio', 'Marinheiro', 'Soldado', 'Órfão',
+  'Gladiador', 'Cavaleiro', 'Pirata', 'Caçador de Recompensas', 'Mercador de Clã',
+  'Erudito Enclausurado', 'Assombrado', 'Veterano Mercenário', 'Vigilante Urbano',
+  'Herdeiro Disputado', 'Arqueólogo', 'Antropólogo'
 ];
 
 export const ALIGNMENTS = [
@@ -411,12 +415,18 @@ export const ALIGNMENTS = [
 
 export const NAMES_FIRST = [
   'Ael', 'Bar', 'Cae', 'Dor', 'Eri', 'Fael', 'Gor', 'Hul', 'Ias', 'Jan', 'Kel', 'Lor', 
-  'Mor', 'Nor', 'Ori', 'Pan', 'Quil', 'Ras', 'Syl', 'Tho', 'Ulf', 'Val', 'Wyn', 'Xan', 'Yor', 'Zen'
+  'Mor', 'Nor', 'Ori', 'Pan', 'Quil', 'Ras', 'Syl', 'Tho', 'Ulf', 'Val', 'Wyn', 'Xan', 'Yor', 'Zen',
+  'Arin', 'Bael', 'Cor', 'Dian', 'Elas', 'Fian', 'Gael', 'Hael', 'Ion', 'Jor', 'Kael', 'Lian',
+  'Mael', 'Nael', 'Olin', 'Pian', 'Qor', 'Rian', 'Sian', 'Tian', 'Ulan', 'Vian', 'Wael', 'Xor',
+  'Yian', 'Zaer', 'Bram', 'Cade', 'Dorn', 'Ewan', 'Finn', 'Grom', 'Hark', 'Ivor', 'Jace', 'Kian'
 ];
 
 export const NAMES_LAST = [
   'thos', 'bar', 'drin', 'gan', 'mar', 'lamin', 'krin', 'dor', 'las', 'ther', 'vin', 'mus', 
-  'nos', 'roth', 'us', 'xar', 'zarr', 'wind', 'storm', 'fire', 'shield', 'hammer'
+  'nos', 'roth', 'us', 'xar', 'zarr', 'wind', 'storm', 'fire', 'shield', 'hammer',
+  'forge', 'blade', 'song', 'shade', 'light', 'dark', 'moon', 'star', 'sun', 'sky',
+  'sea', 'stone', 'wood', 'iron', 'steel', 'gold', 'silver', 'blood', 'bone', 'fist',
+  'foot', 'hand', 'eye', 'heart', 'mind', 'soul', 'spirit', 'breath', 'walker', 'runner'
 ];
 
 export const NPC_QUOTES = [
@@ -425,5 +435,14 @@ export const NPC_QUOTES = [
   "Por um preço justo, eu vendo até minha avó. Brincadeira... ou não.",
   "Os deuses nos observam, viajante. Comporte-se.",
   "Não caia no sono na taverna do Cão Sarnento.",
-  "Você viu meu gato? Ele é pequeno, preto e cospe fogo."
+  "Você viu meu gato? Ele é pequeno, preto e cospe fogo.",
+  "O segredo de uma vida longa? Correr mais rápido que o monstro.",
+  "Nunca confie em um mago que não cheira a enxofre.",
+  "Aquela montanha ali? Dizem que engoliu um exército inteiro.",
+  "Se você procura problemas, está no lugar certo.",
+  "Eu vi coisas nas profundezas que fariam seus cabelos ficarem brancos.",
+  "Um brinde aos que caíram e aos que ainda vão cair!",
+  "Cuidado com os sussurros na floresta à noite.",
+  "O ouro brilha, mas o aço resolve.",
+  "Nem tudo que reluz é tesouro, às vezes é a baba de um mímico."
 ];

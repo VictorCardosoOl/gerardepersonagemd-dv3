@@ -1,3 +1,4 @@
+
 export type Attribute = 'Força' | 'Destreza' | 'Constituição' | 'Inteligência' | 'Sabedoria' | 'Carisma';
 
 export type SkillName = 
@@ -38,6 +39,14 @@ export interface Skill {
   value: number;
 }
 
+export interface Wealth {
+  cp: number; // Cobre
+  sp: number; // Prata
+  ep: number; // Electro
+  gp: number; // Ouro
+  pp: number; // Platina
+}
+
 export interface Character {
   id: string;
   name: string;
@@ -55,7 +64,8 @@ export interface Character {
   modifiers: Attributes;
   skills: Skill[];
   passivePerception: number;
-  equipment: Item[]; // Mudança estrutural: Array de Objetos em vez de strings
+  equipment: Item[]; 
+  wealth: Wealth; // Novo campo
   languages: string[];
   senses: string[];
   backstory?: string;

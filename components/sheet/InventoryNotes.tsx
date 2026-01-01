@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
-import { Character, DndClass, Item, ItemType } from '../../types';
-import { CircleDot, Sword, Shield, FlaskConical, Wrench, Trash2, Plus } from 'lucide-react';
+import { Character, DndClass, Item, ItemType, Wealth } from '../../types';
+import { CircleDot, Sword, Shield, FlaskConical, Wrench, Trash2, Plus, Coins } from 'lucide-react';
 
 interface Props {
     character: Character;
@@ -19,10 +20,30 @@ const getItemIcon = (type: ItemType) => {
     }
 };
 
+const CurrencyInput: React.FC<{ label: string, value: number, color: string, isEditing: boolean, onChange: (val: number) => void }> = ({ label, value, color, isEditing, onChange }) => (
+    <div className="flex flex-col items-center gap-1 group">
+        <span className={`text-[9px] font-bold uppercase tracking-wider opacity-60 group-hover:opacity-100 transition-opacity ${color}`}>{label}</span>
+        {isEditing ? (
+            <input 
+                type="number"
+                min="0"
+                value={value}
+                onChange={(e) => onChange(parseInt(e.target.value) || 0)}
+                className="w-12 bg-void-950/50 border border-white/10 rounded-lg py-1 text-center text-xs text-white focus:border-cyan-500/50 outline-none"
+            />
+        ) : (
+            <span className="font-mono text-sm text-white font-medium">{value}</span>
+        )}
+    </div>
+);
+
 export const InventoryNotes: React.FC<Props> = ({ character, isEditing, onChange }) => {
     const [newItemName, setNewItemName] = useState('');
     const [newItemQty, setNewItemQty] = useState(1);
     const [newItemType, setNewItemType] = useState<ItemType>('gear');
+
+    // Fallback for old saves without wealth
+    const wealth = character.wealth || { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 };
 
     const handleAddItem = () => {
         if (!newItemName.trim()) return;
@@ -43,9 +64,15 @@ export const InventoryNotes: React.FC<Props> = ({ character, isEditing, onChange
         onChange('equipment', updatedEquipment);
     };
 
+    const handleWealthChange = (key: keyof Wealth, value: number) => {
+        const updatedWealth = { ...wealth, [key]: value };
+        onChange('wealth', updatedWealth);
+    };
+
     return (
         <div className="flex-grow flex flex-col h-full overflow-hidden">
-            <div className="flex-grow overflow-y-auto custom-scrollbar pr-2 space-y-2" data-lenis-prevent>
+            {/* Items List */}
+            <div className="flex-grow overflow-y-auto custom-scrollbar pr-2 space-y-2 mb-4" data-lenis-prevent>
                 {character.equipment.map((item) => (
                     <div key={item.id} className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] transition-all duration-300 group">
                         <div className="flex items-center gap-3">
@@ -72,8 +99,28 @@ export const InventoryNotes: React.FC<Props> = ({ character, isEditing, onChange
                 ))}
             </div>
 
+            {/* Wealth Section (Algibeira) */}
+            <div className="mt-auto mb-4 p-3 bg-void-950/30 rounded-xl border border-white/5">
+                <div className="flex items-center gap-2 mb-3 opacity-60">
+                    <Coins size={12} className="text-gold-400" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-mystic-300">Algibeira</span>
+                </div>
+                <div className="flex justify-between items-center px-1">
+                    <CurrencyInput label="PC" value={wealth.cp} color="text-[#b87333]" isEditing={isEditing} onChange={(v) => handleWealthChange('cp', v)} />
+                    <div className="w-px h-6 bg-white/5"></div>
+                    <CurrencyInput label="PP" value={wealth.sp} color="text-slate-400" isEditing={isEditing} onChange={(v) => handleWealthChange('sp', v)} />
+                    <div className="w-px h-6 bg-white/5"></div>
+                    <CurrencyInput label="PE" value={wealth.ep} color="text-cyan-600" isEditing={isEditing} onChange={(v) => handleWealthChange('ep', v)} />
+                    <div className="w-px h-6 bg-white/5"></div>
+                    <CurrencyInput label="PO" value={wealth.gp} color="text-gold-400" isEditing={isEditing} onChange={(v) => handleWealthChange('gp', v)} />
+                    <div className="w-px h-6 bg-white/5"></div>
+                    <CurrencyInput label="PL" value={wealth.pp} color="text-indigo-300" isEditing={isEditing} onChange={(v) => handleWealthChange('pp', v)} />
+                </div>
+            </div>
+
+            {/* Add Item Input */}
             {isEditing && (
-                <div className="mt-4 pt-3 border-t border-white/5 animate-fade-in-up">
+                <div className="pt-3 border-t border-white/5 animate-fade-in-up">
                     <div className="flex gap-2 items-center">
                         <input 
                             type="text" 

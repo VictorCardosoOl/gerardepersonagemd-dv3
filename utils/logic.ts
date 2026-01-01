@@ -1,5 +1,6 @@
+
 import { CLASSES, RACES, BACKGROUNDS, ALIGNMENTS, NAMES_FIRST, NAMES_LAST, SKILL_LIST, NPC_QUOTES, DICTIONARY } from "../constants";
-import { Attributes, Character, DndClass, DndRace, Item, Skill } from "../types";
+import { Attributes, Character, DndClass, DndRace, Item, Skill, Wealth } from "../types";
 
 export const rollDice = (sides: number): number => Math.floor(Math.random() * sides) + 1;
 
@@ -51,6 +52,10 @@ const STORY_TEMPLATES: StoryTemplateStructure = {
         "Treinado desde a infância em um monastério isolado,",
         "Filho bastardo de um nobre decadente,",
         "Encontrado ainda bebê flutuando em uma cesta no rio,",
+        "Forjado nas chamas de uma guerra antiga,",
+        "Amaldiçoado por uma bruxa vingativa ao nascer,",
+        "Exilado de seu clã por um crime que não cometeu,",
+        "Perdido em uma floresta feérica por uma década,"
     ],
     incidents: {
         'Acólito': "encontrou textos proibidos que revelavam uma verdade terrível sobre sua ordem.",
@@ -60,6 +65,10 @@ const STORY_TEMPLATES: StoryTemplateStructure = {
         'Sábio': "descobriu um mapa estelar que aponta para o fim dos tempos.",
         'Nobre': "foi deserdado após recusar um casamento arranjado com uma entidade sombria.",
         'Herói do Povo': "liderou uma revolta contra um tirano local usando apenas ferramentas agrícolas.",
+        'Gladiador': "ganhou sua liberdade na arena, mas perdeu sua humanidade.",
+        'Cavaleiro': "falhou em proteger seu senhor e agora busca redenção.",
+        'Pirata': "sobreviveu a um motim e foi deixado em uma ilha deserta.",
+        'Caçador de Recompensas': "perseguiu um alvo que acabou se tornando seu único amigo.",
         'generic': "decidiu que o destino não seria escrito pelos outros, mas por sua própria lâmina."
     },
     motivations: [
@@ -68,7 +77,10 @@ const STORY_TEMPLATES: StoryTemplateStructure = {
         "Procura o ingrediente final para uma cura impossível.",
         "Deseja apenas esquecer os horrores que testemunhou.",
         "Quer escrever seu nome nas estrelas, custe o que custar.",
-        "Caça a criatura de seis olhos que assombra seus pesadelos."
+        "Caça a criatura de seis olhos que assombra seus pesadelos.",
+        "Busca restaurar a honra de sua família caída.",
+        "Deseja acumular ouro suficiente para comprar seu próprio reino.",
+        "Procura a chave para destrancar os portões do submundo."
     ]
 };
 
@@ -80,6 +92,37 @@ const generateBackstory = (background: string, dndClass: string, race: string): 
     const motivation = STORY_TEMPLATES.motivations[Math.floor(Math.random() * STORY_TEMPLATES.motivations.length)];
 
     return `${origin} este ${race} ${dndClass} ${incident} ${motivation}`;
+};
+
+// --- WEALTH GENERATION ---
+const generateStartingWealth = (className: string): Wealth => {
+    // Basic Standard Starting Gold logic (simplified average of 5e rules)
+    // Multiplied by 10 for Gold Piece value in calculation, stored as GP
+    let gold = 0;
+    
+    switch (className) {
+        case 'Bárbaro': gold = (rollDice(4) + rollDice(4)) * 10; break;
+        case 'Bardo': gold = (rollDice(4) + rollDice(4) + rollDice(4) + rollDice(4) + rollDice(4)) * 10; break;
+        case 'Clérigo': gold = (rollDice(4) + rollDice(4) + rollDice(4) + rollDice(4) + rollDice(4)) * 10; break;
+        case 'Druida': gold = (rollDice(4) + rollDice(4)) * 10; break;
+        case 'Guerreiro': gold = (rollDice(4) + rollDice(4) + rollDice(4) + rollDice(4) + rollDice(4)) * 10; break;
+        case 'Monge': gold = (rollDice(4) + rollDice(4) + rollDice(4) + rollDice(4) + rollDice(4)); break; // 5d4 gp (low wealth)
+        case 'Paladino': gold = (rollDice(4) + rollDice(4) + rollDice(4) + rollDice(4) + rollDice(4)) * 10; break;
+        case 'Patrulheiro': gold = (rollDice(4) + rollDice(4) + rollDice(4) + rollDice(4) + rollDice(4)) * 10; break;
+        case 'Ladino': gold = (rollDice(4) + rollDice(4) + rollDice(4) + rollDice(4)) * 10; break;
+        case 'Feiticeiro': gold = (rollDice(4) + rollDice(4) + rollDice(4)) * 10; break;
+        case 'Bruxo': gold = (rollDice(4) + rollDice(4) + rollDice(4) + rollDice(4)) * 10; break;
+        case 'Mago': gold = (rollDice(4) + rollDice(4) + rollDice(4) + rollDice(4)) * 10; break;
+        default: gold = 100;
+    }
+
+    return {
+        cp: 0,
+        sp: 0,
+        ep: 0,
+        gp: gold,
+        pp: 0
+    };
 };
 
 // --- ITEM FACTORY HELPERS ---
@@ -266,6 +309,9 @@ export const recalculateCharacterStats = (char: Character): Character => {
     // 6. Recalculate Initiative
     const newInit = newMods.Destreza;
 
+    // 7. Ensure Wealth object exists (for old saves)
+    const newWealth = char.wealth || { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 };
+
     return {
         ...char,
         hp: newHp > 0 ? newHp : newMaxHp,
@@ -274,7 +320,8 @@ export const recalculateCharacterStats = (char: Character): Character => {
         initiative: newInit,
         modifiers: newMods,
         skills: newSkills,
-        passivePerception: newPassive
+        passivePerception: newPassive,
+        wealth: newWealth
     };
 };
 
@@ -360,6 +407,9 @@ export const generateCharacter = (isNPC: boolean = false, raceOverride?: string)
   // Equipment
   const equipment = getClassKit(dndClass.name);
 
+  // Wealth
+  const wealth = generateStartingWealth(dndClass.name);
+
   // AC
   const ac = calculateAC(dndClass.name, modifiers.Destreza, modifiers.Constituição, modifiers.Sabedoria, equipment);
 
@@ -386,6 +436,7 @@ export const generateCharacter = (isNPC: boolean = false, raceOverride?: string)
     skills,
     passivePerception,
     equipment,
+    wealth,
     languages: raceDef.languages,
     senses: raceDef.senses,
     backstory,
