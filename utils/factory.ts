@@ -3,68 +3,12 @@ import { RulesRepository } from "../services/RulesRepository";
 import { Attributes, Character, DndClass, DndRace, Item, Skill, Wealth } from "../types";
 import { rollDice, rollStat, getModifier } from "./dice";
 import { calculateAC } from "./rules";
+import { generateDeepBackstory } from "../features/generator/storyEngine";
 
 export const generateRandomName = (): string => {
   const first = NAMES_FIRST[Math.floor(Math.random() * NAMES_FIRST.length)];
   const last = NAMES_LAST[Math.floor(Math.random() * NAMES_LAST.length)];
   return `${first}${last}`;
-};
-
-// --- STORY ENGINE ---
-interface StoryTemplateStructure {
-    origins: string[];
-    incidents: Record<string, string>;
-    motivations: string[];
-}
-
-const STORY_TEMPLATES: StoryTemplateStructure = {
-    origins: [
-        "Nascido sob uma lua de sangue,",
-        "Criado nas ruas labirínticas da capital,",
-        "Único sobrevivente de um vilarejo esquecido,",
-        "Treinado desde a infância em um monastério isolado,",
-        "Filho bastardo de um nobre decadente,",
-        "Encontrado ainda bebê flutuando em uma cesta no rio,",
-        "Forjado nas chamas de uma guerra antiga,",
-        "Amaldiçoado por uma bruxa vingativa ao nascer,",
-        "Exilado de seu clã por um crime que não cometeu,",
-        "Perdido em uma floresta feérica por uma década,"
-    ],
-    incidents: {
-        'Acólito': "encontrou textos proibidos que revelavam uma verdade terrível sobre sua ordem.",
-        'Charlatão': "aplicou o golpe errado na pessoa errada e agora foge de uma guilda de assassinos.",
-        'Criminoso': "foi traído por seu parceiro durante o maior roubo de sua vida.",
-        'Soldado': "viu seu batalhão ser dizimado por uma magia que não deveria existir.",
-        'Sábio': "descobriu um mapa estelar que aponta para o fim dos tempos.",
-        'Nobre': "foi deserdado após recusar um casamento arranjado com uma entidade sombria.",
-        'Herói do Povo': "liderou uma revolta contra um tirano local usando apenas ferramentas agrícolas.",
-        'Gladiador': "ganhou sua liberdade na arena, mas perdeu sua humanidade.",
-        'Cavaleiro': "falhou em proteger seu senhor e agora busca redenção.",
-        'Pirata': "sobreviveu a um motim e foi deixado em uma ilha deserta.",
-        'Caçador de Recompensas': "perseguiu um alvo que acabou se tornando seu único amigo.",
-        'generic': "decidiu que o destino não seria escrito pelos outros, mas por sua própria lâmina."
-    },
-    motivations: [
-        "Agora busca poder suficiente para desafiar os deuses.",
-        "Viaja para pagar uma dívida de sangue que jamais poderá ser quitada.",
-        "Procura o ingrediente final para uma cura impossível.",
-        "Deseja apenas esquecer os horrores que testemunhou.",
-        "Quer escrever seu nome nas estrelas, custe o que custar.",
-        "Caça a criatura de seis olhos que assombra seus pesadelos.",
-        "Busca restaurar a honra de sua família caída.",
-        "Deseja acumular ouro suficiente para comprar seu próprio reino.",
-        "Procura a chave para destrancar os portões do submundo."
-    ]
-};
-
-export const generateBackstory = (background: string, dndClass: string, race: string): string => {
-    const origin = STORY_TEMPLATES.origins[Math.floor(Math.random() * STORY_TEMPLATES.origins.length)];
-    const foundKey = Object.keys(STORY_TEMPLATES.incidents).find(k => background.includes(k));
-    const incidentKey = foundKey || 'generic';
-    const incident = STORY_TEMPLATES.incidents[incidentKey];
-    const motivation = STORY_TEMPLATES.motivations[Math.floor(Math.random() * STORY_TEMPLATES.motivations.length)];
-
-    return `${origin} este ${race} ${dndClass} ${incident} ${motivation}`;
 };
 
 // --- WEALTH GENERATION ---
@@ -288,10 +232,10 @@ export const generateCharacter = (isNPC: boolean = false, raceOverride?: string)
   // AC
   const ac = calculateAC(dndClass.name, modifiers.Destreza, modifiers.Constituição, modifiers.Sabedoria, equipment);
 
-  // Story
+  // Story (New Deep Engine)
   const backstory = isNPC 
     ? `"${NPC_QUOTES[Math.floor(Math.random() * NPC_QUOTES.length)]}"`
-    : generateBackstory(background, dndClass.name, raceDef.name);
+    : generateDeepBackstory(background, dndClass.name, raceDef.name, finalStats);
 
   return {
     id: crypto.randomUUID(),
