@@ -1,4 +1,5 @@
 
+
 export type Attribute = 'Força' | 'Destreza' | 'Constituição' | 'Inteligência' | 'Sabedoria' | 'Carisma';
 
 export type SkillName = 
@@ -110,7 +111,7 @@ export interface Monster {
   armor_class_desc: string; 
   hit_points: number;
   hit_dice: string;
-  speed: { walk: string, fly?: string, swim?: string };
+  speed: { walk: string, fly?: string, swim?: string, climb?: string, burrow?: string };
   strength: number;
   dexterity: number;
   constitution: number;
