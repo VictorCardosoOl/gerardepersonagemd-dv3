@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { Character, APIMonsterIndex } from './types';
 import { DMPanel } from './components/DMPanel'; 
-import { MoveRight, Zap, Check, Sparkles, Book, Skull, Map, Shield, Hammer, ExternalLink, Printer, Loader2, ArrowRight } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { Zap, Check, Book, Skull, Map, Shield, Hammer, ExternalLink, Printer, Loader2 } from 'lucide-react';
+import { AnimatePresence, motion, LayoutGroup } from 'framer-motion';
 import { fetchMonsterList } from './services/dndApi';
 import Lenis from 'lenis';
 import { CharacterProvider, useCharacter } from './context/CharacterContext';
-import { RACE_IMAGES } from './constants';
 
 // --- LAZY LOADED COMPONENTS (Performance Optimization) ---
 const Sanctum = React.lazy(() => import('./features/sanctum/Sanctum').then(module => ({ default: module.Sanctum })));
@@ -124,32 +123,42 @@ const MainApp: React.FC = () => {
       />
 
       {/* Navigation */}
-      <header className="fixed top-0 left-0 w-full z-40 flex justify-center pt-8 px-4 pointer-events-none no-print">
-        <nav className="glass-panel rounded-full p-2 flex items-center gap-2 shadow-2xl pointer-events-auto border-white/10 bg-void-950/80 backdrop-blur-xl">
-            {TABS.filter(t => !t.hidden || (t.id === 'sheet' && activeCharacterId && activeTab === 'sheet')).map((tab) => {
-                const isActive = activeTab === tab.id;
-                return (
-                    <button
-                        key={tab.id}
-                        onClick={() => { 
-                          setActiveTab(tab.id); 
-                          if (tab.id === 'sanctum') selectCharacter(''); // Clear selection on sanctum 
-                          lenisRef.current?.scrollTo(0, { immediate: true });
-                        }}
-                        className={`relative px-6 py-2.5 rounded-full text-xs font-display font-bold tracking-[0.15em] uppercase transition-colors duration-500 ${isActive ? 'text-void-950' : 'text-mystic-500 hover:text-white'}`}
-                    >
-                        {isActive && (
-                            <motion.div layoutId="nav-pill" className="absolute inset-0 bg-white rounded-full shadow-[0_0_25px_rgba(255,255,255,0.4)]" transition={{ type: "spring", stiffness: 350, damping: 25 }} />
-                        )}
-                        <span className="relative z-10 flex items-center gap-2.5"><tab.icon size={14} strokeWidth={isActive ? 2.5 : 1.5} /> {tab.label}</span>
-                    </button>
-                )
-            })}
-            <div className="w-px h-6 bg-white/10 mx-2"></div>
-            <button onClick={() => setIsDMPanelOpen(true)} className="p-2.5 rounded-full hover:bg-white/10 text-mystic-500 hover:text-cyan-400 transition-colors duration-300 group" title="Painel do Mestre">
-                <Hammer size={16} className="group-hover:rotate-12 transition-transform" />
-            </button>
-        </nav>
+      <header className="fixed top-6 left-0 w-full z-40 flex justify-center px-4 pointer-events-none no-print">
+        <LayoutGroup id="main-nav">
+            <nav className="glass-panel rounded-full p-1.5 flex items-center gap-1 shadow-2xl pointer-events-auto border-white/10 bg-void-950/80 backdrop-blur-xl">
+                {TABS.filter(t => !t.hidden || (t.id === 'sheet' && activeCharacterId && activeTab === 'sheet')).map((tab) => {
+                    const isActive = activeTab === tab.id;
+                    return (
+                        <button
+                            key={tab.id}
+                            onClick={() => { 
+                              setActiveTab(tab.id); 
+                              if (tab.id === 'sanctum') selectCharacter(''); // Clear selection on sanctum 
+                              lenisRef.current?.scrollTo(0, { immediate: true });
+                            }}
+                            className={`relative px-6 py-2.5 rounded-full text-xs font-display font-bold tracking-[0.15em] uppercase transition-colors duration-300 outline-none select-none
+                            ${isActive ? 'text-cyan-950' : 'text-mystic-500 hover:text-white'}`}
+                        >
+                            {isActive && (
+                                <motion.div 
+                                    layoutId="nav-pill" 
+                                    className="absolute inset-0 bg-white rounded-full shadow-[0_0_20px_rgba(255,255,255,0.5)]" 
+                                    transition={{ type: "spring", stiffness: 350, damping: 25 }} 
+                                />
+                            )}
+                            <span className="relative z-10 flex items-center gap-2.5">
+                                <tab.icon size={14} strokeWidth={isActive ? 2.5 : 1.5} /> 
+                                {tab.label}
+                            </span>
+                        </button>
+                    )
+                })}
+                <div className="w-px h-6 bg-white/10 mx-2"></div>
+                <button onClick={() => setIsDMPanelOpen(true)} className="p-2.5 rounded-full hover:bg-white/10 text-mystic-500 hover:text-cyan-400 transition-colors duration-300 group" title="Painel do Mestre">
+                    <Hammer size={16} className="group-hover:rotate-12 transition-transform" />
+                </button>
+            </nav>
+        </LayoutGroup>
       </header>
 
       {/* Main Content */}
@@ -182,7 +191,7 @@ const MainApp: React.FC = () => {
                     </motion.div>
                 )}
                 
-                {/* --- CODEX REFACTORED (Fluid Snap Scroll) --- */}
+                {/* --- CODEX --- */}
                 {activeTab === 'codex' && (
                     <motion.div key="codex" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.4 }}>
                         <Codex />

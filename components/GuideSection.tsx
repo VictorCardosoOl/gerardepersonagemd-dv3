@@ -3,6 +3,7 @@ import { GUIDE_STEPS } from '../constants';
 import { Compass, BookOpen, Dices, ShieldAlert, Sparkles, Sword, Eye, Search, Zap, Hand, Footprints, Clock, Flame, Heart, Skull, Ghost, Brain, BicepsFlexed, Moon, Sun, Backpack, Hammer, Crown, Shield } from 'lucide-react';
 import { SPELLS_BR, Spell } from '../data/spells_br';
 import { RulesRepository } from '../services/RulesRepository';
+import { motion, LayoutGroup } from 'framer-motion';
 
 const GUIDE_TABS = [
     { id: 'basics', label: 'Fundamentos' },
@@ -169,16 +170,29 @@ export const GuideSection: React.FC = () => {
 
             {/* Floating Navigation Tabs */}
             <div className="flex justify-center mb-16 sticky top-28 z-30">
-                <div className="flex flex-wrap justify-center gap-2 p-2 rounded-full bg-void-950/80 border border-white/10 backdrop-blur-xl shadow-2xl">
-                    {GUIDE_TABS.map(tab => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`px-6 py-2 rounded-full font-bold text-[10px] md:text-xs uppercase tracking-[0.15em] transition-all duration-300 ${activeTab === tab.id ? 'bg-white text-void-950 shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'text-mystic-500 hover:text-white hover:bg-white/5'}`}
-                        >
-                            {tab.label}
-                        </button>
-                    ))}
+                <div className="flex flex-wrap justify-center gap-1.5 p-2 rounded-full bg-void-950/80 border border-white/10 backdrop-blur-xl shadow-2xl">
+                    <LayoutGroup id="guide-tabs">
+                        {GUIDE_TABS.map(tab => {
+                            const isActive = activeTab === tab.id;
+                            return (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`relative px-5 py-2 rounded-full font-bold text-[10px] md:text-xs uppercase tracking-[0.15em] transition-all duration-300 select-none z-10
+                                    ${isActive ? 'text-void-950' : 'text-mystic-400 hover:bg-white/5 hover:text-white'}`}
+                                >
+                                    {isActive && (
+                                        <motion.div 
+                                            layoutId="active-guide-tab"
+                                            className="absolute inset-0 bg-white rounded-full shadow-[0_0_20px_rgba(255,255,255,0.4)] -z-10"
+                                            transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                                        />
+                                    )}
+                                    {tab.label}
+                                </button>
+                            );
+                        })}
+                    </LayoutGroup>
                 </div>
             </div>
 
@@ -200,7 +214,7 @@ export const GuideSection: React.FC = () => {
                                     <h3 className="text-3xl font-display font-bold text-white">A Regra de Ouro</h3>
                                 </div>
                                 
-                                <p className="text-mystic-200 leading-relaxed mb-8 text-lg font-light">
+                                <p className="text-mystic-200 leading-relaxed mb-8 text-lg font-light text-secondary">
                                     Tudo no D&D segue esta fórmula simples: role um <strong>d20</strong>, some seu modificador e tente superar a Dificuldade (CD).
                                 </p>
                                 
@@ -247,10 +261,10 @@ export const GuideSection: React.FC = () => {
                             <h3 className="text-2xl font-display font-bold text-gold-400 mb-6 flex items-center gap-3">
                                 <Sparkles size={24} /> Bônus de Proficiência
                             </h3>
-                            <p className="text-mystic-300 text-base leading-relaxed mb-6">
+                            <p className="text-mystic-300 text-base leading-relaxed mb-6 text-secondary">
                                 É o número que define o quão treinado seu herói é. Ele começa como <span className="text-void-950 font-bold bg-gold-400 px-2 py-0.5 rounded text-sm shadow-glow-gold mx-1">+2</span> e sobe com o nível.
                             </p>
-                            <p className="text-mystic-300 text-base leading-relaxed">
+                            <p className="text-mystic-300 text-base leading-relaxed text-secondary">
                                 Você soma este número em tudo que você sabe fazer bem: ataques com armas que conhece, perícias treinadas e magias.
                             </p>
                         </div>
@@ -266,7 +280,7 @@ export const GuideSection: React.FC = () => {
                                         </div>
                                         <div className="text-3xl mb-4 grayscale group-hover:grayscale-0 transition-all">{step.icon}</div>
                                         <h4 className="font-bold text-white mb-3 font-display text-lg">{step.title}</h4>
-                                        <p className="text-xs text-mystic-400 leading-relaxed font-light">{step.desc}</p>
+                                        <p className="text-xs text-mystic-400 leading-relaxed font-light text-secondary">{step.desc}</p>
                                     </div>
                                 ))}
                             </div>
@@ -279,7 +293,7 @@ export const GuideSection: React.FC = () => {
                     <div className="animate-fade-in-up">
                         <div className="text-center mb-10">
                             <h3 className="text-3xl font-display font-bold text-white mb-4">Caminhos Heroicos</h3>
-                            <p className="text-mystic-400 font-light max-w-2xl mx-auto">Sua classe define como você luta, que magias usa e qual seu papel no grupo.</p>
+                            <p className="text-mystic-400 font-light max-w-2xl mx-auto text-secondary">Sua classe define como você luta, que magias usa e qual seu papel no grupo.</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {allClasses.map(cls => (
@@ -301,7 +315,7 @@ export const GuideSection: React.FC = () => {
 
                                         <div>
                                             <span className="text-[10px] uppercase font-bold text-mystic-600 tracking-wider">Proficiências</span>
-                                            <p className="text-xs text-mystic-300 mt-1 leading-relaxed">
+                                            <p className="text-xs text-mystic-300 mt-1 leading-relaxed text-secondary">
                                                 {cls.proficiencies.slice(0, 3).join(", ")}...
                                             </p>
                                         </div>
@@ -317,7 +331,7 @@ export const GuideSection: React.FC = () => {
                     <div className="animate-fade-in-up">
                         <div className="text-center mb-10">
                             <h3 className="text-3xl font-display font-bold text-white mb-4">Os 6 Pilares</h3>
-                            <p className="text-mystic-400 font-light max-w-2xl mx-auto">Cada criatura no multiverso é definida por estes seis números.</p>
+                            <p className="text-mystic-400 font-light max-w-2xl mx-auto text-secondary">Cada criatura no multiverso é definida por estes seis números.</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {ATTRIBUTE_INFO.map(attr => (
@@ -331,7 +345,7 @@ export const GuideSection: React.FC = () => {
                                             <span className="text-xs font-bold uppercase tracking-widest text-mystic-500">{attr.abbr}</span>
                                         </div>
                                     </div>
-                                    <p className="text-sm text-mystic-300 font-light mb-6 border-b border-white/5 pb-4">{attr.desc}</p>
+                                    <p className="text-sm text-mystic-300 font-light mb-6 border-b border-white/5 pb-4 text-secondary">{attr.desc}</p>
                                     <div>
                                         <span className="text-[10px] font-bold uppercase tracking-widest text-mystic-600 block mb-2">Usado para:</span>
                                         <div className="flex flex-wrap gap-2">
@@ -362,7 +376,7 @@ export const GuideSection: React.FC = () => {
                                                 <h4 className="font-bold text-white">{wpn.name}</h4>
                                                 <span className="text-xs text-rose-300 font-mono">{wpn.examples}</span>
                                             </div>
-                                            <p className="text-sm text-mystic-400">{wpn.desc}</p>
+                                            <p className="text-sm text-mystic-400 text-secondary">{wpn.desc}</p>
                                         </div>
                                     ))}
                                 </div>
@@ -379,7 +393,7 @@ export const GuideSection: React.FC = () => {
                                             <div className="flex justify-between mb-2">
                                                 <h4 className="font-bold text-white">{arm.name}</h4>
                                             </div>
-                                            <p className="text-sm text-mystic-400 mb-2">{arm.desc}</p>
+                                            <p className="text-sm text-mystic-400 mb-2 text-secondary">{arm.desc}</p>
                                             <span className="text-xs text-blue-300 font-mono bg-blue-900/20 px-2 py-1 rounded">{arm.stat}</span>
                                         </div>
                                     ))}
@@ -396,7 +410,7 @@ export const GuideSection: React.FC = () => {
                         <div className="space-y-8">
                             <div className="text-center">
                                  <h3 className="text-3xl font-display font-bold text-white mb-4">Economia de Ação</h3>
-                                 <p className="text-mystic-400 font-light max-w-2xl mx-auto">Em seu turno, você pode se mover e realizar <strong>uma Ação</strong>. Se sua classe permitir, você também pode ter uma <strong>Ação Bônus</strong>.</p>
+                                 <p className="text-mystic-400 font-light max-w-2xl mx-auto text-secondary">Em seu turno, você pode se mover e realizar <strong>uma Ação</strong>. Se sua classe permitir, você também pode ter uma <strong>Ação Bônus</strong>.</p>
                             </div>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-auto md:h-[400px]">
@@ -443,7 +457,7 @@ export const GuideSection: React.FC = () => {
                                         <cond.icon className="text-rose-400 shrink-0 mt-1" size={20} />
                                         <div>
                                             <h4 className="font-bold text-white mb-1">{cond.name}</h4>
-                                            <p className="text-xs text-mystic-400 leading-relaxed">{cond.desc}</p>
+                                            <p className="text-xs text-mystic-400 leading-relaxed text-secondary">{cond.desc}</p>
                                         </div>
                                     </div>
                                 ))}
@@ -462,7 +476,7 @@ export const GuideSection: React.FC = () => {
                                 <h3 className="text-2xl font-display font-bold text-white mb-4 flex items-center gap-3">
                                     <Clock className="text-emerald-400" /> Descanso Curto
                                 </h3>
-                                <p className="text-mystic-300 font-light mb-4">
+                                <p className="text-mystic-300 font-light mb-4 text-secondary">
                                     Uma pausa de pelo menos <strong>1 hora</strong> para enfaixar feridas e recuperar fôlego.
                                 </p>
                                 <ul className="space-y-2 text-sm text-mystic-200">
@@ -477,7 +491,7 @@ export const GuideSection: React.FC = () => {
                                 <h3 className="text-2xl font-display font-bold text-white mb-4 flex items-center gap-3">
                                     <Moon className="text-indigo-400" /> Descanso Longo
                                 </h3>
-                                <p className="text-mystic-300 font-light mb-4">
+                                <p className="text-mystic-300 font-light mb-4 text-secondary">
                                     Um período de <strong>8 horas</strong> de sono e atividades leves. Só pode fazer 1 a cada 24h.
                                 </p>
                                 <ul className="space-y-2 text-sm text-mystic-200">
@@ -494,7 +508,7 @@ export const GuideSection: React.FC = () => {
                             <div className="relative z-10 max-w-3xl mx-auto">
                                 <Skull size={48} className="text-rose-500 mx-auto mb-6 animate-pulse" />
                                 <h3 className="text-3xl font-display font-bold text-white mb-6">Testes de Morte</h3>
-                                <p className="text-mystic-300 text-lg font-light mb-8 leading-relaxed">
+                                <p className="text-mystic-300 text-lg font-light mb-8 leading-relaxed text-secondary">
                                     Quando seus Pontos de Vida chegam a <strong>0</strong>, você não morre imediatamente. Você cai inconsciente e começa a lutar pela vida.
                                 </p>
                                 
@@ -537,7 +551,7 @@ export const GuideSection: React.FC = () => {
                                     <h3 className="text-4xl font-display font-bold text-white mb-2 flex items-center gap-3">
                                         <Sparkles className="text-purple-400" /> Magia & Slots
                                     </h3>
-                                    <p className="text-mystic-300 font-light max-w-xl">
+                                    <p className="text-mystic-300 font-light max-w-xl text-secondary">
                                         Magias de Nível 1 ou superior gastam <strong>Espaços de Magia (Slots)</strong>. Pense neles como sua "munição" diária. Truques (Nível 0) são infinitos.
                                     </p>
                                 </div>
@@ -583,7 +597,7 @@ export const GuideSection: React.FC = () => {
                                     <div className="mt-1"><ShieldAlert size={24} className={`${item.color} opacity-70 group-hover:opacity-100 transition-opacity`} /></div>
                                     <div>
                                         <strong className={`${item.color} block mb-2 text-lg font-display tracking-wide`}>{item.term}</strong>
-                                        <p className="text-sm text-mystic-400 leading-relaxed font-light">{item.desc}</p>
+                                        <p className="text-sm text-mystic-400 leading-relaxed font-light text-secondary">{item.desc}</p>
                                     </div>
                                 </div>
                             )) : (

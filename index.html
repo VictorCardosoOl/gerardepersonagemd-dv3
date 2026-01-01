@@ -48,6 +48,7 @@
                 400: '#22d3ee', // Aether Cyan
                 500: '#06b6d4',
                 900: '#083344',
+                950: '#082f49', // Darkest Cyan for Active Text
               },
               accent: {
                 rose: '#f43f5e',
@@ -68,6 +69,7 @@
               'fade-in-down': 'fadeInDown 0.8s ease-out forwards',
               'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
               'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'float': 'float 6s ease-in-out infinite',
             },
             keyframes: {
               fadeInDown: {
@@ -77,6 +79,10 @@
               fadeInUp: {
                 '0%': { opacity: '0', transform: 'translateY(20px)' },
                 '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-10px)' },
               }
             }
           }
@@ -129,11 +135,24 @@
       /* Headers Cinzel Adjustment - Modern & Epic */
       h1, h2, h3, h4, h5, h6 {
         font-family: 'Cinzel', serif;
-        letter-spacing: 0.03em;
+        letter-spacing: 0.03em; /* Slightly tighter for a premium feel */
+        font-weight: 700;
       }
       
-      p, span, div, input, button, textarea {
+      /* Body Text Inter */
+      p, span, div, input, button, textarea, label, li {
         font-family: 'Inter', sans-serif;
+      }
+
+      /* Visual Hierarchy Utils */
+      .text-secondary {
+        opacity: 0.7;
+        font-weight: 300;
+      }
+
+      .text-tertiary {
+        opacity: 0.5;
+        font-weight: 300;
       }
       
       .font-display { font-family: 'Cinzel', serif; }

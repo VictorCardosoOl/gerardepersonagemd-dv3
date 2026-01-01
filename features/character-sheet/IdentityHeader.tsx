@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Character } from '../../types';
 import { Crown, Swords, Scroll } from 'lucide-react';
@@ -8,6 +7,7 @@ import { RulesRepository } from '../../services/RulesRepository';
 interface Props {
     character: Character;
     isEditing: boolean;
+    // Strict Type Safety: K must be a key of Character, and value must match that key's type
     onChange: <K extends keyof Character>(field: K, value: Character[K]) => void;
 }
 

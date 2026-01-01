@@ -5,6 +5,7 @@ import { CircleDot, Sword, Shield, FlaskConical, Wrench, Trash2, Plus, Coins, Ba
 interface Props {
     character: Character;
     isEditing: boolean;
+    // Strict Type Safety
     onChange: <K extends keyof Character>(field: K, value: Character[K]) => void;
 }
 
@@ -45,6 +46,7 @@ export const InventoryNotes: React.FC<Props> = ({ character, isEditing, onChange
     const handleAddItem = () => {
         if (!newItemName.trim()) return;
         const newItem: Item = { id: crypto.randomUUID(), name: newItemName, quantity: newItemQty, type: newItemType };
+        // Valid cast as Item[] matches Character['equipment']
         onChange('equipment', [...character.equipment, newItem]);
         setNewItemName(''); setNewItemQty(1);
     };
@@ -54,7 +56,9 @@ export const InventoryNotes: React.FC<Props> = ({ character, isEditing, onChange
     };
 
     const handleWealthChange = (key: keyof Wealth, value: number) => {
-        onChange('wealth', { ...wealth, [key]: value });
+        const newWealth: Wealth = { ...wealth, [key]: value };
+        // Valid cast as Wealth matches Character['wealth']
+        onChange('wealth', newWealth);
     };
 
     return (
