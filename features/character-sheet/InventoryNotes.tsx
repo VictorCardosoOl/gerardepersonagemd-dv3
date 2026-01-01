@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { Character, Item, ItemType, Wealth } from '../../types';
-import { CircleDot, Sword, Shield, FlaskConical, Wrench, Trash2, Plus, Coins } from 'lucide-react';
+import { CircleDot, Sword, Shield, FlaskConical, Wrench, Trash2, Plus, Coins, Backpack } from 'lucide-react';
 
 interface Props {
     character: Character;
@@ -11,16 +10,16 @@ interface Props {
 
 const getItemIcon = (type: ItemType) => {
     switch(type) {
-        case 'weapon': return <Sword size={12} className="text-red-400/80" />;
-        case 'armor': return <Shield size={12} className="text-blue-400/80" />;
-        case 'consumable': return <FlaskConical size={12} className="text-green-400/80" />;
-        case 'tool': return <Wrench size={12} className="text-orange-400/80" />;
-        default: return <CircleDot size={8} className="text-slate-600" />;
+        case 'weapon': return <Sword size={14} className="text-red-400" />;
+        case 'armor': return <Shield size={14} className="text-blue-400" />;
+        case 'consumable': return <FlaskConical size={14} className="text-green-400" />;
+        case 'tool': return <Wrench size={14} className="text-orange-400" />;
+        default: return <CircleDot size={10} className="text-slate-500" />;
     }
 };
 
 const CurrencyInput: React.FC<{ label: string, value: number, color: string, isEditing: boolean, onChange: (val: number) => void }> = ({ label, value, color, isEditing, onChange }) => (
-    <div className="flex flex-col items-center gap-1 group">
+    <div className="flex flex-col items-center gap-1 group bg-void-950/30 p-1.5 rounded-lg border border-transparent hover:border-white/5 transition-colors">
         <span className={`text-[9px] font-bold uppercase tracking-wider opacity-60 group-hover:opacity-100 transition-opacity ${color}`}>{label}</span>
         {isEditing ? (
             <input 
@@ -28,7 +27,7 @@ const CurrencyInput: React.FC<{ label: string, value: number, color: string, isE
                 min="0"
                 value={value}
                 onChange={(e) => onChange(parseInt(e.target.value) || 0)}
-                className="ghost-input w-12 border-b border-white/10 text-center text-xs text-white focus:border-cyan-500/50"
+                className="w-full bg-transparent text-center text-xs text-white outline-none font-mono focus:text-cyan-400"
             />
         ) : (
             <span className="font-mono text-sm text-white font-medium">{value}</span>
@@ -60,47 +59,62 @@ export const InventoryNotes: React.FC<Props> = ({ character, isEditing, onChange
 
     return (
         <div className="flex-grow flex flex-col h-full overflow-hidden">
-            <div className="flex-grow overflow-y-auto custom-scrollbar pr-2 space-y-2 mb-4" data-lenis-prevent>
-                {character.equipment.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] transition-all duration-300 group">
-                        <div className="flex items-center gap-3">
-                            <div className="opacity-70 group-hover:opacity-100 transition-opacity">{getItemIcon(item.type)}</div>
-                            <div className="flex flex-col">
-                                <span className="text-sm font-body font-medium text-mystic-200 group-hover:text-white transition-colors">{item.name}</span>
-                                {item.damage && <span className="text-[9px] text-red-400/60 font-mono">{item.damage}</span>}
+            {/* List Area */}
+            <div className="flex-grow overflow-y-auto custom-scrollbar pr-2 space-y-2 mb-4 min-h-[200px]" data-lenis-prevent>
+                {character.equipment.length === 0 ? (
+                    <div className="h-full flex flex-col items-center justify-center text-center opacity-30 gap-4">
+                        <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center">
+                            <Backpack size={24} className="text-white" />
+                        </div>
+                        <p className="text-xs uppercase tracking-widest text-mystic-400 font-bold">Mochila Vazia</p>
+                    </div>
+                ) : (
+                    character.equipment.map((item) => (
+                        <div key={item.id} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] transition-all duration-300 group">
+                            <div className="flex items-center gap-3 overflow-hidden">
+                                <div className="shrink-0 p-2 bg-white/5 rounded-lg border border-white/5 group-hover:border-white/10 transition-colors">
+                                    {getItemIcon(item.type)}
+                                </div>
+                                <div className="flex flex-col truncate">
+                                    <span className="text-sm font-body font-medium text-mystic-200 group-hover:text-white transition-colors truncate">{item.name}</span>
+                                    {item.damage && <span className="text-[9px] text-red-400/60 font-mono">{item.damage}</span>}
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3 pl-2">
+                                <span className="text-[10px] font-mono text-mystic-500 bg-void-950/50 px-2 py-1 rounded-md border border-white/5">x{item.quantity}</span>
+                                {isEditing && (
+                                    <button onClick={() => handleRemoveItem(item.id)} className="p-1.5 text-mystic-600 hover:text-red-400 hover:bg-red-400/10 rounded-md transition-colors"><Trash2 size={14} /></button>
+                                )}
                             </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-mono text-mystic-500 bg-void-950/50 px-1.5 py-0.5 rounded border border-white/5">x{item.quantity}</span>
-                            {isEditing && (
-                                <button onClick={() => handleRemoveItem(item.id)} className="p-1.5 text-mystic-600 hover:text-red-400 hover:bg-red-400/10 rounded transition-colors"><Trash2 size={12} /></button>
-                            )}
-                        </div>
-                    </div>
-                ))}
+                    ))
+                )}
             </div>
-            <div className="mt-auto mb-4 p-3 bg-void-950/30 rounded-xl border border-white/5">
-                <div className="flex items-center gap-2 mb-3 opacity-60">
-                    <Coins size={12} className="text-gold-400" /><span className="text-[10px] font-bold uppercase tracking-widest text-mystic-300">Algibeira</span>
+
+            {/* Wealth Display */}
+            <div className="mt-auto mb-4 p-4 bg-void-900/40 rounded-2xl border border-white/5 backdrop-blur-sm">
+                <div className="flex items-center gap-2 mb-3 opacity-80 border-b border-white/5 pb-2">
+                    <Coins size={14} className="text-gold-400" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-mystic-300">Algibeira</span>
                 </div>
-                <div className="flex justify-between items-center px-1">
+                <div className="grid grid-cols-5 gap-2">
                     <CurrencyInput label="PC" value={wealth.cp} color="text-[#b87333]" isEditing={isEditing} onChange={(v) => handleWealthChange('cp', v)} />
-                    <div className="w-px h-6 bg-white/5"></div>
                     <CurrencyInput label="PP" value={wealth.sp} color="text-slate-400" isEditing={isEditing} onChange={(v) => handleWealthChange('sp', v)} />
-                    <div className="w-px h-6 bg-white/5"></div>
                     <CurrencyInput label="PE" value={wealth.ep} color="text-cyan-600" isEditing={isEditing} onChange={(v) => handleWealthChange('ep', v)} />
-                    <div className="w-px h-6 bg-white/5"></div>
                     <CurrencyInput label="PO" value={wealth.gp} color="text-gold-400" isEditing={isEditing} onChange={(v) => handleWealthChange('gp', v)} />
-                    <div className="w-px h-6 bg-white/5"></div>
                     <CurrencyInput label="PL" value={wealth.pp} color="text-indigo-300" isEditing={isEditing} onChange={(v) => handleWealthChange('pp', v)} />
                 </div>
             </div>
+
+            {/* Add Item Input */}
             {isEditing && (
                 <div className="pt-3 border-t border-white/5 animate-fade-in-up">
                     <div className="flex gap-2 items-center">
-                        <input type="text" placeholder="Item..." value={newItemName} onChange={(e) => setNewItemName(e.target.value)} className="ghost-input flex-grow bg-void-950/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/20 focus:border-cyan-500/50" />
-                        <input type="number" min="1" value={newItemQty} onChange={(e) => setNewItemQty(parseInt(e.target.value))} className="ghost-input w-10 bg-void-950/50 border border-white/10 rounded-lg px-1 py-2 text-xs text-white text-center focus:border-cyan-500/50" />
-                        <button onClick={handleAddItem} className="p-2 bg-cyan-900/50 hover:bg-cyan-500 text-cyan-200 hover:text-void-950 rounded-lg transition-colors border border-cyan-500/20"><Plus size={14} /></button>
+                        <div className="relative flex-grow">
+                             <input type="text" placeholder="Adicionar item..." value={newItemName} onChange={(e) => setNewItemName(e.target.value)} className="w-full bg-void-950/50 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-white/20 focus:outline-none focus:border-cyan-500/50 focus:bg-void-900" />
+                        </div>
+                        <input type="number" min="1" value={newItemQty} onChange={(e) => setNewItemQty(parseInt(e.target.value))} className="w-12 bg-void-950/50 border border-white/10 rounded-xl px-1 py-3 text-xs text-white text-center focus:outline-none focus:border-cyan-500/50" />
+                        <button onClick={handleAddItem} className="p-3 bg-cyan-500 hover:bg-cyan-400 text-void-950 rounded-xl transition-colors shadow-lg shadow-cyan-900/20 active:scale-95"><Plus size={16} /></button>
                     </div>
                 </div>
             )}
