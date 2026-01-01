@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Plus, Upload, Trash2, Download, Wand2, Printer, User, Swords, Shield } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'framer-motion';
@@ -81,18 +82,18 @@ export const Sanctum: React.FC<Props> = ({ onSelect, onPrint, onExport }) => {
                 </div>
             </div>
 
-            {/* BENTO GRID LAYOUT */}
+            {/* BENTO GRID LAYOUT - Improved Responsive Grid using minmax */}
             <motion.div 
                 variants={containerVariants} 
                 initial="hidden" 
                 animate="show" 
-                className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 relative z-10 pb-20"
+                className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6 relative z-10 pb-20 auto-rows-[320px]"
             >
                 {/* 1. Primary Action: CREATE NEW (Big Tile) */}
                 <motion.button 
                     variants={itemVariants} 
                     onClick={() => createCharacter(false)} 
-                    className="col-span-1 md:col-span-2 row-span-2 group relative rounded-[2.5rem] bg-gradient-to-br from-void-900/80 to-void-950/80 border border-white/10 hover:border-cyan-500/50 transition-all duration-500 overflow-hidden flex flex-col items-center justify-center gap-6 min-h-[350px] md:min-h-[auto] shadow-lg hover:shadow-glow-cyan"
+                    className="col-span-1 md:col-span-2 row-span-1 md:row-span-1 group relative rounded-[2.5rem] bg-gradient-to-br from-void-900/80 to-void-950/80 border border-white/10 hover:border-cyan-500/50 transition-all duration-500 overflow-hidden flex flex-col items-center justify-center gap-6 shadow-lg hover:shadow-glow-cyan h-full w-full"
                 >
                     <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
                     <div className="absolute inset-0 bg-gradient-to-t from-cyan-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
@@ -119,7 +120,7 @@ export const Sanctum: React.FC<Props> = ({ onSelect, onPrint, onExport }) => {
                 <motion.button 
                     variants={itemVariants} 
                     onClick={handleImportClick}
-                    className="col-span-1 md:col-span-1 row-span-1 group relative rounded-[2rem] bg-void-900/40 border border-white/10 hover:border-white/30 hover:bg-white/5 transition-all flex flex-col items-center justify-center gap-3 min-h-[160px]"
+                    className="col-span-1 row-span-1 group relative rounded-[2rem] bg-void-900/40 border border-white/10 hover:border-white/30 hover:bg-white/5 transition-all flex flex-col items-center justify-center gap-3 h-full w-full"
                 >
                     <Upload size={24} className="text-mystic-500 group-hover:text-white transition-colors" />
                     <span className="text-xs font-display font-bold uppercase tracking-widest text-mystic-400 group-hover:text-white">Importar JSON</span>
@@ -127,14 +128,14 @@ export const Sanctum: React.FC<Props> = ({ onSelect, onPrint, onExport }) => {
 
                 {/* 3. Character Cards */}
                 {savedCharacters.map(char => {
-                    const raceImg = RACE_IMAGES[char.race] || 'https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?q=80&w=1000&auto=format&fit=crop';
+                    const raceImg = RACE_IMAGES[char.race] || 'https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?q=60&w=600&auto=format&fit=crop';
                     
                     return (
-                        <motion.div 
+                        <motion.button 
                             key={char.id} 
                             variants={itemVariants} 
                             onClick={() => onSelect(char)} 
-                            className="col-span-1 md:col-span-1 row-span-1 group relative h-[320px] rounded-[2rem] overflow-hidden cursor-pointer border border-white/5 hover:border-white/20 transition-all duration-500 bg-void-950"
+                            className="col-span-1 row-span-1 group relative h-full w-full rounded-[2rem] overflow-hidden cursor-pointer border border-white/5 hover:border-white/20 transition-all duration-500 bg-void-950 text-left focus:outline-none focus:ring-2 focus:ring-cyan-500"
                             tabIndex={0}
                         >
                             {/* Background Image with Overlay */}
@@ -187,12 +188,12 @@ export const Sanctum: React.FC<Props> = ({ onSelect, onPrint, onExport }) => {
                             <div className="absolute inset-x-0 bottom-0 p-4 bg-void-950/90 backdrop-blur-xl border-t border-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex justify-between items-center z-20">
                                 <span className="text-[10px] font-bold text-mystic-500 uppercase tracking-widest">Ações</span>
                                 <div className="flex gap-2">
-                                    <button onClick={(e) => { e.stopPropagation(); onPrint(char); }} className="p-2 hover:bg-white/10 rounded-full text-mystic-400 hover:text-white transition-colors" title="Imprimir"><Printer size={16} /></button>
-                                    <button onClick={(e) => { e.stopPropagation(); onExport(char); }} className="p-2 hover:bg-white/10 rounded-full text-mystic-400 hover:text-gold-400 transition-colors" title="Exportar"><Download size={16} /></button>
-                                    <button onClick={(e) => { e.stopPropagation(); deleteCharacter(char.id); }} className="p-2 hover:bg-rose-500/20 rounded-full text-mystic-400 hover:text-rose-500 transition-colors" title="Excluir"><Trash2 size={16} /></button>
+                                    <div role="button" onClick={(e) => { e.stopPropagation(); onPrint(char); }} className="p-2 hover:bg-white/10 rounded-full text-mystic-400 hover:text-white transition-colors" title="Imprimir"><Printer size={16} /></div>
+                                    <div role="button" onClick={(e) => { e.stopPropagation(); onExport(char); }} className="p-2 hover:bg-white/10 rounded-full text-mystic-400 hover:text-gold-400 transition-colors" title="Exportar"><Download size={16} /></div>
+                                    <div role="button" onClick={(e) => { e.stopPropagation(); deleteCharacter(char.id); }} className="p-2 hover:bg-rose-500/20 rounded-full text-mystic-400 hover:text-rose-500 transition-colors" title="Excluir"><Trash2 size={16} /></div>
                                 </div>
                             </div>
-                        </motion.div>
+                        </motion.button>
                     );
                 })}
             </motion.div>

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Character } from '../../types';
 import { Crown, Swords, Scroll } from 'lucide-react';
@@ -7,12 +8,12 @@ import { RulesRepository } from '../../services/RulesRepository';
 interface Props {
     character: Character;
     isEditing: boolean;
-    // TYPE SAFETY FIX: Generic Key ensures value matches the key type
     onChange: <K extends keyof Character>(field: K, value: Character[K]) => void;
 }
 
 export const IdentityHeader: React.FC<Props> = ({ character, isEditing, onChange }) => {
-    const bgImage = RACE_IMAGES[character.race] || 'https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?q=80&w=1000&auto=format&fit=crop';
+    // Optimized image URL
+    const bgImage = RACE_IMAGES[character.race] || 'https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?q=60&w=600&auto=format&fit=crop';
     
     // Data from Repository
     const races = RulesRepository.getRaces();
@@ -27,7 +28,7 @@ export const IdentityHeader: React.FC<Props> = ({ character, isEditing, onChange
             
             <div className="absolute inset-0 bg-cover bg-center transition-transform duration-[2s] ease-out group-hover:scale-105" style={{ backgroundImage: `url(${bgImage})` }}></div>
             <div className="absolute inset-0 bg-gradient-to-t from-void-950 via-void-900/80 to-void-950/40 opacity-95"></div>
-            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
+            <div className="absolute inset-0 bg-noise opacity-5 mix-blend-overlay pointer-events-none"></div>
 
             <div className="relative z-10 px-6 py-12 md:py-20 flex flex-col items-center text-center">
                 <div className="flex items-center gap-3 mb-8 animate-fade-in-down">
@@ -51,7 +52,7 @@ export const IdentityHeader: React.FC<Props> = ({ character, isEditing, onChange
                                     type="text" 
                                     value={character.name}
                                     onChange={(e) => onChange('name', e.target.value)}
-                                    className="w-full text-center text-3xl md:text-4xl font-display font-bold bg-void-900/50 border-b-2 border-white/20 text-white focus:outline-none focus:border-cyan-500 focus:bg-void-900 p-4 rounded-t-lg transition-all placeholder-white/10"
+                                    className="ghost-input w-full text-center text-3xl md:text-4xl font-display font-bold text-white border-b-2 border-white/20 p-4 rounded-t-lg transition-all placeholder-white/10 focus:border-cyan-500 focus:bg-void-900/50"
                                 />
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

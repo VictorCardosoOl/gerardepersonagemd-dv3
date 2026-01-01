@@ -1,3 +1,4 @@
+
 import { Attribute, SkillName } from "./types";
 
 // --- ATTRIBUTE DESCRIPTIONS (TOOLTIPS) ---
@@ -62,15 +63,18 @@ export const DICTIONARY: Record<string, string> = {
 };
 
 // --- VISUAL ASSETS (RACE IMAGES) ---
+// Optimized with Unsplash params for performance (width 600px, quality 60, auto format)
+const OPTIM = "&w=600&q=60&auto=format&fit=crop";
+
 export const RACE_IMAGES: Record<string, string> = {
-    'Humano': 'https://images.unsplash.com/photo-1542259681-d3d63b82a0d7?q=80&w=1000&auto=format&fit=crop',
-    'Elfo': 'https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?q=80&w=1000&auto=format&fit=crop',
-    'Anão': 'https://images.unsplash.com/photo-1506422748879-887454f9cdff?q=80&w=1000&auto=format&fit=crop',
-    'Halfling': 'https://images.unsplash.com/photo-1502477612301-44703a557b77?q=80&w=1000&auto=format&fit=crop',
-    'Draconato': 'https://images.unsplash.com/photo-1535581652167-3d6b9353a90b?q=80&w=1000&auto=format&fit=crop',
-    'Gnomo': 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1000&auto=format&fit=crop',
-    'Meio-Orc': 'https://images.unsplash.com/photo-1599789197514-dd7273dc766f?q=80&w=1000&auto=format&fit=crop',
-    'Tiefling': 'https://images.unsplash.com/photo-1634918737676-e8d12cc49942?q=80&w=1000&auto=format&fit=crop',
+    'Humano': `https://images.unsplash.com/photo-1542259681-d3d63b82a0d7?${OPTIM}`,
+    'Elfo': `https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?${OPTIM}`,
+    'Anão': `https://images.unsplash.com/photo-1506422748879-887454f9cdff?${OPTIM}`,
+    'Halfling': `https://images.unsplash.com/photo-1502477612301-44703a557b77?${OPTIM}`,
+    'Draconato': `https://images.unsplash.com/photo-1535581652167-3d6b9353a90b?${OPTIM}`,
+    'Gnomo': `https://images.unsplash.com/photo-1534447677768-be436bb09401?${OPTIM}`,
+    'Meio-Orc': `https://images.unsplash.com/photo-1599789197514-dd7273dc766f?${OPTIM}`,
+    'Tiefling': `https://images.unsplash.com/photo-1634918737676-e8d12cc49942?${OPTIM}`,
 };
 
 export const SKILL_LIST: { name: SkillName; attr: Attribute }[] = [

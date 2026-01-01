@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Character, Item, ItemType, Wealth } from '../../types';
 import { CircleDot, Sword, Shield, FlaskConical, Wrench, Trash2, Plus, Coins } from 'lucide-react';
@@ -5,7 +6,6 @@ import { CircleDot, Sword, Shield, FlaskConical, Wrench, Trash2, Plus, Coins } f
 interface Props {
     character: Character;
     isEditing: boolean;
-    // TYPE SAFETY FIX: Generic Key ensures value matches the key type
     onChange: <K extends keyof Character>(field: K, value: Character[K]) => void;
 }
 
@@ -28,7 +28,7 @@ const CurrencyInput: React.FC<{ label: string, value: number, color: string, isE
                 min="0"
                 value={value}
                 onChange={(e) => onChange(parseInt(e.target.value) || 0)}
-                className="w-12 bg-void-950/50 border border-white/10 rounded-lg py-1 text-center text-xs text-white focus:border-cyan-500/50 outline-none"
+                className="ghost-input w-12 border-b border-white/10 text-center text-xs text-white focus:border-cyan-500/50"
             />
         ) : (
             <span className="font-mono text-sm text-white font-medium">{value}</span>
@@ -98,8 +98,8 @@ export const InventoryNotes: React.FC<Props> = ({ character, isEditing, onChange
             {isEditing && (
                 <div className="pt-3 border-t border-white/5 animate-fade-in-up">
                     <div className="flex gap-2 items-center">
-                        <input type="text" placeholder="Item..." value={newItemName} onChange={(e) => setNewItemName(e.target.value)} className="flex-grow bg-void-950/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/20 focus:outline-none focus:border-cyan-500/50" />
-                        <input type="number" min="1" value={newItemQty} onChange={(e) => setNewItemQty(parseInt(e.target.value))} className="w-10 bg-void-950/50 border border-white/10 rounded-lg px-1 py-2 text-xs text-white text-center focus:outline-none focus:border-cyan-500/50" />
+                        <input type="text" placeholder="Item..." value={newItemName} onChange={(e) => setNewItemName(e.target.value)} className="ghost-input flex-grow bg-void-950/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/20 focus:border-cyan-500/50" />
+                        <input type="number" min="1" value={newItemQty} onChange={(e) => setNewItemQty(parseInt(e.target.value))} className="ghost-input w-10 bg-void-950/50 border border-white/10 rounded-lg px-1 py-2 text-xs text-white text-center focus:border-cyan-500/50" />
                         <button onClick={handleAddItem} className="p-2 bg-cyan-900/50 hover:bg-cyan-500 text-cyan-200 hover:text-void-950 rounded-lg transition-colors border border-cyan-500/20"><Plus size={14} /></button>
                     </div>
                 </div>
