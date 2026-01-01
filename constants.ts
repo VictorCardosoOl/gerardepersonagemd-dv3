@@ -191,17 +191,16 @@ export const DICTIONARY: Record<string, string> = {
 };
 
 // --- VISUAL ASSETS (RACE IMAGES) ---
-// Using high-quality Unsplash source images for "Ethereal" look. 
-// You can replace these with local path like '/img/elf.jpg'
+// High-quality, moody, dark fantasy images for the Ethereal Theme
 export const RACE_IMAGES: Record<string, string> = {
-    'Humano': 'https://images.unsplash.com/photo-1542259681-d3d63b82a0d7?q=80&w=1000&auto=format&fit=crop', // Knight/Human
-    'Elfo': 'https://images.unsplash.com/photo-1596706037896-1d120a1c1d63?q=80&w=1000&auto=format&fit=crop', // Mystical Forest
-    'Anão': 'https://images.unsplash.com/photo-1620888209268-2432d0611d2e?q=80&w=1000&auto=format&fit=crop', // Forge/Cave
-    'Halfling': 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?q=80&w=1000&auto=format&fit=crop', // Cozy Nature
-    'Draconato': 'https://images.unsplash.com/photo-1632219736780-3691b0b43527?q=80&w=1000&auto=format&fit=crop', // Scales/Fire
-    'Gnomo': 'https://images.unsplash.com/photo-1563297126-728b7a95616b?q=80&w=1000&auto=format&fit=crop', // Crystals/Magic
-    'Meio-Orc': 'https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?q=80&w=1000&auto=format&fit=crop', // Tribal/Warrior
-    'Tiefling': 'https://images.unsplash.com/photo-1629812456605-4a044aa38fbc?q=80&w=1000&auto=format&fit=crop', // Dark/Mystic
+    'Humano': 'https://images.unsplash.com/photo-1599789197514-dd7273dc766f?q=80&w=1000&auto=format&fit=crop', // Dark Knight
+    'Elfo': 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000&auto=format&fit=crop', // Mystic Forest
+    'Anão': 'https://images.unsplash.com/photo-1516916759473-600c07bc5d5f?q=80&w=1000&auto=format&fit=crop', // Deep Cave Sparks
+    'Halfling': 'https://images.unsplash.com/photo-1440557653017-d39f46ee3680?q=80&w=1000&auto=format&fit=crop', // Cozy Garden Light
+    'Draconato': 'https://images.unsplash.com/photo-1614726365445-5658c7929d48?q=80&w=1000&auto=format&fit=crop', // Dragon Scale Texture
+    'Gnomo': 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1000&auto=format&fit=crop', // Crystals
+    'Meio-Orc': 'https://images.unsplash.com/photo-1542259681-d3d63b82a0d7?q=80&w=1000&auto=format&fit=crop', // Tribal Armor
+    'Tiefling': 'https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?q=80&w=1000&auto=format&fit=crop', // Dark Portrait
 };
 
 export const RACES: DndRace[] = [

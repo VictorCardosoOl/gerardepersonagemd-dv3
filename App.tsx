@@ -8,7 +8,7 @@ import { DragSlider } from './components/DragSlider';
 import { GuideSection } from './components/GuideSection';
 import { DMPanel } from './components/DMPanel'; // Added missing import
 import { RACES } from './constants';
-import { MoveRight, Zap, Check, Sparkles, Book, Skull, Map, Shield, Hammer } from 'lucide-react';
+import { MoveRight, Zap, Check, Sparkles, Book, Skull, Map, Shield, Hammer, ExternalLink, Heart } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { fetchMonsterList } from './services/dndApi';
 import Lenis from 'lenis';
@@ -58,8 +58,13 @@ export default function App() {
       } catch (e) { console.error("Erro ao carregar do LocalStorage:", e); }
     }
 
-    // Lenis Setup
-    const lenis = new Lenis({ duration: 1.2, smoothWheel: true });
+    // Lenis Setup for Ethereal Smooth Scroll
+    const lenis = new Lenis({ 
+      duration: 1.5, // Slower duration for space-like feel
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
+      smoothWheel: true 
+    });
+    
     lenisRef.current = lenis;
     function raf(time: number) { lenis.raf(time); requestAnimationFrame(raf); }
     requestAnimationFrame(raf);
@@ -132,7 +137,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen font-body text-mystic-100 bg-void-950">
+    <div className="min-h-screen font-body text-mystic-100 bg-void-950 flex flex-col">
       <input type="file" ref={fileInputRef} onChange={onImportFile} className="hidden" accept=".json" />
 
       {/* --- DMPanel Component (Now Rendered) --- */}
@@ -149,7 +154,7 @@ export default function App() {
 
       {/* --- Horizontal Navigation --- */}
       <header className="fixed top-0 left-0 w-full z-40 flex justify-center pt-6 px-4 pointer-events-none">
-        <nav className="glass-panel rounded-full px-2 py-2 flex items-center gap-1 shadow-2xl pointer-events-auto">
+        <nav className="glass-panel rounded-full px-2 py-2 flex items-center gap-1 shadow-2xl pointer-events-auto border-white/10 bg-void-950/40 backdrop-blur-xl">
             {TABS.map((tab) => {
                 const isActive = activeTab === tab.id || (tab.id === 'sanctum' && activeTab === 'sheet' && activeCharacterId);
                 return (
@@ -162,7 +167,7 @@ export default function App() {
                         }}
                         className={`relative px-6 py-2.5 rounded-full text-[10px] font-display font-bold tracking-widest uppercase transition-all duration-300 ${isActive ? 'text-void-950' : 'text-mystic-400 hover:text-white'}`}
                     >
-                        {isActive && <motion.div layoutId="nav-pill" className="absolute inset-0 bg-white rounded-full" />}
+                        {isActive && <motion.div layoutId="nav-pill" className="absolute inset-0 bg-white rounded-full shadow-[0_0_20px_rgba(255,255,255,0.3)]" />}
                         <span className="relative z-10 flex items-center gap-2">
                              <tab.icon size={14} /> {tab.label}
                         </span>
@@ -172,7 +177,7 @@ export default function App() {
             <div className="w-px h-6 bg-white/10 mx-2"></div>
             <button 
                 onClick={() => setIsDMPanelOpen(true)}
-                className="p-2.5 rounded-full bg-void-900 border border-white/10 text-cyan-400 hover:bg-cyan-500 hover:text-void-950 transition-all"
+                className="p-2.5 rounded-full bg-void-900 border border-white/10 text-cyan-400 hover:bg-cyan-500 hover:text-void-950 transition-all hover:shadow-[0_0_15px_rgba(34,211,238,0.4)]"
                 title="Painel do Mestre"
             >
                 <Hammer size={16} />
@@ -181,7 +186,7 @@ export default function App() {
       </header>
 
       {/* --- Main Content --- */}
-      <main className="w-full min-h-screen pt-32 pb-20 relative">
+      <main className="w-full flex-grow pt-32 relative">
           <AnimatePresence mode="wait">
             {activeTab === 'sanctum' && (
                 <motion.div key="sanctum" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -213,11 +218,11 @@ export default function App() {
                 <motion.div key="codex" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                     <div className="text-center mb-16 px-4">
                         <Sparkles className="mx-auto text-gold-500 mb-4 animate-pulse" size={32} />
-                        <h2 className="text-5xl font-display font-black text-white mb-4 tracking-tight uppercase">Códice de Origens</h2>
+                        <h2 className="text-5xl font-display font-black text-white mb-4 tracking-tight uppercase drop-shadow-lg">Códice de Origens</h2>
                     </div>
                     <DragSlider className="max-w-[95vw]">
                         {RACES.map(race => (
-                            <div key={race.name} className="min-w-[360px] glass-panel p-10 rounded-[2rem] hover:border-cyan-500/30 transition-all cursor-pointer group relative overflow-hidden" onClick={() => handleCreateNew(false, race.name)}>
+                            <div key={race.name} className="min-w-[360px] glass-panel p-10 rounded-[2rem] hover:border-cyan-500/30 transition-all cursor-pointer group relative overflow-hidden bg-void-900/40" onClick={() => handleCreateNew(false, race.name)}>
                                 <div className="absolute -right-10 -top-10 w-40 h-40 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
                                 <h3 className="text-3xl font-display font-bold text-white mb-6 group-hover:text-cyan-400">{race.name}</h3>
                                 <p className="text-mystic-400 text-sm leading-relaxed mb-8">{race.description}</p>
@@ -234,6 +239,25 @@ export default function App() {
             )}
           </AnimatePresence>
       </main>
+
+      {/* --- Footer / Copyright --- */}
+      <footer className="w-full py-8 text-center relative z-10 border-t border-white/5 bg-void-950/50 backdrop-blur-sm mt-auto">
+          <div className="flex flex-col items-center gap-2">
+             <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-mystic-500">
+                <span>Mestre da Masmorra</span>
+                <span className="w-1 h-1 rounded-full bg-mystic-500/50"></span>
+                <span>© 2024</span>
+             </div>
+             <a 
+                href="https://seusite.com.br" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="group flex items-center gap-2 text-xs font-bold text-white hover:text-cyan-400 transition-colors"
+            >
+                Desenvolvido por <span className="underline decoration-white/20 underline-offset-4 group-hover:decoration-cyan-400/50">Seu Nome</span> <ExternalLink size={10} className="opacity-50 group-hover:opacity-100" />
+             </a>
+          </div>
+      </footer>
 
       <AnimatePresence>
         {notification && (
