@@ -1,12 +1,12 @@
 import React from 'react';
 import { Character } from '../../types';
-import { Sparkles, Crown, Swords, Scroll } from 'lucide-react';
+import { Crown, Swords, Scroll } from 'lucide-react';
 import { CLASSES, RACES, RACE_IMAGES } from '../../constants';
 
 interface Props {
     character: Character;
     isEditing: boolean;
-    onChange: (field: keyof Character, value: Character[keyof Character]) => void;
+    onChange: <K extends keyof Character>(field: K, value: Character[K]) => void;
 }
 
 export const IdentityHeader: React.FC<Props> = ({ character, isEditing, onChange }) => {

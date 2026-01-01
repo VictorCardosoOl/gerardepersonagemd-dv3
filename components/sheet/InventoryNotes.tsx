@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Character, DndClass, Item, ItemType, Wealth } from '../../types';
 import { CircleDot, Sword, Shield, FlaskConical, Wrench, Trash2, Plus, Coins } from 'lucide-react';
@@ -7,7 +6,7 @@ interface Props {
     character: Character;
     classData?: DndClass;
     isEditing: boolean;
-    onChange: (field: keyof Character, value: any) => void;
+    onChange: <K extends keyof Character>(field: K, value: Character[K]) => void;
 }
 
 const getItemIcon = (type: ItemType) => {

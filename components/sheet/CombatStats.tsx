@@ -5,7 +5,7 @@ import { Shield, Heart, Zap } from 'lucide-react';
 interface Props {
     character: Character;
     isEditing: boolean;
-    onChange: (field: keyof Character, value: any) => void;
+    onChange: <K extends keyof Character>(field: K, value: Character[K]) => void;
 }
 
 export const CombatStats: React.FC<Props> = ({ character, isEditing, onChange }) => {

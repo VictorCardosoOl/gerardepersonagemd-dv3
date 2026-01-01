@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Character } from '../types';
-import { User, Users, Trash2, Crown, Ghost, Plus, Save, X, RefreshCw, Download, Upload, FileJson } from 'lucide-react';
-import { generateCharacter } from '../utils/logic';
+import { User, Users, Trash2, Crown, Ghost, Plus, Save, X, RefreshCw, Download, Upload } from 'lucide-react';
+import { generateCharacter } from '../utils/factory';
 
 interface Props {
     savedCharacters: Character[];

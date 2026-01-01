@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600&family=Cinzel:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=Cinzel:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
@@ -80,6 +80,7 @@
         background-color: #020202;
         color: #e0e7ff;
         overflow-x: hidden;
+        font-family: 'Inter', sans-serif;
       }
 
       /* --- Ethereal Glass Utility --- */
@@ -93,6 +94,11 @@
       
       /* --- Typography Utilities --- */
       .text-balance { text-wrap: balance; }
+      
+      /* Headers Cinzel Adjustment */
+      h1, h2, h3, h4, h5, h6 {
+        font-family: 'Cinzel', serif;
+      }
       
       /* Scrollbar */
       .custom-scrollbar::-webkit-scrollbar { width: 4px; }

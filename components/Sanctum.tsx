@@ -66,18 +66,18 @@ export const Sanctum: React.FC<Props> = ({ savedCharacters, onSelect, onCreate, 
             <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6 relative z-10">
                 <div>
                     <h2 className="text-4xl md:text-5xl font-display font-black text-white mb-2 tracking-tight drop-shadow-lg">Sanctum</h2>
-                    <p className="text-mystic-400 font-serif italic text-lg">Seu salão de lendas e heróis caídos.</p>
+                    <p className="text-mystic-400 font-body font-light text-lg opacity-80">Seu salão de lendas e heróis caídos.</p>
                 </div>
                 <div className="flex gap-3">
                      <button 
                         onClick={onImport}
-                        className="flex items-center gap-2 px-5 py-3 rounded-xl border border-white/10 hover:bg-white/5 text-mystic-300 font-bold uppercase text-xs tracking-widest transition-all cursor-pointer"
+                        className="flex items-center gap-2 px-5 py-3 rounded-xl border border-white/10 hover:bg-white/5 text-mystic-300 font-display font-bold uppercase text-xs tracking-widest transition-all cursor-pointer"
                     >
                         <Upload size={14} /> Importar
                     </button>
                     <button 
                         onClick={onCreate}
-                        className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-void-950 hover:bg-accent-cyan font-bold uppercase text-xs tracking-widest shadow-neon-cyan transition-all cursor-pointer"
+                        className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-void-950 hover:bg-accent-cyan font-display font-bold uppercase text-xs tracking-widest shadow-neon-cyan transition-all cursor-pointer"
                     >
                         <Plus size={14} /> Invocar Novo
                     </button>
@@ -103,7 +103,7 @@ export const Sanctum: React.FC<Props> = ({ savedCharacters, onSelect, onCreate, 
                     <div className="w-16 h-16 rounded-full bg-void-900 flex items-center justify-center group-hover:scale-110 transition-transform border border-white/10 group-hover:border-accent-cyan shadow-lg relative z-10">
                         <Wand2 size={24} className="text-mystic-500 group-hover:text-accent-cyan" />
                     </div>
-                    <span className="text-sm font-bold uppercase tracking-widest text-mystic-500 group-hover:text-white relative z-10">Forjar Lenda</span>
+                    <span className="text-sm font-display font-bold uppercase tracking-widest text-mystic-500 group-hover:text-white relative z-10">Forjar Lenda</span>
                 </motion.button>
 
                 {/* Character Cards with Spotlight */}
@@ -135,19 +135,19 @@ export const Sanctum: React.FC<Props> = ({ savedCharacters, onSelect, onCreate, 
                         {/* Top: Header */}
                         <div className="relative z-10">
                             <div className="flex justify-between items-start mb-2">
-                                <span className="px-2 py-1 rounded bg-white/10 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur-sm">
+                                <span className="px-2 py-1 rounded bg-white/10 border border-white/10 text-[10px] font-display font-bold uppercase tracking-widest text-white backdrop-blur-sm">
                                     Nv. {char.level}
                                 </span>
                                 {char.isNPC && (
-                                    <span className="px-2 py-1 rounded bg-accent-rose/20 border border-accent-rose/20 text-[10px] font-bold uppercase tracking-widest text-accent-rose backdrop-blur-sm">
+                                    <span className="px-2 py-1 rounded bg-accent-rose/20 border border-accent-rose/20 text-[10px] font-display font-bold uppercase tracking-widest text-accent-rose backdrop-blur-sm">
                                         NPC
                                     </span>
                                 )}
                             </div>
-                            <h3 className="font-display font-bold text-2xl text-white leading-tight mb-1 group-hover:text-accent-cyan transition-colors truncate drop-shadow-md">
+                            <h3 className="font-display font-bold text-2xl text-white leading-tight mb-1 group-hover:text-accent-cyan transition-colors truncate drop-shadow-md tracking-tight">
                                 {char.name}
                             </h3>
-                            <p className="text-xs text-mystic-300 font-mono uppercase tracking-wider opacity-80 group-hover:opacity-100">
+                            <p className="text-xs text-mystic-300 font-body uppercase tracking-wider opacity-70 group-hover:opacity-100 transition-opacity">
                                 {char.race} {char.class}
                             </p>
                         </div>
@@ -155,11 +155,11 @@ export const Sanctum: React.FC<Props> = ({ savedCharacters, onSelect, onCreate, 
                         {/* Middle: Mini Stats */}
                         <div className="grid grid-cols-2 gap-2 relative z-10 my-4 opacity-70 group-hover:opacity-100 transition-opacity">
                             <div className="bg-void-950/60 rounded-lg p-2 text-center border border-white/5 backdrop-blur-sm">
-                                <span className="block text-[9px] text-mystic-400 uppercase font-bold">HP</span>
+                                <span className="block text-[9px] text-mystic-400 font-display font-bold uppercase tracking-wider">HP</span>
                                 <span className="font-mono font-bold text-white text-lg">{char.hp}</span>
                             </div>
                             <div className="bg-void-950/60 rounded-lg p-2 text-center border border-white/5 backdrop-blur-sm">
-                                <span className="block text-[9px] text-mystic-400 uppercase font-bold">CA</span>
+                                <span className="block text-[9px] text-mystic-400 font-display font-bold uppercase tracking-wider">CA</span>
                                 <span className="font-mono font-bold text-white text-lg">{char.ac}</span>
                             </div>
                         </div>
@@ -193,7 +193,7 @@ export const Sanctum: React.FC<Props> = ({ savedCharacters, onSelect, onCreate, 
             </motion.div>
 
             {savedCharacters.length === 0 && (
-                <div className="mt-12 text-center text-mystic-600 font-serif italic text-lg opacity-50 relative z-10">
+                <div className="mt-12 text-center text-mystic-600 font-body font-light text-lg opacity-50 relative z-10">
                     O silêncio reina no Sanctum. Invoque seu primeiro herói.
                 </div>
             )}

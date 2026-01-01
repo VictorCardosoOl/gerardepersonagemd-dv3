@@ -21,7 +21,7 @@ export const CharacterSheet: React.FC<Props> = ({ character, isEditing = false, 
     onUpdate({ attributes: newAttributes });
   };
 
-  const handleChange = (field: keyof Character, value: any) => {
+  const handleChange = <K extends keyof Character>(field: K, value: Character[K]) => {
     if (onUpdate) onUpdate({ [field]: value });
   };
 
@@ -120,6 +120,5 @@ export const CharacterSheet: React.FC<Props> = ({ character, isEditing = false, 
             </div>
 
         </div>
-    </div>
-  );
+    );
 };

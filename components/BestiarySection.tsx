@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { APIMonsterIndex, Monster } from '../types';
-import { fetchMonsterList, fetchMonsterDetails } from '../services/dndApi';
+import React from 'react';
+import { APIMonsterIndex } from '../types';
 import { MonsterCard } from './MonsterCard';
 import { Search, Loader2, Skull } from 'lucide-react';
+import { useBestiary } from '../hooks/useBestiary';
 
 interface Props {
     preLoadedList?: APIMonsterIndex[];
@@ -30,32 +30,16 @@ const MonsterListItem: React.FC<MonsterListItemProps> = ({ name, active, onClick
 );
 
 export const BestiarySection: React.FC<Props> = ({ preLoadedList = [] }) => {
-    const [monsterList, setMonsterList] = useState<APIMonsterIndex[]>(preLoadedList);
-    const [search, setSearch] = useState('');
-    const [selectedMonster, setSelectedMonster] = useState<Monster | null>(null);
-    const [isLoadingDetails, setIsLoadingDetails] = useState(false);
-    
-    // Initial Fetch (Fallback if not provided via props, though App.tsx handles this now)
-    useEffect(() => {
-        if (preLoadedList.length > 0) {
-            setMonsterList(preLoadedList);
-        } else if (monsterList.length === 0) {
-            fetchMonsterList().then(data => setMonsterList(data));
-        }
-    }, [preLoadedList]);
-
-    const handleSelect = async (index: string) => {
-        setIsLoadingDetails(true);
-        const details = await fetchMonsterDetails(index);
-        setSelectedMonster(details);
-        setIsLoadingDetails(false);
-    };
-
-    const filteredList = useMemo(() => {
-        const term = search.toLowerCase();
-        if (!term) return monsterList.slice(0, 50);
-        return monsterList.filter(m => m.name.toLowerCase().includes(term)).slice(0, 50);
-    }, [search, monsterList]);
+    const { 
+        monsterList, 
+        filteredList, 
+        search, 
+        setSearch, 
+        selectedMonster, 
+        handleSelect, 
+        clearSelection, 
+        isLoadingDetails 
+    } = useBestiary(preLoadedList);
 
     return (
         <div className="w-full h-[80vh] flex gap-6 animate-fade-in">
@@ -114,7 +98,7 @@ export const BestiarySection: React.FC<Props> = ({ preLoadedList = [] }) => {
                             <span className="text-xs font-bold uppercase tracking-[0.3em] text-cyan-500/50 animate-pulse">Consultando Arcanos...</span>
                         </div>
                     ) : selectedMonster ? (
-                        <MonsterCard monster={selectedMonster} onClose={() => setSelectedMonster(null)} />
+                        <MonsterCard monster={selectedMonster} onClose={clearSelection} />
                     ) : (
                         <div className="h-full flex flex-col items-center justify-center opacity-20">
                             <div className="w-32 h-32 rounded-full border-2 border-dashed border-white/30 flex items-center justify-center mb-6">

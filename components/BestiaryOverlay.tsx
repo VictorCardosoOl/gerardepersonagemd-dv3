@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { APIMonsterIndex, Monster } from '../types';
-import { fetchMonsterList, fetchMonsterDetails } from '../services/dndApi';
+import React, { useEffect } from 'react';
 import { MonsterCard } from './MonsterCard';
 import { Search, X, Loader2 } from 'lucide-react';
+import { useBestiary } from '../hooks/useBestiary';
 
 interface Props {
     isOpen: boolean;
@@ -31,30 +30,16 @@ const MonsterListItem: React.FC<MonsterListItemProps> = ({ name, active, onClick
 );
 
 export const BestiaryOverlay: React.FC<Props> = ({ isOpen, onClose }) => {
-    const [monsterList, setMonsterList] = useState<APIMonsterIndex[]>([]);
-    const [search, setSearch] = useState('');
-    const [selectedMonster, setSelectedMonster] = useState<Monster | null>(null);
-    const [isLoadingDetails, setIsLoadingDetails] = useState(false);
-    
-    // Initial Fetch
-    useEffect(() => {
-        if (isOpen && monsterList.length === 0) {
-            fetchMonsterList().then(data => setMonsterList(data));
-        }
-    }, [isOpen]);
-
-    const handleSelect = async (index: string) => {
-        setIsLoadingDetails(true);
-        const details = await fetchMonsterDetails(index);
-        setSelectedMonster(details);
-        setIsLoadingDetails(false);
-    };
-
-    const filteredList = useMemo(() => {
-        const term = search.toLowerCase();
-        if (!term) return monsterList.slice(0, 50);
-        return monsterList.filter(m => m.name.toLowerCase().includes(term)).slice(0, 50);
-    }, [search, monsterList]);
+    const { 
+        monsterList, 
+        filteredList, 
+        search, 
+        setSearch, 
+        selectedMonster, 
+        handleSelect, 
+        clearSelection, 
+        isLoadingDetails 
+    } = useBestiary();
 
     // Keyboard Esc listener
     useEffect(() => {
@@ -122,7 +107,7 @@ export const BestiaryOverlay: React.FC<Props> = ({ isOpen, onClose }) => {
                             <span className="text-xs font-bold uppercase tracking-widest">Invocando criatura...</span>
                         </div>
                     ) : selectedMonster ? (
-                        <MonsterCard monster={selectedMonster} onClose={() => setSelectedMonster(null)} />
+                        <MonsterCard monster={selectedMonster} onClose={clearSelection} />
                     ) : (
                         <div className="h-full flex flex-col items-center justify-center opacity-30">
                             <div className="w-24 h-24 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center mb-4">
