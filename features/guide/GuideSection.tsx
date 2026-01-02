@@ -1,28 +1,29 @@
+
 import React, { useState } from 'react';
-import { GUIDE_STEPS } from '../constants';
-import { Compass, BookOpen, Dices, ShieldAlert, Sparkles, Sword, Eye, Search, Zap, Hand, Footprints, Clock, Flame, Heart, Skull, Ghost, Brain, BicepsFlexed, Moon, Sun, Backpack, Hammer, Crown, Shield, Infinity } from 'lucide-react';
-import { SPELLS_BR, Spell } from '../data/spells_br';
-import { RulesRepository } from '../services/RulesRepository';
+import { GUIDE_STEPS } from '../../constants';
+import { Compass, BookOpen, Dices, ShieldAlert, Sparkles, Sword, Eye, Search, Zap, Hand, Footprints, Clock, Flame, Heart, Skull, Ghost, Brain, BicepsFlexed, Moon, Sun, Backpack, User, Shield, Infinity, AlertTriangle, CheckCircle2, XCircle } from 'lucide-react';
+import { SPELLS_BR, Spell } from '../../data/spells_br';
+import { RulesRepository } from '../../services/RulesRepository';
 import { motion, LayoutGroup } from 'framer-motion';
 
 const GUIDE_TABS = [
-    { id: 'basics', label: 'Fundamentos' },
-    { id: 'classes', label: 'Classes' },
-    { id: 'attributes', label: 'Atributos' },
-    { id: 'equipment', label: 'Equipamento' },
-    { id: 'combat', label: 'Combate' },
-    { id: 'survival', label: 'Sobrevivência' },
-    { id: 'magic', label: 'Magia' },
-    { id: 'glossary', label: 'Glossário' }
+    { id: 'basics', label: 'Fundamentos', icon: Compass },
+    { id: 'classes', label: 'Classes', icon: User },
+    { id: 'attributes', label: 'Atributos', icon: Dices },
+    { id: 'equipment', label: 'Equipamento', icon: Backpack },
+    { id: 'combat', label: 'Combate', icon: Sword },
+    { id: 'survival', label: 'Sobrevivência', icon: Heart },
+    { id: 'magic', label: 'Magia', icon: Sparkles },
+    { id: 'glossary', label: 'Glossário', icon: BookOpen }
 ];
 
 const ATTRIBUTE_INFO = [
-    { name: "Força", abbr: "FOR", icon: BicepsFlexed, color: "text-red-400", desc: "Potência física natural.", skills: ["Atletismo", "Dano Corpo-a-Corpo", "Capacidade de Carga"] },
-    { name: "Destreza", abbr: "DES", icon: ActivityIcon, color: "text-cyan-400", desc: "Agilidade, reflexos e equilíbrio.", skills: ["Furtividade", "Acrobacia", "Iniciativa", "Classe de Armadura (CA)"] },
-    { name: "Constituição", abbr: "CON", icon: Heart, color: "text-green-400", desc: "Saúde, vigor e força vital.", skills: ["Pontos de Vida (HP)", "Resistir a Veneno", "Concentração em Magias"] },
-    { name: "Inteligência", abbr: "INT", icon: Brain, color: "text-blue-400", desc: "Acuidade mental e memória.", skills: ["Arcanismo", "Investigação", "História", "Natureza"] },
-    { name: "Sabedoria", abbr: "SAB", icon: Eye, color: "text-gold-400", desc: "Percepção e intuição.", skills: ["Percepção", "Medicina", "Sobrevivência", "Intuição"] },
-    { name: "Carisma", abbr: "CAR", icon: Sparkles, color: "text-purple-400", desc: "Força de personalidade.", skills: ["Persuasão", "Intimidação", "Enganação", "Atuação"] },
+    { name: "Força", abbr: "FOR", icon: BicepsFlexed, color: "text-red-400", bg: "bg-red-400/10", desc: "Potência física natural.", skills: ["Atletismo", "Dano Corpo-a-Corpo", "Capacidade de Carga"] },
+    { name: "Destreza", abbr: "DES", icon: ActivityIcon, color: "text-cyan-400", bg: "bg-cyan-400/10", desc: "Agilidade, reflexos e equilíbrio.", skills: ["Furtividade", "Acrobacia", "Iniciativa", "Classe de Armadura (CA)"] },
+    { name: "Constituição", abbr: "CON", icon: Heart, color: "text-green-400", bg: "bg-green-400/10", desc: "Saúde, vigor e força vital.", skills: ["Pontos de Vida (HP)", "Resistir a Veneno", "Concentração em Magias"] },
+    { name: "Inteligência", abbr: "INT", icon: Brain, color: "text-blue-400", bg: "bg-blue-400/10", desc: "Acuidade mental e memória.", skills: ["Arcanismo", "Investigação", "História", "Natureza"] },
+    { name: "Sabedoria", abbr: "SAB", icon: Eye, color: "text-gold-400", bg: "bg-gold-400/10", desc: "Percepção e intuição.", skills: ["Percepção", "Medicina", "Sobrevivência", "Intuição"] },
+    { name: "Carisma", abbr: "CAR", icon: Sparkles, color: "text-purple-400", bg: "bg-purple-400/10", desc: "Força de personalidade.", skills: ["Persuasão", "Intimidação", "Enganação", "Atuação"] },
 ];
 
 const WEAPON_TYPES = [
@@ -37,10 +38,10 @@ const ARMOR_TYPES = [
 ];
 
 const CONDITIONS = [
-    { name: "Caído", desc: "Você está no chão. Ataques contra você têm Vantagem se o atacante estiver perto. Seus ataques têm Desvantagem.", icon: Footprints },
+    { name: "Caído", desc: "Você está no chão. Ataques contra você têm Vantagem se o atacante estiver perto (1,5m). Seus ataques têm Desvantagem.", icon: Footprints },
     { name: "Cego", desc: "Você falha automaticamente em testes de visão. Ataques contra você têm Vantagem. Seus ataques têm Desvantagem.", icon: Eye },
-    { name: "Agarrado", desc: "Seu deslocamento torna-se 0. Você não pode se mover até se soltar (Ação de Atletismo/Acrobacia).", icon: Hand },
-    { name: "Envenenado", desc: "Você tem Desvantagem em jogadas de ataque e testes de habilidade.", icon: Skull },
+    { name: "Agarrado", desc: "Seu deslocamento torna-se 0. Você não pode se mover até se soltar (Ação de Atletismo/Acrobacia contra o oponente).", icon: Hand },
+    { name: "Envenenado", desc: "Você tem Desvantagem em jogadas de ataque e testes de habilidade enquanto o veneno persistir.", icon: Skull },
 ];
 
 const GLOSSARY_ITEMS = [
@@ -54,6 +55,21 @@ const GLOSSARY_ITEMS = [
     { term: "Proficiência", desc: "Seu bônus de treinamento (+2 no nv 1). Você soma isso em tudo que seu personagem 'sabe fazer' (armas, perícias).", color: "text-orange-400" },
     { term: "Rodada vs Turno", desc: "Uma Rodada é o ciclo completo onde todos agem (aprox. 6 segundos). Turno é a vez de um personagem específico.", color: "text-mystic-300" },
 ];
+
+const CLASS_DESCRIPTIONS: Record<string, string> = {
+    "Bárbaro": "Um guerreiro primitivo que canaliza a fúria em poder físico devastador.",
+    "Bardo": "Um artista mágico que usa música e oratória para inspirar aliados e manipular inimigos.",
+    "Clérigo": "Um servo divino que usa o poder dos deuses para curar feridas e punir hereges.",
+    "Druida": "Um guardião da natureza que conjura elementos e se transforma em bestas selvagens.",
+    "Guerreiro": "Um mestre tático de armas e armaduras, treinado para todas as formas de combate.",
+    "Monge": "Um mestre das artes marciais que canaliza a energia ki para feitos sobre-humanos.",
+    "Paladino": "Um cavaleiro sagrado que jurou combater o mal com aço e magia divina.",
+    "Patrulheiro": "Um caçador implacável que combina habilidade marcial com magia da natureza.",
+    "Ladino": "Um especialista em furtividade e precisão que ataca pontos vitais dos inimigos.",
+    "Feiticeiro": "Um conjurador com magia inata em seu sangue, capaz de moldar feitiços.",
+    "Bruxo": "Um buscador de segredos que fez um pacto com uma entidade extraplanar por poder.",
+    "Mago": "Um estudioso que manipula a realidade através de fórmulas arcanas complexas."
+};
 
 // --- HELPER ICONS ---
 function ActivityIcon(props: any) { return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> }
@@ -71,13 +87,13 @@ const CombatActionCard: React.FC<{
         <div className={`w-12 h-12 rounded-2xl ${color.replace('text-', 'bg-')}/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
             <Icon size={24} className={color} />
         </div>
-        <h4 className={`text-xl font-display font-bold text-white mb-2`}>{title}</h4>
-        <p className="text-sm text-mystic-300 font-light leading-relaxed mb-4">{desc}</p>
+        <h4 className={`text-xl font-display font-bold text-white mb-2 tracking-tight`}>{title}</h4>
+        <p className="text-sm text-mystic-200 font-light leading-relaxed mb-4">{desc}</p>
         <div className="mt-auto">
             <span className="text-[10px] font-bold uppercase tracking-widest text-mystic-500 block mb-2">Exemplos:</span>
             <div className="flex flex-wrap gap-2">
                 {examples.map(ex => (
-                    <span key={ex} className="text-[10px] px-2 py-1 rounded bg-white/5 border border-white/5 text-mystic-200">{ex}</span>
+                    <span key={ex} className="text-[10px] px-2 py-1 rounded bg-white/5 border border-white/5 text-mystic-300">{ex}</span>
                 ))}
             </div>
         </div>
@@ -108,14 +124,14 @@ const SpellCard: React.FC<{ spell: Spell }> = ({ spell }) => {
                 </span>
             </div>
             
-            <h4 className="font-display font-bold text-lg text-white mb-2 group-hover:text-cyan-200 transition-colors">{spell.name}</h4>
+            <h4 className="font-display font-bold text-lg text-white mb-2 group-hover:text-cyan-200 transition-colors tracking-wide">{spell.name}</h4>
             
             <div className="grid grid-cols-2 gap-2 text-[10px] text-mystic-400 mb-3 font-mono">
                 <span className="flex items-center gap-1"><Clock size={10}/> {spell.castingTime}</span>
                 <span className="flex items-center gap-1"><Footprints size={10}/> {spell.range}</span>
             </div>
 
-            <p className="text-xs text-mystic-300 font-light leading-relaxed line-clamp-4 group-hover:line-clamp-none transition-all">
+            <p className="text-xs text-mystic-200 font-light leading-relaxed line-clamp-4 group-hover:line-clamp-none transition-all">
                 {spell.desc}
             </p>
         </div>
@@ -192,22 +208,23 @@ export const GuideSection: React.FC = () => {
                 <h2 className="text-5xl md:text-8xl font-display font-black text-white mb-6 tracking-tight drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
                     Grimório do <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-500">Iniciante</span>
                 </h2>
-                <p className="text-xl text-mystic-300 max-w-2xl mx-auto leading-relaxed font-body font-light">
+                <p className="text-xl text-mystic-200 max-w-2xl mx-auto leading-relaxed font-body font-light">
                     O RPG de mesa é uma conversa onde o destino é decidido pelos dados. Aqui estão os segredos para dominar a masmorra.
                 </p>
             </div>
 
             {/* Floating Navigation Tabs */}
             <div className="flex justify-center mb-16 sticky top-28 z-30">
-                <div className="flex flex-wrap justify-center gap-1.5 p-2 rounded-full bg-void-950/80 border border-white/10 backdrop-blur-xl shadow-2xl">
+                <div className="flex flex-wrap justify-center gap-1.5 p-2 rounded-full bg-void-950/80 border border-white/10 backdrop-blur-xl shadow-2xl overflow-x-auto max-w-full">
                     <LayoutGroup id="guide-tabs">
                         {GUIDE_TABS.map(tab => {
                             const isActive = activeTab === tab.id;
+                            const Icon = tab.icon;
                             return (
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
-                                    className={`relative px-5 py-2 rounded-full font-bold text-[10px] md:text-xs uppercase tracking-[0.15em] transition-all duration-300 select-none z-10
+                                    className={`relative px-5 py-2.5 rounded-full font-bold text-[10px] md:text-xs uppercase tracking-[0.15em] transition-all duration-300 select-none z-10 flex items-center gap-2 whitespace-nowrap
                                     ${isActive ? 'text-void-950' : 'text-mystic-400 hover:bg-white/5 hover:text-white'}`}
                                 >
                                     {isActive && (
@@ -217,6 +234,7 @@ export const GuideSection: React.FC = () => {
                                             transition={{ type: "spring", stiffness: 350, damping: 25 }}
                                         />
                                     )}
+                                    {Icon && <Icon size={14} className={isActive ? "text-void-950" : "opacity-70"} />}
                                     {tab.label}
                                 </button>
                             );
@@ -240,10 +258,10 @@ export const GuideSection: React.FC = () => {
                             <div className="flex flex-col h-full relative z-10">
                                 <div className="flex items-center gap-4 mb-6">
                                     <div className="p-3 bg-cyan-900/30 rounded-2xl text-cyan-400 border border-cyan-500/30"><Dices size={28} /></div>
-                                    <h3 className="text-3xl font-display font-bold text-white">A Regra de Ouro</h3>
+                                    <h3 className="text-3xl font-display font-bold text-white tracking-tight">A Regra de Ouro</h3>
                                 </div>
                                 
-                                <p className="text-mystic-200 leading-relaxed mb-8 text-lg font-light text-secondary">
+                                <p className="text-mystic-100 leading-relaxed mb-8 text-lg font-light text-secondary">
                                     Tudo no D&D segue esta fórmula simples: role um <strong>d20</strong>, some seu modificador e tente superar a Dificuldade (CD).
                                 </p>
                                 
@@ -290,10 +308,10 @@ export const GuideSection: React.FC = () => {
                             <h3 className="text-2xl font-display font-bold text-gold-400 mb-6 flex items-center gap-3">
                                 <Sparkles size={24} /> Bônus de Proficiência
                             </h3>
-                            <p className="text-mystic-300 text-base leading-relaxed mb-6 text-secondary">
+                            <p className="text-mystic-200 text-base leading-relaxed mb-6 text-secondary">
                                 É o número que define o quão treinado seu herói é. Ele começa como <span className="text-void-950 font-bold bg-gold-400 px-2 py-0.5 rounded text-sm shadow-glow-gold mx-1">+2</span> e sobe com o nível.
                             </p>
-                            <p className="text-mystic-300 text-base leading-relaxed text-secondary">
+                            <p className="text-mystic-200 text-base leading-relaxed text-secondary">
                                 Você soma este número em tudo que você sabe fazer bem: ataques com armas que conhece, perícias treinadas e magias.
                             </p>
                         </div>
@@ -308,8 +326,8 @@ export const GuideSection: React.FC = () => {
                                             {idx + 1}
                                         </div>
                                         <div className="text-3xl mb-4 grayscale group-hover:grayscale-0 transition-all">{step.icon}</div>
-                                        <h4 className="font-bold text-white mb-3 font-display text-lg">{step.title}</h4>
-                                        <p className="text-xs text-mystic-400 leading-relaxed font-light text-secondary">{step.desc}</p>
+                                        <h4 className="font-bold text-white mb-3 font-display text-lg tracking-wide">{step.title}</h4>
+                                        <p className="text-xs text-mystic-300 leading-relaxed font-light text-secondary">{step.desc}</p>
                                     </div>
                                 ))}
                             </div>
@@ -322,19 +340,21 @@ export const GuideSection: React.FC = () => {
                     <div className="animate-fade-in-up">
                         <div className="text-center mb-10">
                             <h3 className="text-3xl font-display font-bold text-white mb-4">Caminhos Heroicos</h3>
-                            <p className="text-mystic-400 font-light max-w-2xl mx-auto text-secondary">Sua classe define como você luta, que magias usa e qual seu papel no grupo.</p>
+                            <p className="text-mystic-200 font-light max-w-2xl mx-auto text-secondary leading-relaxed">Sua classe define como você luta, que magias usa e qual seu papel no grupo.</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {allClasses.map(cls => (
-                                <div key={cls.name} className="glass-panel p-6 rounded-[2rem] hover:bg-white/[0.03] transition-all group border border-white/5 hover:border-gold-500/30">
+                                <div key={cls.name} className="glass-panel p-6 rounded-[2rem] hover:bg-white/[0.03] transition-all group border border-white/5 hover:border-gold-500/30 flex flex-col">
                                     <div className="flex justify-between items-start mb-4">
-                                        <h4 className="font-display font-bold text-xl text-white group-hover:text-gold-400 transition-colors">{cls.name}</h4>
-                                        <span className="text-[10px] font-bold uppercase bg-white/5 px-2 py-1 rounded text-mystic-500">d{cls.hitDie} Vida</span>
+                                        <h4 className="font-display font-bold text-xl text-white group-hover:text-gold-400 transition-colors tracking-wide">{cls.name}</h4>
+                                        <span className="text-[10px] font-bold uppercase bg-white/5 px-2 py-1 rounded text-mystic-500 border border-white/5">d{cls.hitDie} Vida</span>
                                     </div>
-                                    
-                                    <div className="space-y-4">
+                                    <p className="text-sm text-mystic-300 font-light leading-relaxed mb-6 italic border-l-2 border-white/10 pl-3">
+                                        "{CLASS_DESCRIPTIONS[cls.name] || 'Uma classe de aventureiro.'}"
+                                    </p>
+                                    <div className="mt-auto space-y-4">
                                         <div>
-                                            <span className="text-[10px] uppercase font-bold text-mystic-600 tracking-wider">Atributos Principais</span>
+                                            <span className="text-[10px] uppercase font-bold text-mystic-500 tracking-wider">Atributos Principais</span>
                                             <div className="flex gap-2 mt-1">
                                                 {cls.primaryAttributes.map(attr => (
                                                     <span key={attr} className="text-xs text-cyan-300 font-mono bg-cyan-900/20 px-1.5 py-0.5 rounded border border-cyan-500/20">{attr.substring(0,3).toUpperCase()}</span>
@@ -343,8 +363,8 @@ export const GuideSection: React.FC = () => {
                                         </div>
 
                                         <div>
-                                            <span className="text-[10px] uppercase font-bold text-mystic-600 tracking-wider">Proficiências</span>
-                                            <p className="text-xs text-mystic-300 mt-1 leading-relaxed text-secondary">
+                                            <span className="text-[10px] uppercase font-bold text-mystic-500 tracking-wider">Proficiências</span>
+                                            <p className="text-xs text-mystic-200 mt-1 leading-relaxed text-secondary">
                                                 {cls.proficiencies.slice(0, 3).join(", ")}...
                                             </p>
                                         </div>
@@ -360,26 +380,26 @@ export const GuideSection: React.FC = () => {
                     <div className="animate-fade-in-up">
                         <div className="text-center mb-10">
                             <h3 className="text-3xl font-display font-bold text-white mb-4">Os 6 Pilares</h3>
-                            <p className="text-mystic-400 font-light max-w-2xl mx-auto text-secondary">Cada criatura no multiverso é definida por estes seis números.</p>
+                            <p className="text-mystic-200 font-light max-w-2xl mx-auto text-secondary leading-relaxed">Cada criatura no multiverso é definida por estes seis números.</p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {ATTRIBUTE_INFO.map(attr => (
                                 <div key={attr.name} className="glass-panel p-6 rounded-[2rem] hover:border-white/20 transition-all group">
                                     <div className="flex items-center gap-4 mb-4">
-                                        <div className={`p-3 rounded-xl bg-white/5 ${attr.color}`}>
+                                        <div className={`p-3 rounded-xl ${attr.bg} ${attr.color}`}>
                                             <attr.icon size={24} />
                                         </div>
                                         <div>
-                                            <h4 className="font-display font-bold text-xl text-white">{attr.name}</h4>
+                                            <h4 className="font-display font-bold text-xl text-white tracking-wide">{attr.name}</h4>
                                             <span className="text-xs font-bold uppercase tracking-widest text-mystic-500">{attr.abbr}</span>
                                         </div>
                                     </div>
-                                    <p className="text-sm text-mystic-300 font-light mb-6 border-b border-white/5 pb-4 text-secondary">{attr.desc}</p>
+                                    <p className="text-sm text-mystic-200 font-light mb-6 border-b border-white/5 pb-4 text-secondary leading-relaxed">{attr.desc}</p>
                                     <div>
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-mystic-600 block mb-2">Usado para:</span>
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-mystic-500 block mb-2">Usado para:</span>
                                         <div className="flex flex-wrap gap-2">
                                             {attr.skills.map(s => (
-                                                <span key={s} className="px-2 py-1 rounded bg-white/5 text-[10px] text-mystic-200 border border-white/5">{s}</span>
+                                                <span key={s} className="px-2 py-1 rounded bg-white/5 text-[10px] text-mystic-300 border border-white/5">{s}</span>
                                             ))}
                                         </div>
                                     </div>
@@ -400,12 +420,12 @@ export const GuideSection: React.FC = () => {
                                 </h3>
                                 <div className="space-y-6">
                                     {WEAPON_TYPES.map((wpn, i) => (
-                                        <div key={i} className="bg-void-950/50 p-4 rounded-xl border border-white/5">
+                                        <div key={i} className="bg-void-950/50 p-4 rounded-xl border border-white/5 hover:border-rose-500/30 transition-colors">
                                             <div className="flex justify-between mb-2">
                                                 <h4 className="font-bold text-white">{wpn.name}</h4>
-                                                <span className="text-xs text-rose-300 font-mono">{wpn.examples}</span>
+                                                <span className="text-xs text-rose-300 font-mono bg-rose-900/20 px-2 py-0.5 rounded">{wpn.examples}</span>
                                             </div>
-                                            <p className="text-sm text-mystic-400 text-secondary">{wpn.desc}</p>
+                                            <p className="text-sm text-mystic-300 text-secondary">{wpn.desc}</p>
                                         </div>
                                     ))}
                                 </div>
@@ -418,12 +438,12 @@ export const GuideSection: React.FC = () => {
                                 </h3>
                                 <div className="space-y-6">
                                     {ARMOR_TYPES.map((arm, i) => (
-                                        <div key={i} className="bg-void-950/50 p-4 rounded-xl border border-white/5">
+                                        <div key={i} className="bg-void-950/50 p-4 rounded-xl border border-white/5 hover:border-blue-500/30 transition-colors">
                                             <div className="flex justify-between mb-2">
                                                 <h4 className="font-bold text-white">{arm.name}</h4>
                                             </div>
-                                            <p className="text-sm text-mystic-400 mb-2 text-secondary">{arm.desc}</p>
-                                            <span className="text-xs text-blue-300 font-mono bg-blue-900/20 px-2 py-1 rounded">{arm.stat}</span>
+                                            <p className="text-sm text-mystic-300 mb-2 text-secondary">{arm.desc}</p>
+                                            <span className="text-xs text-blue-300 font-mono bg-blue-900/20 px-2 py-1 rounded inline-block">{arm.stat}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -439,7 +459,7 @@ export const GuideSection: React.FC = () => {
                         <div className="space-y-8">
                             <div className="text-center">
                                  <h3 className="text-3xl font-display font-bold text-white mb-4">Economia de Ação</h3>
-                                 <p className="text-mystic-400 font-light max-w-2xl mx-auto text-secondary">Em seu turno, você pode se mover e realizar <strong>uma Ação</strong>. Se sua classe permitir, você também pode ter uma <strong>Ação Bônus</strong>.</p>
+                                 <p className="text-mystic-200 font-light max-w-2xl mx-auto text-secondary leading-relaxed">Em seu turno, você pode se mover e realizar <strong>uma Ação</strong>. Se sua classe permitir, você também pode ter uma <strong>Ação Bônus</strong>.</p>
                             </div>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-auto md:h-[400px]">
@@ -474,22 +494,49 @@ export const GuideSection: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Conditions */}
-                        <div className="space-y-8">
-                            <div className="flex items-center gap-4 border-b border-white/5 pb-4">
-                                <h3 className="text-2xl font-display font-bold text-white">Condições Comuns</h3>
-                                <span className="px-2 py-1 bg-rose-500/10 text-rose-400 text-[10px] font-bold uppercase rounded border border-rose-500/20">Debuffs</span>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                {CONDITIONS.map(cond => (
-                                    <div key={cond.name} className="bg-void-950/50 border border-white/5 p-4 rounded-xl flex items-start gap-4">
-                                        <cond.icon className="text-rose-400 shrink-0 mt-1" size={20} />
-                                        <div>
-                                            <h4 className="font-bold text-white mb-1">{cond.name}</h4>
-                                            <p className="text-xs text-mystic-400 leading-relaxed text-secondary">{cond.desc}</p>
+                        {/* Combat Mechanics Deep Dive */}
+                        <div className="glass-panel p-8 rounded-[2.5rem] bg-void-900/40 border-white/5 relative overflow-hidden">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                                <div>
+                                    <h3 className="text-2xl font-display font-bold text-white mb-4">Ataque vs Dano</h3>
+                                    <p className="text-mystic-300 text-sm leading-relaxed mb-6">
+                                        Muitos iniciantes confundem os dois rolares de dados. Aqui está a diferença:
+                                    </p>
+                                    <div className="space-y-4">
+                                        <div className="flex items-start gap-4">
+                                            <div className="p-2 bg-cyan-900/30 rounded-lg text-cyan-400 border border-cyan-500/20 shrink-0"><Dices size={20} /></div>
+                                            <div>
+                                                <h4 className="font-bold text-white text-sm">1. Jogada de Ataque (O "Se")</h4>
+                                                <p className="text-xs text-mystic-400 mt-1">
+                                                    Role um <strong>d20 + Modificador</strong>. Se o resultado for igual ou maior que a <strong>CA</strong> do inimigo, você acertou!
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start gap-4">
+                                            <div className="p-2 bg-rose-900/30 rounded-lg text-rose-400 border border-rose-500/20 shrink-0"><Skull size={20} /></div>
+                                            <div>
+                                                <h4 className="font-bold text-white text-sm">2. Jogada de Dano (O "Quanto")</h4>
+                                                <p className="text-xs text-mystic-400 mt-1">
+                                                    Se acertou, role o <strong>Dado da Arma</strong> (ex: d8 ou d6). Subtraia esse número da vida do inimigo.
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
-                                ))}
+                                </div>
+                                <div className="space-y-4">
+                                    <h3 className="text-2xl font-display font-bold text-white mb-4">Condições Comuns</h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        {CONDITIONS.map(cond => (
+                                            <div key={cond.name} className="bg-void-950/50 border border-white/5 p-4 rounded-xl flex items-start gap-3">
+                                                <cond.icon className="text-rose-400 shrink-0 mt-1" size={16} />
+                                                <div>
+                                                    <h4 className="font-bold text-white text-sm mb-1">{cond.name}</h4>
+                                                    <p className="text-[10px] text-mystic-400 leading-tight">{cond.desc}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -505,10 +552,10 @@ export const GuideSection: React.FC = () => {
                                 <h3 className="text-2xl font-display font-bold text-white mb-4 flex items-center gap-3">
                                     <Clock className="text-emerald-400" /> Descanso Curto
                                 </h3>
-                                <p className="text-mystic-300 font-light mb-4 text-secondary">
+                                <p className="text-mystic-200 font-light mb-4 text-secondary leading-relaxed">
                                     Uma pausa de pelo menos <strong>1 hora</strong> para enfaixar feridas e recuperar fôlego.
                                 </p>
-                                <ul className="space-y-2 text-sm text-mystic-200">
+                                <ul className="space-y-2 text-sm text-mystic-300">
                                     <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div> Você pode gastar Dados de Vida para se curar.</li>
                                     <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div> Bruxo recupera magias.</li>
                                     <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div> Guerreiro recupera "Retomar o Fôlego".</li>
@@ -520,10 +567,10 @@ export const GuideSection: React.FC = () => {
                                 <h3 className="text-2xl font-display font-bold text-white mb-4 flex items-center gap-3">
                                     <Moon className="text-indigo-400" /> Descanso Longo
                                 </h3>
-                                <p className="text-mystic-300 font-light mb-4 text-secondary">
+                                <p className="text-mystic-200 font-light mb-4 text-secondary leading-relaxed">
                                     Um período de <strong>8 horas</strong> de sono e atividades leves. Só pode fazer 1 a cada 24h.
                                 </p>
-                                <ul className="space-y-2 text-sm text-mystic-200">
+                                <ul className="space-y-2 text-sm text-mystic-300">
                                     <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div> Recupera TODOS os Pontos de Vida (HP).</li>
                                     <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div> Recupera metade dos Dados de Vida gastos.</li>
                                     <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div> Conjuradores recuperam todas as magias.</li>
@@ -537,16 +584,16 @@ export const GuideSection: React.FC = () => {
                             <div className="relative z-10 max-w-3xl mx-auto">
                                 <Skull size={48} className="text-rose-500 mx-auto mb-6 animate-pulse" />
                                 <h3 className="text-3xl font-display font-bold text-white mb-6">Testes de Morte</h3>
-                                <p className="text-mystic-300 text-lg font-light mb-8 leading-relaxed text-secondary">
+                                <p className="text-mystic-200 text-lg font-light mb-8 leading-relaxed text-secondary">
                                     Quando seus Pontos de Vida chegam a <strong>0</strong>, você não morre imediatamente. Você cai inconsciente e começa a lutar pela vida.
                                 </p>
                                 
                                 <div className="flex flex-col md:flex-row justify-center gap-8 md:gap-16 mb-8">
                                     <div className="text-center">
                                         <div className="flex gap-2 justify-center mb-2">
-                                            <div className="w-6 h-6 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
-                                            <div className="w-6 h-6 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
-                                            <div className="w-6 h-6 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
+                                            <div className="w-6 h-6 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)] flex items-center justify-center"><CheckCircle2 size={14} className="text-void-950" /></div>
+                                            <div className="w-6 h-6 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)] flex items-center justify-center"><CheckCircle2 size={14} className="text-void-950" /></div>
+                                            <div className="w-6 h-6 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)] flex items-center justify-center"><CheckCircle2 size={14} className="text-void-950" /></div>
                                         </div>
                                         <p className="text-sm font-bold text-green-400 uppercase tracking-widest">3 Sucessos</p>
                                         <p className="text-xs text-mystic-500 mt-1">Você estabiliza (não morre).</p>
@@ -562,9 +609,17 @@ export const GuideSection: React.FC = () => {
                                         <p className="text-xs text-mystic-500 mt-1">Seu personagem morre.</p>
                                     </div>
                                 </div>
-                                <p className="text-xs text-mystic-500 italic">
-                                    * Role 1d20 no início do turno. 10 ou mais é sucesso. 1 é duas falhas. 20 você acorda com 1 PV.
-                                </p>
+                                <div className="bg-white/5 rounded-xl p-4 max-w-lg mx-auto border border-white/5">
+                                    <div className="flex items-center justify-center gap-2 text-xs text-mystic-400">
+                                        <AlertTriangle size={14} className="text-gold-500" />
+                                        <span>Role <strong>1d20</strong> no início do turno.</span>
+                                    </div>
+                                    <div className="flex justify-between mt-3 text-[10px] font-mono uppercase text-mystic-500 px-4">
+                                        <span>1 = 2 Falhas</span>
+                                        <span>10+ = Sucesso</span>
+                                        <span>20 = Levanta com 1 PV</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -580,7 +635,7 @@ export const GuideSection: React.FC = () => {
                                     <h3 className="text-4xl font-display font-bold text-white mb-2 flex items-center gap-3">
                                         <Sparkles className="text-purple-400" /> Magia & Slots
                                     </h3>
-                                    <p className="text-mystic-300 font-light max-w-xl text-secondary">
+                                    <p className="text-mystic-200 font-light max-w-xl text-secondary leading-relaxed">
                                         Magias de Nível 1 ou superior gastam <strong>Espaços de Magia (Slots)</strong>. Truques (Nível 0) são infinitos.
                                     </p>
                                 </div>
@@ -642,7 +697,7 @@ export const GuideSection: React.FC = () => {
                                     <div className="mt-1"><ShieldAlert size={24} className={`${item.color} opacity-70 group-hover:opacity-100 transition-opacity`} /></div>
                                     <div>
                                         <strong className={`${item.color} block mb-2 text-lg font-display tracking-wide`}>{item.term}</strong>
-                                        <p className="text-sm text-mystic-400 leading-relaxed font-light text-secondary">{item.desc}</p>
+                                        <p className="text-sm text-mystic-300 leading-relaxed font-light text-secondary">{item.desc}</p>
                                     </div>
                                 </div>
                             )) : (
@@ -660,7 +715,6 @@ export const GuideSection: React.FC = () => {
     );
 };
 
-// Mini helper for the X mark in Death Saves
 const XMark = () => (
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="text-white opacity-80">
         <path d="M18 6 6 18"/><path d="m6 6 12 12"/>

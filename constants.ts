@@ -63,32 +63,16 @@ export const DICTIONARY: Record<string, string> = {
 };
 
 // --- VISUAL ASSETS (RACE IMAGES) ---
-const OPTIM = "&w=600&q=80&auto=format&fit=crop";
-
+// High-quality fantasy themed images for immediate visual impact
 export const RACE_IMAGES: Record<string, string> = {
-    // Humano: Knight/Warrior concept (Dark Souls/Elden Ring vibe)
-    'Humano': `https://images.unsplash.com/photo-1598556851352-19e6d089151c?${OPTIM}`,
-    
-    // Elfo: Mystical Forest/Magic (Not cosplay, but environment/mood)
-    'Elfo': `https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?${OPTIM}`,
-    
-    // Anão: Forge, Fire, Sparks (Industrial Fantasy)
-    'Anão': `https://images.unsplash.com/photo-1542152399-6e3717dfb38f?${OPTIM}`,
-    
-    // Halfling: Cozy Hobbit-hole vibe, Greenery
-    'Halfling': `https://images.unsplash.com/photo-1448375240586-dfd8d395ea6c?${OPTIM}`,
-    
-    // Draconato: Reptile eye texture (Abstract representation)
-    'Draconato': `https://images.unsplash.com/photo-1550751827-4bd374c3f58b?${OPTIM}`,
-    
-    // Gnomo: Clockwork, mechanisms, curiosity
-    'Gnomo': `https://images.unsplash.com/photo-1580234533033-66779471927e?${OPTIM}`,
-    
-    // Meio-Orc: War paint, intense tribal look (Shadowy)
-    'Meio-Orc': `https://images.unsplash.com/photo-1531384441138-2736e62e0919?${OPTIM}`,
-    
-    // Tiefling: Red, Demonic, Atmospheric smoke
-    'Tiefling': `https://images.unsplash.com/photo-1620662758800-4b35e2197e93?${OPTIM}`,
+    'Humano': 'https://images.unsplash.com/photo-1500964757637-c85e8a162699?q=80&w=1000&auto=format&fit=crop', // Landscape/Journey
+    'Elfo': 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000&auto=format&fit=crop', // Forest/Ethereal
+    'Anão': 'https://images.unsplash.com/photo-1516934024742-b461fba4b72c?q=80&w=1000&auto=format&fit=crop', // Mountain/Texture
+    'Halfling': 'https://images.unsplash.com/photo-1465433045946-b06ed920d0f0?q=80&w=1000&auto=format&fit=crop', // Green Hills/Shire
+    'Draconato': 'https://images.unsplash.com/photo-1642425149556-b6f90e946859?q=80&w=1000&auto=format&fit=crop', // Fire/Scale Texture
+    'Gnomo': 'https://images.unsplash.com/photo-1633469924738-52101af51d87?q=80&w=1000&auto=format&fit=crop', // Mechanical/Clockwork
+    'Meio-Orc': 'https://images.unsplash.com/photo-1535581652167-3d6b98c3633e?q=80&w=1000&auto=format&fit=crop', // Dark/Intense
+    'Tiefling': 'https://images.unsplash.com/photo-1610216705422-caa3fcb6d158?q=80&w=1000&auto=format&fit=crop', // Mystical/Purple
 };
 
 export const SKILL_LIST: { name: SkillName; attr: Attribute }[] = [

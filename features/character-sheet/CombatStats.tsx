@@ -10,14 +10,18 @@ interface Props {
 }
 
 export const CombatStats: React.FC<Props> = ({ character, isEditing, onChange }) => {
+    // Calculate HP percentage for visual bar
+    const hpPercent = Math.min(100, (character.hp / character.maxHp) * 100);
+    const hpColor = hpPercent < 30 ? 'bg-rose-500' : hpPercent < 60 ? 'bg-gold-500' : 'bg-emerald-500';
+
     return (
-        <div className="flex flex-col gap-4 h-full">
+        <div className="flex flex-col gap-6 h-full">
             
-            {/* HP Row */}
-            <div className="flex flex-col p-5 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors group relative overflow-hidden">
-                <div className="flex justify-between items-center mb-4 relative z-10">
-                     <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-mystic-500 group-hover:text-accent-rose transition-colors">Vitalidade</span>
-                     <Heart size={16} className="text-accent-rose opacity-50" />
+            {/* HP Row - Featured */}
+            <div className="flex flex-col p-6 rounded-[2rem] border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors group relative overflow-hidden">
+                <div className="flex justify-between items-center mb-6 relative z-10">
+                     <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-mystic-500 group-hover:text-white transition-colors">Vitalidade</span>
+                     <Heart size={16} className={`${hpPercent < 30 ? 'text-rose-500 animate-pulse' : 'text-mystic-600'}`} />
                 </div>
                 
                 <div className="flex items-end justify-between relative z-10">
@@ -25,55 +29,61 @@ export const CombatStats: React.FC<Props> = ({ character, isEditing, onChange })
                         <NumberControl 
                             value={character.hp} 
                             onChange={(v) => onChange('hp', v)} 
-                            max={character.maxHp + 20} // Allow temp HP buffer
+                            max={character.maxHp + 20}
                             large
-                            className="w-full justify-between px-4 bg-void-950/80"
+                            className="w-full justify-between px-6 bg-void-950/80 border-white/10"
                         />
                     ) : (
                         <div className="flex flex-col">
-                            <span className="text-5xl font-body font-light text-white tracking-tighter leading-none">{character.hp}</span>
+                            <span className="text-6xl font-body font-thin text-white tracking-tighter leading-none">{character.hp}</span>
                         </div>
                     )}
                     
                     {!isEditing && (
-                        <span className="text-xs text-white/30 font-mono mb-1.5">/ {character.maxHp} MAX</span>
+                        <div className="text-right">
+                             <span className="text-sm font-bold text-mystic-500">MAX {character.maxHp}</span>
+                        </div>
                     )}
                 </div>
                 
-                {/* Health Bar Background */}
-                <div 
-                    className="absolute bottom-0 left-0 h-1 bg-accent-rose/50 transition-all duration-1000" 
-                    style={{ width: `${Math.min(100, (character.hp / character.maxHp) * 100)}%` }}
-                ></div>
+                {/* Elegant Health Bar Line */}
+                {!isEditing && (
+                    <div className="absolute bottom-0 left-0 w-full h-1 bg-void-900">
+                        <div 
+                            className={`h-full ${hpColor} transition-all duration-1000 ease-out shadow-[0_0_10px_currentColor]`} 
+                            style={{ width: `${hpPercent}%` }}
+                        ></div>
+                    </div>
+                )}
             </div>
 
             {/* AC & Init Grid */}
             <div className="grid grid-cols-2 gap-4">
                 {/* AC */}
-                <div className="flex flex-col p-4 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors group">
-                    <div className="flex justify-between items-center mb-3">
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-mystic-500">Defesa</span>
-                        <Shield size={14} className="text-cyan-400 opacity-50" />
+                <div className="flex flex-col items-center justify-center p-6 rounded-[2rem] border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors group">
+                    <div className="flex items-center gap-2 mb-2 opacity-60 group-hover:opacity-100 transition-opacity">
+                        <Shield size={12} className="text-cyan-400" />
+                        <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-mystic-400">CA</span>
                     </div>
                     
                     {isEditing ? (
                          <NumberControl value={character.ac} onChange={(v) => onChange('ac', v)} className="w-full justify-center" />
                     ) : (
-                        <span className="text-4xl font-body font-light text-white tracking-tighter text-center">{character.ac}</span>
+                        <span className="text-5xl font-body font-thin text-white tracking-tighter">{character.ac}</span>
                     )}
                 </div>
 
                 {/* Initiative */}
-                <div className="flex flex-col p-4 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors group">
-                    <div className="flex justify-between items-center mb-3">
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-mystic-500">Reflexo</span>
-                        <Zap size={14} className="text-gold-500 opacity-50" />
+                <div className="flex flex-col items-center justify-center p-6 rounded-[2rem] border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors group">
+                    <div className="flex items-center gap-2 mb-2 opacity-60 group-hover:opacity-100 transition-opacity">
+                        <Zap size={12} className="text-gold-500" />
+                        <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-mystic-400">Inic.</span>
                     </div>
                     
                     {isEditing ? (
                         <NumberControl value={character.initiative} onChange={(v) => onChange('initiative', v)} min={-5} max={20} className="w-full justify-center" />
                     ) : (
-                        <span className="text-4xl font-body font-light text-white tracking-tighter text-center">
+                        <span className="text-5xl font-body font-thin text-white tracking-tighter">
                             {character.initiative >= 0 ? `+${character.initiative}` : character.initiative}
                         </span>
                     )}

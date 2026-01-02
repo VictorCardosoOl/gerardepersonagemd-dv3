@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Monster } from '../types';
+import { Monster } from '../features/bestiary/types';
 import { translateTerm } from '../utils/logic';
 import { DICTIONARY } from '../constants';
 import { Shield, Skull, Zap, Eye, BookOpen, Swords } from 'lucide-react';

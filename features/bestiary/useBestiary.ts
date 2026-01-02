@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
-import { APIMonsterIndex, Monster } from '../features/bestiary/types';
-import { fetchMonsterList, fetchMonsterDetails } from '../services/dndApi';
+import { APIMonsterIndex, Monster } from './types';
+import { fetchMonsterList, fetchMonsterDetails } from '../../services/dndApi';
 
 export const useBestiary = (preLoadedList: APIMonsterIndex[] = []) => {
     const [monsterList, setMonsterList] = useState<APIMonsterIndex[]>(preLoadedList);

@@ -51,7 +51,10 @@ export const DMPanel: React.FC<Props> = ({ savedCharacters, onSelect, onDelete, 
                     </button>
                 </div>
 
-                <div className="flex-grow overflow-y-auto custom-scrollbar space-y-8 pr-1">
+                <div 
+                    className="flex-grow overflow-y-auto custom-scrollbar space-y-8 pr-1"
+                    data-lenis-prevent
+                >
                     
                     {/* --- QUICK NPC SECTION --- */}
                     <div className="space-y-3">

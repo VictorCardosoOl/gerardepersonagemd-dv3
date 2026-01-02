@@ -1,0 +1,449 @@
+[
+    {
+        "index": "br-goblin",
+        "name": "Goblin",
+        "size": "Pequeno",
+        "type": "Humanoide (Goblinoide)",
+        "alignment": "Neutro e Mau",
+        "armor_class_value": 15,
+        "armor_class_desc": "Armadura de Couro, Escudo",
+        "hit_points": 7,
+        "hit_dice": "2d6",
+        "speed": { "walk": "9m" },
+        "strength": 8,
+        "dexterity": 14,
+        "constitution": 10,
+        "intelligence": 10,
+        "wisdom": 8,
+        "charisma": 8,
+        "proficiencies": [],
+        "saving_throws": [],
+        "skills": [{ "name": "Furtividade", "value": 6 }],
+        "damage_vulnerabilities": [],
+        "damage_resistances": [],
+        "damage_immunities": [],
+        "condition_immunities": [],
+        "senses": { "Visão no Escuro": "18m", "Percepção Passiva": 9 },
+        "languages": "Comum, Goblin",
+        "challenge_rating": 0.25,
+        "xp": 50,
+        "special_abilities": [
+            {
+                "name": "Escapar com Agilidade",
+                "desc": "O goblin pode realizar a ação de Desengajar ou Esconder-se como uma ação bônus em cada um de seus turnos."
+            }
+        ],
+        "actions": [
+            {
+                "name": "Cimitarra",
+                "desc": "Ataque Corpo-a-Corpo com Arma: +4 para atingir, alcance 1,5 m, um alvo. Dano: 5 (1d6 + 2) de dano cortante.",
+                "attack_bonus": 4
+            },
+            {
+                "name": "Arco Curto",
+                "desc": "Ataque à Distância com Arma: +4 para atingir, alcance 24/96 m, um alvo. Dano: 5 (1d6 + 2) de dano perfurante.",
+                "attack_bonus": 4
+            }
+        ]
+    },
+    {
+        "index": "br-esqueleto",
+        "name": "Esqueleto",
+        "size": "Médio",
+        "type": "Morto-vivo",
+        "alignment": "Leal e Mau",
+        "armor_class_value": 13,
+        "armor_class_desc": "Restos de Armadura",
+        "hit_points": 13,
+        "hit_dice": "2d8 + 4",
+        "speed": { "walk": "9m" },
+        "strength": 10,
+        "dexterity": 14,
+        "constitution": 15,
+        "intelligence": 6,
+        "wisdom": 8,
+        "charisma": 5,
+        "proficiencies": [],
+        "damage_vulnerabilities": ["Concussão"],
+        "damage_resistances": [],
+        "damage_immunities": ["Veneno"],
+        "condition_immunities": [{ "name": "Exaustão" }, { "name": "Envenenado" }],
+        "senses": { "Visão no Escuro": "18m", "Percepção Passiva": 9 },
+        "languages": "Compreende os idiomas que conhecia em vida, mas não pode falar",
+        "challenge_rating": 0.25,
+        "xp": 50,
+        "special_abilities": [],
+        "actions": [
+            {
+                "name": "Espada Curta",
+                "desc": "Ataque Corpo-a-Corpo com Arma: +4 para atingir, alcance 1,5 m, um alvo. Dano: 5 (1d6 + 2) de dano perfurante.",
+                "attack_bonus": 4
+            },
+            {
+                "name": "Arco Curto",
+                "desc": "Ataque à Distância com Arma: +4 para atingir, alcance 24/96 m, um alvo. Dano: 5 (1d6 + 2) de dano perfurante.",
+                "attack_bonus": 4
+            }
+        ]
+    },
+    {
+        "index": "br-zumbi",
+        "name": "Zumbi",
+        "size": "Médio",
+        "type": "Morto-vivo",
+        "alignment": "Neutro e Mau",
+        "armor_class_value": 8,
+        "armor_class_desc": "(Natural)",
+        "hit_points": 22,
+        "hit_dice": "3d8 + 9",
+        "speed": { "walk": "6m" },
+        "strength": 13,
+        "dexterity": 6,
+        "constitution": 16,
+        "intelligence": 3,
+        "wisdom": 6,
+        "charisma": 5,
+        "proficiencies": [],
+        "saving_throws": [{ "name": "Sabedoria", "value": 0 }],
+        "skills": [],
+        "damage_vulnerabilities": [],
+        "damage_resistances": [],
+        "damage_immunities": ["Veneno"],
+        "condition_immunities": [{ "name": "Envenenado" }],
+        "senses": { "Visão no Escuro": "18m", "Percepção Passiva": 8 },
+        "languages": "Compreende os idiomas que conhecia em vida, mas não pode falar",
+        "challenge_rating": 0.25,
+        "xp": 50,
+        "special_abilities": [
+            {
+                "name": "Fortitude de Morto-Vivo",
+                "desc": "Se o dano reduzir o zumbi a 0 pontos de vida, ele deve realizar um teste de resistência de Constituição com CD 5 + o dano sofrido, a não ser que o dano seja radiante ou de um acerto crítico. Em um sucesso, o zumbi cai para 1 ponto de vida."
+            }
+        ],
+        "actions": [
+            {
+                "name": "Pancada",
+                "desc": "Ataque Corpo-a-Corpo com Arma: +3 para atingir, alcance 1,5 m, um alvo. Dano: 4 (1d6 + 1) de dano de concussão.",
+                "attack_bonus": 3
+            }
+        ]
+    },
+    {
+        "index": "br-bandido",
+        "name": "Bandido",
+        "size": "Médio",
+        "type": "Humanoide (Qualquer raça)",
+        "alignment": "Qualquer não leal",
+        "armor_class_value": 12,
+        "armor_class_desc": "Armadura de Couro",
+        "hit_points": 11,
+        "hit_dice": "2d8 + 2",
+        "speed": { "walk": "9m" },
+        "strength": 11,
+        "dexterity": 12,
+        "constitution": 12,
+        "intelligence": 10,
+        "wisdom": 10,
+        "charisma": 10,
+        "proficiencies": [],
+        "damage_vulnerabilities": [],
+        "damage_resistances": [],
+        "damage_immunities": [],
+        "condition_immunities": [],
+        "senses": { "Percepção Passiva": 10 },
+        "languages": "Qualquer idioma (geralmente Comum)",
+        "challenge_rating": 0.125,
+        "xp": 25,
+        "special_abilities": [],
+        "actions": [
+            {
+                "name": "Cimitarra",
+                "desc": "Ataque Corpo-a-Corpo com Arma: +3 para atingir, alcance 1,5 m, um alvo. Dano: 4 (1d6 + 1) de dano cortante.",
+                "attack_bonus": 3
+            },
+            {
+                "name": "Besta Leve",
+                "desc": "Ataque à Distância com Arma: +3 para atingir, alcance 24/96 m, um alvo. Dano: 5 (1d8 + 1) de dano perfurante.",
+                "attack_bonus": 3
+            }
+        ]
+    },
+    {
+        "index": "br-lobo",
+        "name": "Lobo",
+        "size": "Médio",
+        "type": "Besta",
+        "alignment": "Imparcial",
+        "armor_class_value": 13,
+        "armor_class_desc": "Armadura Natural",
+        "hit_points": 11,
+        "hit_dice": "2d8 + 2",
+        "speed": { "walk": "12m" },
+        "strength": 12,
+        "dexterity": 15,
+        "constitution": 12,
+        "intelligence": 3,
+        "wisdom": 12,
+        "charisma": 6,
+        "proficiencies": [],
+        "skills": [{ "name": "Percepção", "value": 3 }, { "name": "Furtividade", "value": 4 }],
+        "damage_vulnerabilities": [],
+        "damage_resistances": [],
+        "damage_immunities": [],
+        "condition_immunities": [],
+        "senses": { "Percepção Passiva": 13, "Visão no Escuro": "0m" },
+        "languages": "-",
+        "challenge_rating": 0.25,
+        "xp": 50,
+        "special_abilities": [
+            {
+                "name": "Audição e Olfato Aguçados",
+                "desc": "O lobo tem vantagem em testes de Sabedoria (Percepção) que dependam da audição ou do olfato."
+            },
+            {
+                "name": "Táticas de Matilha",
+                "desc": "O lobo tem vantagem nas jogadas de ataque contra uma criatura se, pelo menos, um dos aliados do lobo estiver a 1,5 metro da criatura e não estiver incapacitado."
+            }
+        ],
+        "actions": [
+            {
+                "name": "Mordida",
+                "desc": "Ataque Corpo-a-Corpo com Arma: +4 para atingir, alcance 1,5 m, um alvo. Dano: 7 (2d4 + 2) de dano perfurante. Se o alvo for uma criatura, ela deve ser bem sucedida num teste de resistência de Força CD 11 ou será derrubada.",
+                "attack_bonus": 4
+            }
+        ]
+    },
+    {
+        "index": "br-urso-coruja",
+        "name": "Urso-Coruja",
+        "size": "Grande",
+        "type": "Monstruosidade",
+        "alignment": "Imparcial",
+        "armor_class_value": 13,
+        "armor_class_desc": "Armadura Natural",
+        "hit_points": 59,
+        "hit_dice": "7d10 + 21",
+        "speed": { "walk": "12m" },
+        "strength": 20,
+        "dexterity": 12,
+        "constitution": 17,
+        "intelligence": 3,
+        "wisdom": 12,
+        "charisma": 7,
+        "proficiencies": [],
+        "skills": [{ "name": "Percepção", "value": 3 }],
+        "damage_vulnerabilities": [],
+        "damage_resistances": [],
+        "damage_immunities": [],
+        "condition_immunities": [],
+        "senses": { "Visão no Escuro": "18m", "Percepção Passiva": 13 },
+        "languages": "-",
+        "challenge_rating": 3,
+        "xp": 700,
+        "special_abilities": [
+            {
+                "name": "Visão e Olfato Aguçados",
+                "desc": "O urso-coruja tem vantagem em testes de Sabedoria (Percepção) relacionados à visão ou olfato."
+            }
+        ],
+        "actions": [
+            {
+                "name": "Ataques Múltiplos",
+                "desc": "O urso-coruja faz dois ataques: um com seu bico e um com suas garras."
+            },
+            {
+                "name": "Bico",
+                "desc": "Ataque Corpo-a-Corpo com Arma: +7 para atingir, alcance 1,5 m, um alvo. Dano: 10 (1d10 + 5) de dano perfurante.",
+                "attack_bonus": 7
+            },
+            {
+                "name": "Garras",
+                "desc": "Ataque Corpo-a-Corpo com Arma: +7 para atingir, alcance 1,5 m, um alvo. Dano: 14 (2d8 + 5) de dano cortante.",
+                "attack_bonus": 7
+            }
+        ]
+    },
+    {
+        "index": "br-cubo-gelatinoso",
+        "name": "Cubo Gelatinoso",
+        "size": "Grande",
+        "type": "Limo",
+        "alignment": "Imparcial",
+        "armor_class_value": 6,
+        "armor_class_desc": "",
+        "hit_points": 84,
+        "hit_dice": "8d10 + 40",
+        "speed": { "walk": "4.5m" },
+        "strength": 14,
+        "dexterity": 3,
+        "constitution": 20,
+        "intelligence": 1,
+        "wisdom": 6,
+        "charisma": 1,
+        "proficiencies": [],
+        "damage_vulnerabilities": [],
+        "damage_resistances": [],
+        "damage_immunities": [],
+        "condition_immunities": [{ "name": "Cego" }, { "name": "Enfeitiçado" }, { "name": "Surdo" }, { "name": "Exaustão" }, { "name": "Amedrontado" }, { "name": "Caído" }],
+        "senses": { "Visão às Cegas": "18m (cego além desse raio)", "Percepção Passiva": 8 },
+        "languages": "-",
+        "challenge_rating": 2,
+        "xp": 450,
+        "special_abilities": [
+            {
+                "name": "Cubo Transparente",
+                "desc": "Mesmo quando o cubo está totalmente visível, é necessário um teste de Sabedoria (Percepção) CD 15 para perceber um cubo gelatinoso que não tenha se movido nem atacado. Uma criatura que tente entrar no espaço do cubo sem percebê-lo é surpreendida."
+            }
+        ],
+        "actions": [
+            {
+                "name": "Pseudópode",
+                "desc": "Ataque Corpo-a-Corpo com Arma: +4 para atingir, alcance 1,5 m, uma criatura. Dano: 10 (3d6) de dano de ácido.",
+                "attack_bonus": 4
+            },
+            {
+                "name": "Engolfar",
+                "desc": "O cubo se move até sua velocidade. Ao fazê-lo, ele pode entrar no espaço de criaturas Grandes ou menores. Quando o cubo entra no espaço de uma criatura, a criatura deve fazer um teste de resistência de Destreza CD 12. Em um sucesso, a criatura pode escolher ser empurrada 1,5 metro para trás ou para o lado do cubo. Em uma falha, o cubo entra no espaço da criatura, e a criatura sofre 10 (3d6) de dano de ácido e é engolfada. A criatura engolfada não pode respirar, está impedida e sofre 21 (6d6) de dano de ácido no início de cada turno do cubo."
+            }
+        ]
+    },
+    {
+        "index": "br-dragao-vermelho-jovem",
+        "name": "Dragão Vermelho Jovem",
+        "size": "Grande",
+        "type": "Dragão",
+        "alignment": "Caótico e Mau",
+        "armor_class_value": 18,
+        "armor_class_desc": "Armadura Natural",
+        "hit_points": 178,
+        "hit_dice": "17d10 + 85",
+        "speed": { "walk": "12m", "fly": "24m", "climb": "12m" },
+        "strength": 23,
+        "dexterity": 10,
+        "constitution": 21,
+        "intelligence": 14,
+        "wisdom": 11,
+        "charisma": 19,
+        "proficiencies": [],
+        "saving_throws": [{"name": "Destreza", "value": 4}, {"name": "Constituição", "value": 9}, {"name": "Sabedoria", "value": 4}, {"name": "Carisma", "value": 8}],
+        "skills": [{"name": "Percepção", "value": 8}, {"name": "Furtividade", "value": 4}],
+        "damage_vulnerabilities": [],
+        "damage_resistances": [],
+        "damage_immunities": ["Fogo"],
+        "condition_immunities": [],
+        "senses": { "Visão às Cegas": "9m", "Visão no Escuro": "36m", "Percepção Passiva": 18 },
+        "languages": "Comum, Dracônico",
+        "challenge_rating": 10,
+        "xp": 5900,
+        "special_abilities": [],
+        "actions": [
+            {
+                "name": "Ataques Múltiplos",
+                "desc": "O dragão faz três ataques: um com sua mordida e dois com suas garras."
+            },
+            {
+                "name": "Mordida",
+                "desc": "Ataque Corpo-a-Corpo: +10 para atingir, alcance 3 m, um alvo. Dano: 17 (2d10 + 6) perfurante mais 3 (1d6) de fogo.",
+                "attack_bonus": 10
+            },
+            {
+                "name": "Sopro de Fogo (Recarga 5–6)",
+                "desc": "O dragão exala fogo em um cone de 9 metros. Cada criatura na área deve fazer um teste de resistência de Destreza CD 17, sofrendo 56 (16d6) de dano de fogo se falhar, ou metade se tiver sucesso."
+            }
+        ]
+    },
+    {
+        "index": "br-ogro",
+        "name": "Ogro",
+        "size": "Grande",
+        "type": "Gigante",
+        "alignment": "Caótico e Mau",
+        "armor_class_value": 11,
+        "armor_class_desc": "Corselete de Peles",
+        "hit_points": 59,
+        "hit_dice": "7d10 + 21",
+        "speed": { "walk": "12m" },
+        "strength": 19,
+        "dexterity": 8,
+        "constitution": 16,
+        "intelligence": 5,
+        "wisdom": 7,
+        "charisma": 7,
+        "proficiencies": [],
+        "damage_vulnerabilities": [],
+        "damage_resistances": [],
+        "damage_immunities": [],
+        "condition_immunities": [],
+        "senses": { "Visão no Escuro": "18m", "Percepção Passiva": 8 },
+        "languages": "Comum, Gigante",
+        "challenge_rating": 2,
+        "xp": 450,
+        "special_abilities": [],
+        "actions": [
+            {
+                "name": "Clava Grande",
+                "desc": "Ataque Corpo-a-Corpo com Arma: +6 para atingir, alcance 1,5 m, um alvo. Dano: 13 (2d8 + 4) de dano de concussão.",
+                "attack_bonus": 6
+            },
+            {
+                "name": "Azagaia",
+                "desc": "Ataque Corpo-a-Corpo ou à Distância com Arma: +6 para atingir, alcance 1,5 m ou distância 9/36 m, um alvo. Dano: 11 (2d6 + 4) de dano perfurante.",
+                "attack_bonus": 6
+            }
+        ]
+    },
+    {
+        "index": "br-mimico",
+        "name": "Mímico",
+        "size": "Médio",
+        "type": "Monstruosidade (Metamorfo)",
+        "alignment": "Neutro",
+        "armor_class_value": 12,
+        "armor_class_desc": "Armadura Natural",
+        "hit_points": 58,
+        "hit_dice": "9d8 + 18",
+        "speed": { "walk": "4.5m" },
+        "strength": 17,
+        "dexterity": 12,
+        "constitution": 15,
+        "intelligence": 5,
+        "wisdom": 13,
+        "charisma": 8,
+        "proficiencies": [],
+        "skills": [{"name": "Furtividade", "value": 5}],
+        "damage_vulnerabilities": [],
+        "damage_resistances": ["Ácido"],
+        "damage_immunities": ["Ácido"],
+        "condition_immunities": [{ "name": "Agarrado" }, { "name": "Caído" }],
+        "senses": { "Visão no Escuro": "18m", "Percepção Passiva": 11 },
+        "languages": "-",
+        "challenge_rating": 2,
+        "xp": 450,
+        "special_abilities": [
+            {
+                "name": "Metamorfo",
+                "desc": "O mímico pode usar sua ação para se metamorfosear em um objeto ou voltar à sua forma real (amorfa). Suas estatísticas são as mesmas em qualquer forma. Qualquer equipamento que ele esteja vestindo ou carregando não é transformado. Ele reverte à sua forma real se morrer."
+            },
+            {
+                "name": "Adesivo (Apenas na Forma de Objeto)",
+                "desc": "O mímico adere a qualquer coisa que o toque. Uma criatura Enorme ou menor aderida ao mímico está agarrada por ele (CD 13 para escapar). Testes de habilidade feitos para escapar desse agarrão têm desvantagem."
+            },
+            {
+                "name": "Aparência Falsa (Apenas na Forma de Objeto)",
+                "desc": "Enquanto o mímico permanecer imóvel, ele é indistinguível de um objeto comum."
+            }
+        ],
+        "actions": [
+            {
+                "name": "Pseudópode",
+                "desc": "Ataque Corpo-a-Corpo com Arma: +5 para atingir, alcance 1,5 m, um alvo. Dano: 7 (1d8 + 3) de dano de concussão. Se o mímico estiver na forma de objeto, o alvo fica sujeito à característica Adesivo.",
+                "attack_bonus": 5
+            },
+            {
+                "name": "Mordida",
+                "desc": "Ataque Corpo-a-Corpo com Arma: +5 para atingir, alcance 1,5 m, um alvo. Dano: 7 (1d8 + 3) de dano perfurante mais 4 (1d8) de dano de ácido.",
+                "attack_bonus": 5
+            }
+        ]
+    }
+]

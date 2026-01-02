@@ -1,5 +1,5 @@
 import React from 'react';
-import { APIMonsterIndex } from '../types';
+import { APIMonsterIndex } from '../features/bestiary/types';
 import { MonsterCard } from './MonsterCard';
 import { Search, Loader2, Skull } from 'lucide-react';
 import { useBestiary } from '../hooks/useBestiary';

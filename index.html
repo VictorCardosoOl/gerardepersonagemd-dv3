@@ -1,11 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR" class="antialiased">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     
-    <!-- PWA / Mobile Capable Tags -->
-    <meta name="theme-color" content="#020202" />
+    <meta name="theme-color" content="#030407" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Mestre da Masmorra" />
@@ -15,7 +15,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=Cinzel:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cinzel:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
@@ -25,51 +25,69 @@
               body: ['Inter', 'sans-serif'],
               mono: ['JetBrains Mono', 'monospace'],
             },
+            transitionTimingFunction: {
+              'out-expo': 'cubic-bezier(0.19, 1, 0.22, 1)',
+              'out-quart': 'cubic-bezier(0.165, 0.84, 0.44, 1)',
+            },
+            letterSpacing: {
+              tighter: '-0.05em',
+              tight: '-0.025em',
+              normal: '0em',
+              wide: '0.025em',
+              wider: '0.05em',
+              widest: '0.25em',
+            },
             colors: {
               void: {
-                800: '#121214',
-                900: '#09090b',
-                950: '#020202', // Deep Void Background
+                800: '#13151f',
+                900: '#0a0b14', 
+                950: '#030407', 
               },
               mystic: {
-                100: '#e0e7ff', // High contrast text
-                200: '#c7d2fe',
-                300: '#a5b4fc', // Body text
+                100: '#eef2ff',
+                200: '#e0e7ff',
+                300: '#a5b4fc',
                 400: '#818cf8',
-                500: '#6366f1', // Accents
-                900: '#312e81',
+                500: '#6366f1',
+                900: '#1e1b4b',
               },
               gold: {
-                400: '#fbbf24',
-                500: '#d4af37', // Mystic Gold
+                100: '#fef9c3',
+                400: '#facc15', 
+                500: '#d97706', 
                 600: '#b45309',
               },
               cyan: {
-                400: '#22d3ee', // Aether Cyan
+                300: '#67e8f9',
+                400: '#22d3ee', 
                 500: '#06b6d4',
                 900: '#083344',
-                950: '#082f49', // Darkest Cyan for Active Text
+                950: '#082f49', 
               },
               accent: {
                 rose: '#f43f5e',
-                gold: '#d4af37',
+                gold: '#d97706',
                 cyan: '#22d3ee'
               }
             },
             backgroundImage: {
-              'noise': "url('data:image/svg+xml,%3Csvg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cfilter id=\"noiseFilter\"%3E%3CfeTurbulence type=\"fractalNoise\" baseFrequency=\"0.65\" numOctaves=\"3\" stitchTiles=\"stitch\"/%3E%3C/filter%3E%3Crect width=\"100%\" height=\"100%\" filter=\"url(%23noiseFilter)\" opacity=\"0.05\"/%3E%3C/svg%3E')",
+              'noise': "url('data:image/svg+xml,%3Csvg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cfilter id=\"noiseFilter\"%3E%3CfeTurbulence type=\"fractalNoise\" baseFrequency=\"0.7\" numOctaves=\"3\" stitchTiles=\"stitch\"/%3E%3C/filter%3E%3Crect width=\"100%\" height=\"100%\" filter=\"url(%23noiseFilter)\" opacity=\"0.05\"/%3E%3C/svg%3E')",
               'glass-gradient': 'linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.00) 100%)',
             },
             boxShadow: {
-              'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.5)',
-              'glow-cyan': '0 0 40px -10px rgba(34, 211, 238, 0.3)',
-              'glow-gold': '0 0 40px -10px rgba(212, 175, 55, 0.3)',
+              'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.4)',
+              'glass-sm': '0 4px 16px 0 rgba(0, 0, 0, 0.2)',
+              'glow-cyan': '0 0 40px -10px rgba(34, 211, 238, 0.2)',
+              'glow-gold': '0 0 40px -10px rgba(217, 119, 6, 0.2)',
             },
             animation: {
-              'fade-in-down': 'fadeInDown 0.8s ease-out forwards',
-              'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
-              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-              'float': 'float 6s ease-in-out infinite',
+              'fade-in-down': 'fadeInDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              'scale-in': 'scaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              'pulse-slow': 'pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'float': 'float 8s ease-in-out infinite',
+              'spin-slow': 'spin 12s linear infinite',
+              'slide-in-right': 'slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
             },
             keyframes: {
               fadeInDown: {
@@ -80,10 +98,18 @@
                 '0%': { opacity: '0', transform: 'translateY(20px)' },
                 '100%': { opacity: '1', transform: 'translateY(0)' },
               },
+              scaleIn: {
+                '0%': { opacity: '0', transform: 'scale(0.95)' },
+                '100%': { opacity: '1', transform: 'scale(1)' },
+              },
               float: {
                 '0%, 100%': { transform: 'translateY(0)' },
                 '50%': { transform: 'translateY(-10px)' },
-              }
+              },
+              slideInRight: {
+                '0%': { transform: 'translateX(30px)', opacity: '0' },
+                '100%': { transform: 'translateX(0)', opacity: '1' },
+              },
             }
           }
         }
@@ -91,75 +117,36 @@
     </script>
     <style>
       body {
-        background-color: #020202;
+        background-color: #030407;
         color: #e0e7ff;
         overflow-x: hidden;
         font-family: 'Inter', sans-serif;
+        font-weight: 300;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      h1, h2, h3, h4, h5, h6 {
+        font-family: 'Cinzel', serif;
+        letter-spacing: -0.02em;
       }
 
-      /* --- Ethereal Glass Utility --- */
+      p { margin-bottom: 1rem; }
+      
+      ::selection {
+        background: rgba(34, 211, 238, 0.15);
+        color: #fff;
+      }
+
       .glass-panel {
-        background: rgba(9, 9, 11, 0.6); /* Void-900 with opacity */
+        background: rgba(13, 14, 20, 0.7); 
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-      }
-
-      /* --- Ghost Input: Makes inputs look exactly like text --- */
-      .ghost-input {
-        background: transparent;
-        border: none;
-        outline: none;
-        padding: 0;
-        margin: 0;
-        width: 100%;
-        color: inherit;
-        font-family: inherit;
-        font-size: inherit;
-        font-weight: inherit;
-        letter-spacing: inherit;
-        text-align: inherit;
-        -moz-appearance: textfield;
-      }
-      .ghost-input:focus {
-        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-      }
-      .ghost-input::placeholder {
-        color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
       }
       
-      /* --- Typography Utilities --- */
-      .text-balance { text-wrap: balance; }
-      
-      /* Headers Cinzel Adjustment - Modern & Epic */
-      h1, h2, h3, h4, h5, h6 {
-        font-family: 'Cinzel', serif;
-        letter-spacing: 0.03em; /* Slightly tighter for a premium feel */
-        font-weight: 700;
-      }
-      
-      /* Body Text Inter */
-      p, span, div, input, button, textarea, label, li {
-        font-family: 'Inter', sans-serif;
-      }
-
-      /* Visual Hierarchy Utils */
-      .text-secondary {
-        opacity: 0.7;
-        font-weight: 300;
-      }
-
-      .text-tertiary {
-        opacity: 0.5;
-        font-weight: 300;
-      }
-      
-      .font-display { font-family: 'Cinzel', serif; }
-      .font-body { font-family: 'Inter', sans-serif; }
-      .font-mono { font-family: 'JetBrains Mono', monospace; }
-      
-      /* Scrollbar */
       .custom-scrollbar::-webkit-scrollbar { width: 4px; }
       .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
       .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
@@ -168,69 +155,13 @@
       .no-scrollbar::-webkit-scrollbar { display: none; }
       .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-      /* Input Reset for Ethereal Look */
-      input[type="number"]::-webkit-inner-spin-button,
-      input[type="number"]::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-      }
+      input:focus, textarea:focus, select:focus { outline: none; }
+      .will-change-transform { will-change: transform, opacity; }
 
-      /* --- PRINT STYLES (PDF EXPORT) --- */
       @media print {
         @page { margin: 1cm; size: A4; }
-        
-        body { 
-          background-color: white !important; 
-          color: black !important; 
-          overflow: visible !important;
-        }
-
-        /* Hide UI Elements */
-        header, footer, nav, button, .no-print, .fixed, .bg-noise, input[type="file"], .ui-control {
-          display: none !important;
-        }
-
-        /* Reset Containers */
-        #root, main { 
-            position: relative !important; 
-            top: 0 !important; 
-            padding: 0 !important; 
-            margin: 0 !important;
-            width: 100% !important;
-            height: auto !important;
-            overflow: visible !important;
-        }
-
-        /* Transform Glass Panels to Ink-Friendly Borders */
-        .glass-panel, .bg-void-950, .bg-void-900, .bg-void-800 {
-          background: transparent !important;
-          backdrop-filter: none !important;
-          border: 2px solid #000 !important;
-          box-shadow: none !important;
-          color: black !important;
-          border-radius: 12px !important;
-          page-break-inside: avoid;
-        }
-
-        /* Typography Colors Reset */
-        .text-white, .text-mystic-100, .text-mystic-200, .text-mystic-300, .text-mystic-400, .text-cyan-400, .text-gold-400, .text-gold-500 {
-          color: black !important;
-          text-shadow: none !important;
-        }
-
-        /* Accent Colors to Dark Grey/Black for readability */
-        .text-accent-rose { color: #cc0000 !important; }
-        
-        /* Layout Adjustments for Paper */
-        .grid { display: grid !important; }
-        .gap-6 { gap: 1rem !important; }
-        
-        /* Ensure Inputs/Textareas print their content */
-        textarea, input {
-            border: none !important;
-            background: transparent !important;
-            color: black !important;
-        }
+        body { background-color: white !important; color: black !important; }
+        .no-print { display: none !important; }
       }
     </style>
   <script type="importmap">
@@ -241,14 +172,17 @@
     "react/": "https://esm.sh/react@^19.2.3/",
     "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
     "framer-motion": "https://esm.sh/framer-motion@^12.23.26",
-    "lenis": "https://esm.sh/lenis@^1.3.17"
+    "lenis": "https://esm.sh/lenis@^1.3.17",
+    "vitest": "https://esm.sh/vitest@^4.0.16"
   }
 }
 </script>
 </head>
   <body>
-    <!-- Lowered noise opacity from 0.05 to 0.03 for cleaner visuals -->
-    <div class="fixed inset-0 pointer-events-none z-0 bg-noise opacity-[0.03] no-print"></div>
+    <div class="fixed inset-0 pointer-events-none z-0 bg-noise opacity-[0.04] mix-blend-overlay no-print"></div>
+    <div class="fixed inset-0 pointer-events-none z-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(3,4,7,0.8)_100%)] no-print"></div>
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-cyan-900/10 rounded-full blur-[120px] pointer-events-none z-0 no-print mix-blend-screen"></div>
+    
     <div id="root" class="relative z-10"></div>
     <script type="module" src="./index.tsx"></script>
   </body>

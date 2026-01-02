@@ -3,12 +3,80 @@ import { Attributes, Character } from '../../types';
 import { StatBlock } from '../../components/StatBlock';
 import { Swords, Target, Backpack, Feather, Shield, Brain, Box } from 'lucide-react';
 import { IdentityHeader } from './IdentityHeader';
-import { SkillsList } from '../../components/sheet/SkillsList'; 
+import { SkillsList } from './SkillsList'; 
 import { InventoryNotes } from './InventoryNotes';
-import { CombatStats } from '../../components/sheet/CombatStats'; 
+import { CombatStats } from './CombatStats'; 
 import { useCharacter } from '../../context/CharacterContext';
+import { motion } from 'framer-motion';
 
 type SheetTab = 'main' | 'combat' | 'skills' | 'inventory';
+
+const TypewriterText: React.FC<{ text: string }> = ({ text }) => {
+    // Split by words to be more performant than characters for long texts
+    const words = text.split(" ");
+
+    const container = {
+        hidden: { opacity: 0 },
+        visible: (i = 1) => ({
+            opacity: 1,
+            transition: { staggerChildren: 0.03, delayChildren: 0.04 * i },
+        }),
+    };
+
+    const child = {
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                type: "spring",
+                damping: 12,
+                stiffness: 100,
+            },
+        },
+        hidden: {
+            opacity: 0,
+            y: 5,
+            transition: {
+                type: "spring",
+                damping: 12,
+                stiffness: 100,
+            },
+        },
+    };
+
+    return (
+        <motion.div
+            variants={container}
+            initial="hidden"
+            animate="visible"
+            className="text-mystic-300/90 text-sm leading-7 font-body font-light text-balance relative"
+        >
+            {/* Initial Drop Cap - Static for design stability */}
+            <span className="text-5xl font-display text-white float-left mr-3 mt-[-8px] opacity-50">
+                {text.charAt(0) || "S"}
+            </span>
+            
+            {/* The rest of the text typed out */}
+            {words.map((word, index) => {
+                // Remove first char if it's the first word (since we used Drop Cap)
+                const displayWord = index === 0 ? word.slice(1) : word;
+                return (
+                    <motion.span variants={child} key={index} className="inline-block mr-1">
+                        {displayWord}
+                    </motion.span>
+                );
+            })}
+            
+            {/* Blinking Cursor at end */}
+            <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0, 1, 0] }}
+                transition={{ repeat: Infinity, duration: 0.8 }}
+                className="inline-block w-1.5 h-4 bg-cyan-400 ml-1 align-middle"
+            />
+        </motion.div>
+    );
+};
 
 export const CharacterSheet: React.FC = () => {
   const { activeCharacter: character, isEditing, updateCharacter } = useCharacter();
@@ -169,10 +237,7 @@ export const CharacterSheet: React.FC = () => {
                                 />
                             ) : (
                                 <div className="absolute inset-0 overflow-y-auto custom-scrollbar pr-2 p-1" data-lenis-prevent>
-                                    <p className="text-mystic-300/80 text-sm leading-7 font-body font-light text-balance">
-                                        <span className="text-5xl font-display text-white float-left mr-3 mt-[-8px] opacity-50">{character.backstory?.charAt(0) || "S"}</span>
-                                        {character.backstory?.slice(1) || "em história definida para este personagem."}
-                                    </p>
+                                    <TypewriterText text={character.backstory || "Sem história definida para este personagem."} />
                                 </div>
                             )}
                         </div>

@@ -1,1 +1,1 @@
-// Arquivo excluído/obsoleto.
+// DELETED
