@@ -1,3 +1,4 @@
+
 export const RULES_DATA = {
   "races": [
     { 
@@ -7,7 +8,7 @@ export const RULES_DATA = {
       "languages": ["Comum", "Um extra a escolha"], 
       "senses": [],
       "description": "Humanos são a mais adaptável e comum das raças comuns. Sua ambição e ímpeto de realizar algo levam-nos a abandonar suas terras natais e explorar o mundo.",
-      "traits": ["Versatilidade Humana"]
+      "racialTraits": ["Versatilidade Humana (Todos atributos +1)", "Adaptação Rápida"]
     },
     { 
       "name": "Elfo", 
@@ -16,7 +17,7 @@ export const RULES_DATA = {
       "languages": ["Comum", "Élfico"], 
       "senses": ["Visão no Escuro 18m", "Sentidos Aguçados"],
       "description": "Elfos são um povo mágico de graça sobrenatural, vivendo no mundo sem fazer parte inteiramente dele. Eles amam a natureza e a magia, a arte e a música.",
-      "traits": ["Ancestralidade Feérica", "Transe", "Sentidos Aguçados"]
+      "racialTraits": ["Ancestralidade Feérica", "Transe", "Sentidos Aguçados", "Treinamento Élfico"]
     },
     { 
       "name": "Anão", 
@@ -25,7 +26,7 @@ export const RULES_DATA = {
       "languages": ["Comum", "Anão"], 
       "senses": ["Visão no Escuro 18m", "Resiliência Anã"],
       "description": "Reinos ricos de grandeza antiga, salões escavados nas raízes das montanhas, o eco de picaretas e martelos em minas profundas e forjas ardentes.",
-      "traits": ["Resiliência Anã", "Treinamento em Combate Anão", "Conhecimento de Pedra"]
+      "racialTraits": ["Resiliência Anã", "Treinamento em Combate Anão", "Conhecimento de Pedra", "Tenacidade"]
     },
     { 
       "name": "Halfling", 
@@ -34,7 +35,7 @@ export const RULES_DATA = {
       "languages": ["Comum", "Halfling"], 
       "senses": ["Sortudo", "Bravura"],
       "description": "O conforto de um lar é o objetivo da maioria dos halflings: um lugar para se estabelecer em paz e sossego, longe de monstros saqueadores.",
-      "traits": ["Sortudo", "Bravura", "Agilidade Halfling"]
+      "racialTraits": ["Sortudo", "Bravura", "Agilidade Halfling", "Furtividade Natural"]
     },
     { 
       "name": "Draconato", 
@@ -43,7 +44,7 @@ export const RULES_DATA = {
       "languages": ["Comum", "Dracônico"], 
       "senses": ["Resistência a Dano"],
       "description": "Nascidos de dragões, como seu nome proclama, os draconatos caminham orgulhosamente pelo mundo que os saúda com um temor incompreensível.",
-      "traits": ["Ancestralidade Dracônica", "Ataque de Sopro", "Resistência a Dano"]
+      "racialTraits": ["Ancestralidade Dracônica", "Ataque de Sopro", "Resistência a Dano Elemental"]
     },
     { 
       "name": "Gnomo", 
@@ -52,7 +53,7 @@ export const RULES_DATA = {
       "languages": ["Comum", "Gnômico"], 
       "senses": ["Visão no Escuro 18m", "Esperteza Gnômica"],
       "description": "Um zumbido constante de atividade permeia os lares onde os gnomos formam suas comunidades muito unidas. Eles vivem intensamente.",
-      "traits": ["Esperteza Gnômica", "Ilusionista Nato (Gnomo da Floresta)", "Engenhoqueiro (Gnomo das Rochas)"]
+      "racialTraits": ["Esperteza Gnômica", "Ilusionista Nato (Gnomo da Floresta)", "Engenhoqueiro (Gnomo das Rochas)"]
     },
     { 
       "name": "Meio-Orc", 
@@ -61,7 +62,7 @@ export const RULES_DATA = {
       "languages": ["Comum", "Orc"], 
       "senses": ["Visão no Escuro 18m", "Ameaçador", "Implacável"],
       "description": "Meio-orcs contam com força bruta e vigor para superar seus desafios. Muitos buscam uma vida de aventuras, onde sua força marcial é valorizada.",
-      "traits": ["Ameaçador", "Resistência Implacável", "Ataques Selvagens"]
+      "racialTraits": ["Ameaçador", "Resistência Implacável", "Ataques Selvagens"]
     },
     { 
       "name": "Tiefling", 
@@ -70,7 +71,7 @@ export const RULES_DATA = {
       "languages": ["Comum", "Infernal"], 
       "senses": ["Visão no Escuro 18m", "Resistência Infernal"],
       "description": "Ser recebido com olhares e sussurros, sofrer violência e insultos na rua, ver a desconfiança e o medo em cada olhar: esse é o fardo do tiefling.",
-      "traits": ["Legado Infernal", "Resistência Infernal"]
+      "racialTraits": ["Legado Infernal", "Resistência Infernal (Fogo)", "Misticismo Obscuro"]
     }
   ],
   "classes": [

@@ -1,5 +1,4 @@
 
-
 export type Attribute = 'Força' | 'Destreza' | 'Constituição' | 'Inteligência' | 'Sabedoria' | 'Carisma';
 
 export type SkillName = 
@@ -90,5 +89,5 @@ export interface DndRace {
   languages: string[];
   senses: string[];
   description?: string;
-  traits?: string[];
+  racialTraits: string[];
 }

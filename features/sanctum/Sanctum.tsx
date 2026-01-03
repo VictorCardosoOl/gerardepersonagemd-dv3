@@ -227,13 +227,13 @@ export const Sanctum: React.FC<Props> = ({ onSelect, onPrint, onExport }) => {
                             Grimório Digital
                         </span>
                     </div>
-                    <h2 className="text-7xl md:text-[10rem] font-display font-black text-white leading-[0.8] tracking-tighter drop-shadow-2xl">
+                    <h2 className="text-5xl md:text-8xl lg:text-[10rem] font-display font-black text-white leading-[0.8] tracking-tighter drop-shadow-2xl">
                         SALÃO DAS<br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-mystic-200 to-mystic-600 opacity-90">LENDAS</span>
                     </h2>
                 </div>
                 <div className="flex flex-col items-end gap-2 text-right border-r-2 border-white/5 pr-8 py-2">
-                    <span className="text-8xl font-display font-thin text-white/5 tabular-nums">{String(savedCharacters.length).padStart(2, '0')}</span>
+                    <span className="text-6xl md:text-8xl font-display font-thin text-white/5 tabular-nums">{String(savedCharacters.length).padStart(2, '0')}</span>
                     <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-mystic-600">Almas<br/>Registradas</span>
                 </div>
             </div>

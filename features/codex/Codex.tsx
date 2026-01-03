@@ -80,8 +80,8 @@ export const Codex: React.FC = () => {
     const bgImage = RACE_IMAGES[selectedRace.name] || 'https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?q=80&w=1000&auto=format&fit=crop';
 
     return (
-        <div className="w-full max-w-[1800px] mx-auto min-h-[85vh] h-[85vh] flex flex-col lg:flex-row gap-6 px-4 lg:px-12 py-8 animate-fade-in overflow-hidden">
-            <div className="w-full lg:w-80 shrink-0 flex flex-col h-full gap-4 z-20">
+        <div className="w-full max-w-[1800px] mx-auto min-h-screen lg:h-[85vh] flex flex-col lg:flex-row gap-6 px-4 lg:px-12 py-8 animate-fade-in overflow-hidden">
+            <div className="w-full lg:w-80 shrink-0 flex flex-col h-[40vh] lg:h-full gap-4 z-20">
                 <div className="glass-panel p-6 rounded-[1.5rem] bg-void-950/80 border-white/10 backdrop-blur-xl shrink-0">
                     <div className="flex items-center gap-3 mb-3">
                         <div className="p-2 bg-cyan-950/30 rounded-lg border border-cyan-500/20 text-cyan-400 shadow-glow-cyan">
@@ -108,7 +108,7 @@ export const Codex: React.FC = () => {
                 </div>
             </div>
 
-            <div className="flex-grow relative h-full rounded-[2.5rem] overflow-hidden bg-void-950 border border-white/10 shadow-2xl group ring-1 ring-white/5">
+            <div className="flex-grow relative h-[60vh] lg:h-full rounded-[2.5rem] overflow-hidden bg-void-950 border border-white/10 shadow-2xl group ring-1 ring-white/5">
                 <AnimatePresence mode="wait">
                     <motion.div 
                         key={selectedRace.name}
@@ -143,11 +143,11 @@ export const Codex: React.FC = () => {
                                                 Raça Jogável
                                             </span>
                                         </div>
-                                        <h1 className="text-6xl md:text-8xl font-display font-black text-white leading-[0.9] tracking-tighter drop-shadow-2xl mb-8 bg-clip-text text-transparent bg-gradient-to-br from-white via-mystic-100 to-mystic-400">
+                                        <h1 className="text-5xl md:text-6xl lg:text-8xl font-display font-black text-white leading-[0.9] tracking-tighter drop-shadow-2xl mb-8 bg-clip-text text-transparent bg-gradient-to-br from-white via-mystic-100 to-mystic-400">
                                             {selectedRace.name}
                                         </h1>
                                         <div className="relative pl-6 border-l-2 border-cyan-500/30 mb-10">
-                                            <p className="text-xl md:text-2xl text-mystic-100 font-light leading-relaxed font-body">
+                                            <p className="text-lg md:text-xl lg:text-2xl text-mystic-100 font-light leading-relaxed font-body">
                                                 {selectedRace.description}
                                             </p>
                                         </div>
@@ -200,7 +200,7 @@ export const Codex: React.FC = () => {
                                             <Sparkles size={14} /> Traços Raciais
                                         </h4>
                                         <div className="flex flex-wrap gap-3">
-                                            {selectedRace.traits?.map(trait => (
+                                            {selectedRace.racialTraits?.map(trait => (
                                                 <div key={trait} className="group/trait relative">
                                                     <span className="px-4 py-2 rounded-xl bg-white/[0.05] border border-white/10 text-sm text-mystic-200 font-medium tracking-wide hover:bg-white/[0.1] hover:text-white transition-colors cursor-help flex items-center gap-2 hover:border-cyan-500/30">
                                                         <Scroll size={12} className="opacity-50" /> {trait}

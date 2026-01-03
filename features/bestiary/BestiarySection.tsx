@@ -64,7 +64,7 @@ export const BestiarySection: React.FC<Props> = ({ preLoadedList = [] }) => {
     };
 
     return (
-        <div className="w-full max-w-[1800px] mx-auto h-[85vh] flex gap-8 animate-fade-in px-4 md:px-12 py-6">
+        <div className="w-full max-w-[1800px] mx-auto min-h-screen md:h-[85vh] flex flex-col md:flex-row gap-8 animate-fade-in px-4 md:px-12 py-6">
             
             {/* 1. Sidebar List (Left) */}
             <div className="w-full md:w-80 lg:w-96 flex flex-col gap-4 shrink-0 animate-slide-in-right" style={{ animationDuration: '0.6s' }}>
@@ -96,7 +96,7 @@ export const BestiarySection: React.FC<Props> = ({ preLoadedList = [] }) => {
                     </div>
                 </div>
 
-                <div className="glass-panel rounded-[2rem] flex-grow overflow-hidden flex flex-col bg-void-950/60 border-white/5 relative">
+                <div className="glass-panel rounded-[2rem] h-[400px] md:h-full overflow-hidden flex flex-col bg-void-950/60 border-white/5 relative flex-grow">
                     {/* Header Columns */}
                     <div className="p-4 border-b border-white/5 flex justify-between items-center text-[9px] uppercase tracking-[0.2em] text-mystic-600 font-bold px-6 bg-void-950/50 backdrop-blur-md z-10">
                         <span>Nome da Criatura</span>
@@ -132,11 +132,11 @@ export const BestiarySection: React.FC<Props> = ({ preLoadedList = [] }) => {
             </div>
 
             {/* 2. Detail View (Right) */}
-            <div className="hidden md:block flex-grow glass-panel rounded-[2.5rem] overflow-hidden relative border-white/10 bg-void-950/30 shadow-2xl transition-all duration-700">
+            <div className="flex-grow glass-panel rounded-[2.5rem] overflow-hidden relative border-white/10 bg-void-950/30 shadow-2xl transition-all duration-700 min-h-[600px] md:min-h-0">
                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.02] pointer-events-none mix-blend-overlay"></div>
                 
                 <div 
-                    className="h-full overflow-y-auto custom-scrollbar p-8 md:p-12 relative z-10" 
+                    className="h-full overflow-y-auto custom-scrollbar p-6 md:p-12 relative z-10" 
                     data-lenis-prevent
                 >
                     {isLoadingDetails ? (
@@ -154,8 +154,8 @@ export const BestiarySection: React.FC<Props> = ({ preLoadedList = [] }) => {
                             <div className="w-64 h-64 rounded-full border border-dashed border-white/10 flex items-center justify-center mb-10 bg-void-900/30 shadow-[inset_0_0_60px_rgba(0,0,0,0.5)]">
                                 <ScrollText size={80} className="text-mystic-700" strokeWidth={0.5} />
                             </div>
-                            <h3 className="font-display text-white text-5xl font-bold tracking-widest mb-4 opacity-50">Bestiário</h3>
-                            <p className="text-mystic-500 font-light text-lg tracking-wide">Selecione uma criatura para revelar seus segredos.</p>
+                            <h3 className="font-display text-white text-3xl md:text-5xl font-bold tracking-widest mb-4 opacity-50 text-center">Bestiário</h3>
+                            <p className="text-mystic-500 font-light text-lg tracking-wide text-center">Selecione uma criatura para revelar seus segredos.</p>
                         </div>
                     )}
                 </div>
